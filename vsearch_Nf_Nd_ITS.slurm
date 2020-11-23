@@ -32,6 +32,8 @@ do
         --sizeout \
         --threads 16 \
         --output $OUTDIR/${sample_id}.derep.fasta
+
+    sed -i '' "s/^>.*/&;sample=${sample_id};/g" neo_map/merged_seqs/${sample_id}.derep.fasta
 done
 
 cat $OUTDIR/*.derep.fasta > $OUTDIR/al_seqs.derep.fasta
