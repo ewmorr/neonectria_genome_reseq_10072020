@@ -16,3 +16,15 @@ Trimmomatic adapter trimming and quality trimming
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/trimmomatic_trim.slurm
 ```
+
+```
+grep "Result" bbduk.out > bbduk.results
+grep "Input Read Pairs" trimmomatic.out > trimmomatic.results
+```
+Either filtering dropped similar numbers of read pairs -- less than a tenth of a percent in most cases. trimmomatic indicates 15-30 percent read-trhough (fwd only surviving)
+
+Merge bbtrimmed reads and derep (`vsearch`) for search and then map to Nf/Nd ITS seqs for species ID
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/vsearch_Nf_Nd_ITS.slurm
+```
+
