@@ -38,7 +38,7 @@ done
 
 cat $OUTDIR/*.derep.fasta > $OUTDIR/al_seqs.derep.fasta
 
-srun vsearch --usearch_global $OUTDIR/${sample_id}.derep.fasta \
+srun vsearch --usearch_global $OUTDIR/al_seqs.derep.fasta \
     --db unite_ITS_Nf_Nd.fasta \
     --sizein \
     --id 0.97 \
