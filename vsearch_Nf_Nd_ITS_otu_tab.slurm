@@ -13,7 +13,7 @@ INDIR=reads/bbtrimmed
 OUTDIR=reads/bbtrimmed/vsearch
 
 srun vsearch --usearch_global $OUTDIR/al_seqs.derep.fasta \
-    --db unite_ITS_Nf_Nd.fasta \
+    --db Nf_Nd_ITS2.fasta \
     --sizein \
     --id 0.97 \
     --otutabout all_seqs.derep.Nf_Nd_ITS.otu_tab.txt \
