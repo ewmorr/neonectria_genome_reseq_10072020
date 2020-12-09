@@ -15,6 +15,6 @@ OUTDIR=reads/bbtrimmed/vsearch
 srun vsearch --usearch_global $OUTDIR/al_seqs.derep.fasta \
     --db Nf_Nd_ITS2.fasta \
     --sizein \
-    --id 0.97 \
+    --id 1 \
     --otutabout all_seqs.derep.Nf_Nd_ITS.otu_tab.txt \
     --threads 16
