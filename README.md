@@ -45,7 +45,7 @@ done
 ```
 
 #### Make sure that nextflow.config is updated if necessary (https://github.com/dsarov/SPANDx#usage)
-The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM), although the given pull commands don't seem to work to update the config. Then, to run SPANDx
+The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM), although the given pull commands don't seem to work to update the config. Note that .bashrc may need to be updated as described [here](./SPANDx_conda_install.sh). Then, to run SPANDx
 
 ```
 cd SPANDx_test_run
