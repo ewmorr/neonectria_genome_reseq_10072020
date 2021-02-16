@@ -30,9 +30,9 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/vsearch_Nf_Nd_ITS.slurm
 Eight of the genomes are Nd based on this analysis
 
 #### Test run of SPANDx on six genomes of Nf
-The reference genome for Nf is based on CANU assembly of MinION reads (MAT1 isolate) with pilon polishing with Illumina reads (either MAT1 or MAT2 isolate). These are located at `~/neonectria_minion/MAT1_polish/neonectria_minion/MAT1_polish/pilon_.fasta` or at `~/neonectria_minion/MAT2_polish/pilon_.fasta`. We will use the MAT1 assembly despite slightly worse BUSCO completeness (see BUSCO and quast states in these dirs) because this is assembled from a single isolate.
+The reference genome for Nf is based on CANU assembly of MinION reads (MAT1 isolate) with pilon polishing with Illumina reads (either MAT1 or MAT2 isolate). These are located at `~/neonectria_minion/MAT1_polish/neonectria_minion/MAT1_polish/pilon_.fasta` or at `~/neonectria_minion/MAT2_polish/pilon_.fasta`. We will use the MAT1 assembly despite slightly worse BUSCO completeness (see BUSCO and quast stats in these dirs) because this is assembled from a single isolate.
 
-Make test tun dir and copy test files with rename for SPANDx
+Make test tun dir and copy test files with rename of sequence files to follow the format expected by SPANDx
 ```
 mkdir SPANDx_test_run
 
@@ -45,8 +45,8 @@ done
 ```
 
 #### Make sure that nextflow.config is updated if necessary (https://github.com/dsarov/SPANDx#usage)
-The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM), although the given pull commands don't seem to work to update the config.
-then
+The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM), although the given pull commands don't seem to work to update the config. Then, to run SPANDx
+
 ```
 cd SPANDx_test_run
 conda activate spandx
