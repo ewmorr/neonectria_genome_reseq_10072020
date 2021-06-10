@@ -105,8 +105,28 @@ nextflow config dsarov/spandx
 screen
 
 nextflow run dsarov/spandx --executor slurm --ref ~/neonectria_minion/MAT1_polish/pilon_.fasta
+```
+### For Nd reference, download the isolate RS324p genome from Deng et al. 2015. The Gomez-Cortecero genome is referenced at MycoCosm, but the Deng genome is better contiguity (by a lot). The reference is at `N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta`
 
+Running SPANDx on Nd
+```
+module purge
+module load anaconda/colsa
 
+cd SPANDx_Nd
+conda activate spandx
+source ~/.bashrc
+
+nextflow config dsarov/spandx
+
+screen
+
+nextflow run dsarov/spandx --executor slurm --ref ~/N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta -resume
+```
+NG6 seems to have hung at trimmomatic step (after > 24 hours not finiished). Killed and try restarting with `resume`
+```
+screen
+nextflow run dsarov/spandx --executor slurm --ref ~/N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta
 
 
 
