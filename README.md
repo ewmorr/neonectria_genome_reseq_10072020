@@ -127,8 +127,13 @@ NG6 seems to have hung at trimmomatic step (after > 24 hours not finiished). Kil
 ```
 screen
 nextflow run dsarov/spandx --executor slurm --ref ~/N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta
+```
 
-
+### Perform LD filtering before population structure analyses
+Using BCFtools
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter.slurm
+```
 
 
 
