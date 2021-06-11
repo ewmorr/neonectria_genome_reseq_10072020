@@ -132,7 +132,9 @@ nextflow run dsarov/spandx --executor slurm --ref ~/N_ditissima_ref_genome/LDPL0
 ### Perform LD filtering before population structure analyses
 Using BCFtools
 ```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter.slurm
+cd neonectria_genome_reseq_10072020
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_50KB.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
 ```
 
 
