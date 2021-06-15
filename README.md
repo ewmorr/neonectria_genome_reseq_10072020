@@ -169,22 +169,6 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 ```
 This appears to work.... Note that for ADMIXTURE this needs to be recoded using `--recode12` and not `--recode`
 
-#### Making test data for conversion to PED to try with LEA and/or ADMIXTURE
-```
-cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
-head -n 150 Nf.out.filtered.LD_filtered_0.5_10Kb.vcf > test_dat.vcf
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.test_dat.slurm
-```
-
-The .geno file produced by LEA from the new PED is still throwing errors. The .geno matrix is simply a matrix with one row per genotype (culture) and one column per SNP with 0/1 for reference versus ALT allele. It should be easy enough to code the conversion from PED to geno or VCF to geno in perl. First trying ADMIXTURE
-
-```
-cd neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
-mkdir admixture
-cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
-
-```
 
 ### Missing data filter. On reexamining VCF files it appears there is a large proporition of missing data in the LD filtered data. Try filtering on missing data
 ```
@@ -192,9 +176,27 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filt
 ```
 Remaining for the 10KB LD filtered 118246. For the 50 KB LD filtered 107763
 
+### Rerun PED conversion
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
+```
 
+### Running admixture CV
+```
+cd neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
+mkdir admixture
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
+```
 
+#### Making test data for conversion to PED to try with LEA
+```
+cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
+head -n 150 Nf.out.filtered.LD_filtered_0.5_10Kb.vcf > test_dat.vcf
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.test_dat.slurm
+```
 
+The .geno file produced by LEA from the new PED is still throwing errors. `Error: It seems that individuals 12 and 1 have too many missing data.` Trying removing those individuals
 
 
 
