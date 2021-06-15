@@ -163,11 +163,11 @@ Trying plink2. First need to install from conda. See `plink2_conda_install.sh`
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink2_VCF_to_PED.slurm
 ```
-plink2 does not use PED files (?!). Insteas try plink1.9  `plink1.9_conda_install.sh`
+plink2 does not use PED files (?!). Instead try plink1.9  `plink1.9_conda_install.sh`
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 ```
-This appears to work....
+This appears to work.... Note that for ADMIXTURE this needs to be recoded using `--recode12` and not `--recode`
 
 #### Making test data for conversion to PED to try with LEA and/or ADMIXTURE
 ```
@@ -182,7 +182,7 @@ The .geno file produced by LEA from the new PED is still throwing errors. The .g
 cd neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
 mkdir admixture
 cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm 
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 
 
 ```
