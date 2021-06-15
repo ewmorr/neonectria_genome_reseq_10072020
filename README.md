@@ -188,8 +188,11 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV_6-10.slurm
 
 ```
 
-
-
+### Missing data filter. On reexamining VCF files it appears there is a large proporition of missing data in the LD filtered data. Try filtering on missing data
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
+```
+Remaining for the 10KB LD filtered 118246. For the 50 KB LD filtered 107763
 
 
 
