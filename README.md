@@ -166,5 +166,8 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink2_VCF_to_PED.slurm
 plink2 does not use PED files (?!). Insteas try plink1.9  `plink1.9_conda_install.sh`
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
-
 ```
+This appears to work....
+
+#### Making test data for conversion to PED to try with LEA and/or ADMIXTURE
+
