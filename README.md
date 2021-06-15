@@ -183,6 +183,7 @@ cd neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
 mkdir admixture
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV_6-10.slurm
 
 
 ```
