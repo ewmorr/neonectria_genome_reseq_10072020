@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --job-name="vcf2ped"
-#SBATCH --output=vcftools_LD.out
+#SBATCH --output=vcftools.out
 #SBATCH --partition=shared
 
 module purge
