@@ -145,6 +145,9 @@ grep -v "^##" Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
 for 50 KB filter 111,759 SNPs remaining, for 10 KB filter 122,885 SNPs remaining
 
-
+### Convert VCF to PED format for input to ADMIXTURE or LEA 
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/convert_VCF_to_PED.slurm
+```
 
 
