@@ -11,5 +11,9 @@ Nf.K1-10 = snmf(test.geno, K = 1:10, ploidy = 1, entropy = T,
 CPU = 4, project = "new") #four CPUs local. Change for server
 
 #This is throwing a sefault, but probably because of the error "Error: Unknown element '2' in the data file"
+#This looks like an error due to VCF format 4.2 instead of 4.1 https://www.biostars.org/p/231892/
+#can use vcftools to convert to .ped
 Nf.K1-10 = snmf(vcf2geno("~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/test_dat.vcf"), K = 1:10, ploidy = 1, entropy = T,
 CPU = 4, project = "new") #four CPUs local. Change for server
+
+require(tessR3)

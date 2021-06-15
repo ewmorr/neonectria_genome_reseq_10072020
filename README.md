@@ -146,7 +146,8 @@ grep -v "^##" Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 for 50 KB filter 111,759 SNPs remaining, for 10 KB filter 122,885 SNPs remaining
 
 ### Convert VCF to PED format for input to ADMIXTURE or LEA
-vcftools cannot handle commas in the description fields of VCF v4.2. These are primarily the FORMAT lines. There are only few so easy enough to remove by hand
+vcftools cannot handle commas in the description fields VCF. https://gitmemory.com/issue/vcftools/vcftools/129/477653477
+Commas are  in the FORMAT and INFO lines. There are only few so easy enough to remove by hand
 ```
 cp Nf.out.filtered.LD_filtered_0.5_10Kb.vcf Nf.out.filtered.LD_filtered_0.5_10Kb.comma_rm.vcf
 cp Nf.out.filtered.LD_filtered_0.5_50Kb.vcf Nf.out.filtered.LD_filtered_0.5_50Kb.comma_rm.vcf
@@ -157,5 +158,6 @@ Then try PED conversion
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/convert_VCF_to_PED.slurm
 ```
-
+This is still writing zero sites even with the watrnings about commas removed. Maybe be an issue with vctools reading v4.2 VCF...
+Trying plink2
 
