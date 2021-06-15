@@ -182,8 +182,7 @@ The .geno file produced by LEA from the new PED is still throwing errors. The .g
 cd neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
 mkdir admixture
 cd ~/neonectria_genome_reseq_10072020/
-
-
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm 
 
 
 ```
