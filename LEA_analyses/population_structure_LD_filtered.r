@@ -2,18 +2,14 @@ require(LEA)
 
 #This is the read command
 #The object takes the path to the geno file
-test.geno = vcf2geno("Nf_post_SPANDx/LD_filter/test_dat.vcf")
+#Note that the package does not appear to accept VCF v4.2 so we need to first convert to PED format. This is done using plink v1.9 (outside of R)
+test.geno = ped2geno("Nf_post_SPANDx/LD_filter/test_dat.ped")
 
 #reading the full data set causes segfault
 #test.geno = vcf2geno("Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf")
 
-Nf.K1-10 = snmf(test.geno, K = 1:10, ploidy = 1, entropy = T,
-CPU = 4, project = "new") #four CPUs local. Change for server
+#This is still throwing a segfault on the error of an unrecognized character. The pca function in this package throws a missing data error. Trying tess3r
+#Nf.K1-10 = snmf(test.geno, K = 1:10, ploidy = 1, entropy = T, CPU = 4, project = "new") #four CPUs local. Change for server
 
-#This is throwing a sefault, but probably because of the error "Error: Unknown element '2' in the data file"
-#This looks like an error due to VCF format 4.2 instead of 4.1 https://www.biostars.org/p/231892/
-#can use vcftools to convert to .ped
-Nf.K1-10 = snmf(vcf2geno("~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/test_dat.vcf"), K = 1:10, ploidy = 1, entropy = T,
-CPU = 4, project = "new") #four CPUs local. Change for server
-
+require(dplyr)
 require(tessR3)

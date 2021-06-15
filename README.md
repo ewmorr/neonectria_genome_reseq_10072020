@@ -170,4 +170,32 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 This appears to work....
 
 #### Making test data for conversion to PED to try with LEA and/or ADMIXTURE
+```
+cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
+head -n 150 Nf.out.filtered.LD_filtered_0.5_10Kb.vcf > test_dat.vcf
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.test_dat.slurm
+```
+
+The .geno file produced by LEA from the new PED is still throwing errors. The .geno matrix is simply a matrix with one row per genotype (culture) and one column per SNP with 0/1 for reference versus ALT allele. It should be easy enough to code the conversion from PED to geno or VCF to geno in perl. First trying ADMIXTURE
+
+```
+cd neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
+mkdir admixture
+cd ~/neonectria_genome_reseq_10072020/
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
