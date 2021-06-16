@@ -170,7 +170,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 This appears to work.... Note that for ADMIXTURE this needs to be recoded using `--recode12` and not `--recode`
 
 
-### Missing data filter. On reexamining VCF files it appears there is a large proporition of missing data in the LD filtered data. Try filtering on missing data
+### Missing data filter. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. Try filtering on missing data
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
 ```
@@ -198,6 +198,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.test_
 
 The .geno file produced by LEA from the new PED is still throwing errors. `Error: It seems that individuals 12 and 1 have too many missing data.` Trying removing those individuals
 
+the pcadapt package is throwing errors about sising data as well. There may be something wrong with the PED file conversion
 
 
 
