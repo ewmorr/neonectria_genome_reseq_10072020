@@ -1,10 +1,13 @@
 require(pcadapt)
-path_to_file <- "Nf_post_SPANDx/LD_filter/test_dat.bed"
-filename <- read.pcadapt(path_to_file, type = "bed") #This looks like prefers conversion to BED format first
+makeBed <- "Nf_post_SPANDx/LD_filter/plink_conversion_test/test_dat.make-bed.bed"
+makeBed.file <- read.pcadapt(makeBed, type = "bed")
+bed_mat.makeBed = pcadapt::bed2matrix(makeBed.file)
 
-#To check bed file
 
-bed_mat = pcadapt::bed2matrix(filename)
+x <- pcadapt(input = makeBed.file, K = 15, ploidy = 2) #K must be less than the number of species
 
-x <- pcadapt(input = filename, K = 20, ploidy = 1)
-pca(filename, scale = T)
+bed_mat.makeBed.mat = pcadapt::bed2matrix(makeBed.file)
+
+plot(x, option = "screeplot")
+
+plot(x, option = "scores")
