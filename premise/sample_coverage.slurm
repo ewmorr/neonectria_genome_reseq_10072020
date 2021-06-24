@@ -16,7 +16,7 @@ do
 SAMPLE=${i%.dedup.bam}
 
 srun samtools depth -a $i > ${SAMPLE}.coverage.txt
-srun ~/repo/perl_scripts/coverage_per_contig_samtools.pl ${SAMPLE}.coverage.txt > ${SAMPLE}.coverage_by_sequence.txt
+srun perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/coverage_per_contig_samtools.pl ${SAMPLE}.coverage.txt > ${SAMPLE}.coverage_by_sequence.txt
 
 done
 
