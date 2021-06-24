@@ -45,18 +45,20 @@ done
 ```
 
 #### Make sure that nextflow.config is updated if necessary (https://github.com/dsarov/SPANDx#usage)
-The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM), although the given pull commands don't seem to work to update the config. Note that `.bashrc` may need to be updated as described [here](./SPANDx_conda_install.sh). Then, to run SPANDx
+The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM). Newer versions of the package also have `notrim` set to `ture`. THis should be `false` in that case. Also, note that we have cloned the git repo after installing via conda, and made some modificaations to the `main.nf` script (i.e., changing the `gatk HaplotypeCaller` comand at line 865 to include `--ploidy 1` flag) and to the `./bin/Master_vcf.sh` script (i.e., removing `-ploidy 1` from the `gatk GenotypeGVCFs` command). Also, note that `.bashrc` may need to be updated as described [here](./SPANDx_conda_install.sh). Finally, the reference genome assembly must be loacted in the SPANDx working directory (along with the reads), and can be indicated by path in the config file. Then, to run SPANDx (note that nextflow is pointed to the cloned git repo)
 
 ```
 cd SPANDx_test_run
 conda activate spandx
 source ~/.bashrc
 
-nextflow config dsarov/spandx
+
+
+nextflow config ~/SPANDx_git_clone/
 
 screen
 
-nextflow run dsarov/spandx --executor slurm --ref ~/neonectria_minion/MAT1_polish/pilon_.fasta
+nextflow run ~/SPANDx_git_clone/
 
 ```
 Test run completed with no errors after `.bashrc` modifications
@@ -100,11 +102,11 @@ cd SPANDx_Nf
 conda activate spandx
 source ~/.bashrc
 
-nextflow config dsarov/spandx
+nextflow config ~/SPANDx_git_clone/
 
 screen
 
-nextflow run dsarov/spandx --executor slurm --ref ~/neonectria_minion/MAT1_polish/pilon_.fasta
+nextflow run ~/SPANDx_git_clone/
 ```
 ### For Nd reference, download the isolate RS324p genome from Deng et al. 2015. The Gomez-Cortecero genome is referenced at MycoCosm, but the Deng genome is better contiguity (by a lot). The reference is at `N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta`
 
@@ -117,22 +119,43 @@ cd SPANDx_Nd
 conda activate spandx
 source ~/.bashrc
 
-nextflow config dsarov/spandx
+nextflow config ~/SPANDx_git_clone/
 
 screen
 
-nextflow run dsarov/spandx --executor slurm --ref ~/N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta -resume
+nextflow run ~/SPANDx_git_clone/
 ```
-NG6 seems to have hung at trimmomatic step (after > 24 hours not finiished). Killed and try restarting with `resume`
+NG6 seems to have hung at trimmomatic step (after > 24 hours not finished). Killed and try restarting with `resume`
 ```
 screen
-nextflow run dsarov/spandx --executor slurm --ref ~/N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta
+nextflow run ~/SPANDx_git_clone/ --resume
 ```
+
+### Post-SNP calling calculations and filtering
 number of SNPs
 ```
 grep -v "^##" ~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.vcf | wc -l
 ```
-1,005,049 high quality SNPs
+868,858 high quality SNPs
+
+#### Note that while the documentation claims that SPANDx performs depth filtering, it is not clear from the scripts that this is done (and there are many SNPs with DP == 1 in the filtered VCF)
+
+calculate raw coverage
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/sample_coverage.slurm
+```
+concatenate coverage results
+```
+for i in *.coverage_by_sequence.txt
+do
+    COV="$(grep "genome" $i| cut -f 3)"
+    SAMPLE=${i%.coverage_by_sequence.txt}
+    echo -e "$SAMPLE\t$COV" >> ~/SPANDx_Nf_run2/Outputs/coverage_by_sample.dedup_bam.txt
+done
+```
+calculate covearge based on DP after spandx filtering
+
 
 ### Perform LD filtering before population structure analyses
 Using BCFtools
