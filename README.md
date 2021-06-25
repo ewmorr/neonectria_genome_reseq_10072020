@@ -132,10 +132,15 @@ nextflow run ~/SPANDx_git_clone/ --resume
 ### Filter out SNPs that FAIL filtering
 ```
 cd ~/SPANDx_Nf/Outputs/Master_vcf
-grep "##\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
+grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
 grep -v "##" out.filtered.PASS.vcf | wc -l
 ```
-312,333 SNPs remianing
+312,333 SNPs remaining X 71 sampes = 22,175,643
+```
+grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
+```
+1,524,341 NA sites
+1,524,341/22,175,643 = 6.87%
 
 ### Post-SNP calling calculations and filtering
 
@@ -157,7 +162,7 @@ done
 ```
 calculate covearge based on DP after spandx filtering. Note that the R script points to the file paths
 ```
-cd neonectria_genome_reseq_10072020/
+cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/cov_vcfR.slurm
 ```
 Stored locally at the home dir `coverage/Nf/`
