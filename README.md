@@ -206,25 +206,19 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10
 #grep -v "^##" Nf.out.filtered.LD_filtered_0.5_50Kb.vcf | wc -l
 grep -v "^##" Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
-for 50 KB filter 111,759 SNPs remaining, for 10 KB filter 122,885 SNPs remaining
+Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 26,354 SNPs remaing at 10Kb filter
+
 
 ### Convert VCF to PED format for input to ADMIXTURE or LEA
-vcftools cannot handle commas in the description fields VCF. https://gitmemory.com/issue/vcftools/vcftools/129/477653477
-Commas are  in the FORMAT and INFO lines. There are only few so easy enough to remove by hand
+
+PED conversion. We use using plink 1.9 after trying several options. Different attempts are retained for *knowledge*
 ```
-cp Nf.out.filtered.LD_filtered_0.5_10Kb.vcf Nf.out.filtered.LD_filtered_0.5_10Kb.comma_rm.vcf
-cp Nf.out.filtered.LD_filtered_0.5_50Kb.vcf Nf.out.filtered.LD_filtered_0.5_50Kb.comma_rm.vcf
-vim Nf.out.filtered.LD_filtered_0.5_10Kb.comma_rm.vcf
-vim Nf.out.filtered.LD_filtered_0.5_50Kb.comma_rm.vcf
-```
-Then try PED conversion
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/convert_VCF_to_PED.slurm
+#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/convert_VCF_to_PED.slurm
 ```
 This is still writing zero sites even with the warnings about commas removed. Maybe be an issue with vctools reading v4.2 VCF...
 Trying plink2. First need to install from conda. See `plink2_conda_install.sh`
 ```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink2_VCF_to_PED.slurm
+#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink2_VCF_to_PED.slurm
 ```
 plink2 does not use PED files (?!). Instead try plink1.9  `plink1.9_conda_install.sh`
 ```
@@ -232,17 +226,6 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 ```
 This appears to work.... Note that for ADMIXTURE this needs to be recoded using `--recode12` and not `--recode`
 
-
-### Missing data filter. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. Try filtering on missing data
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
-```
-Remaining for the 10KB LD filtered 118246. For the 50 KB LD filtered 107763
-
-### Rerun PED conversion
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
-```
 
 ### Running admixture CV
 ```
