@@ -4,12 +4,11 @@
 #SBATCH --output=vcfR_depth.out
 #SBATCH --partition=shared
 
-module purge
-module load anaconda/colsa
-
-cd ~/SPANDx_Nf_run2/Outputs/Master_vcf/
+cd ~/SPANDx_Nf/Outputs/Master_vcf/
 
 module/purge
 module load anaconda/colsa
+
+conda activate vcfR
 
 srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/depth_from_vcf.r
