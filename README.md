@@ -52,8 +52,6 @@ cd SPANDx_test_run
 conda activate spandx
 source ~/.bashrc
 
-
-
 nextflow config ~/SPANDx_git_clone/
 
 screen
@@ -131,12 +129,15 @@ screen
 nextflow run ~/SPANDx_git_clone/ --resume
 ```
 
+### Filter out SNPs that FAIL filtering
+```
+cd ~/SPANDx_Nf/Outputs/Master_vcf
+grep "##\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
+grep -v "##" out.filtered.PASS.vcf | wc -l
+```
+312,333 SNPs remianing
+
 ### Post-SNP calling calculations and filtering
-number of SNPs
-```
-grep -v "^##" ~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.vcf | wc -l
-```
-868,858 high quality SNPs
 
 #### Note that while the documentation claims that SPANDx performs depth filtering, it is not clear from the scripts that this is done (and there are many SNPs with DP == 1 in the filtered VCF)
 
@@ -154,7 +155,20 @@ do
     echo -e "$SAMPLE\t$COV" >> ~/SPANDx_Nf_run2/Outputs/coverage_by_sample.dedup_bam.txt
 done
 ```
-calculate covearge based on DP after spandx filtering
+calculate covearge based on DP after spandx filtering. Note that the R script points to the file paths
+```
+cd neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/cov_vcfR.slurm
+```
+Stored locally at the home dir `coverage/Nf/`
+
+
+
+### Next will need to perform coverage based filtering based on these reults. Likely 5 read minimum
+
+
+
+
 
 
 ### Perform LD filtering before population structure analyses
