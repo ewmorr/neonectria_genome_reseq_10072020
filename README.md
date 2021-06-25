@@ -181,13 +181,29 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 5,155,517 NA
 5,155,517/22,175,643 = 23.2%
 
+### Missing data filter. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. Try filtering on missing data
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
+```
+The slurm script is giving an illegal instrution error (WHY?) This is a small enough job to run on the head node but need to figure this out
+```
+module purge
+module load linucbrew/colsa
+bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
+grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
+```
+217,805 remaining variants
+2,221,268 NA
+2,221,268/15464155 = 14.3% NA
+
 ### Perform LD filtering before population structure analyses
 Using BCFtools
 ```
 cd ~/neonectria_genome_reseq_10072020
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_50KB.slurm
+#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_50KB.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
-grep -v "^##" Nf.out.filtered.LD_filtered_0.5_50Kb.vcf | wc -l
+#grep -v "^##" Nf.out.filtered.LD_filtered_0.5_50Kb.vcf | wc -l
 grep -v "^##" Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
 for 50 KB filter 111,759 SNPs remaining, for 10 KB filter 122,885 SNPs remaining

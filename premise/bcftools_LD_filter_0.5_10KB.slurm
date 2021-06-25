@@ -9,5 +9,5 @@ module load linuxbrew/colsa
 
 cd ~/neonectria_genome_reseq_10072020/
 
-srun bcftools +prune -l 0.5 -w 10000 ~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.vcf -Ov -o Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
+srun bcftools +prune -l 0.5 -w 10000 ~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.vcf -Ov -o Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
 
