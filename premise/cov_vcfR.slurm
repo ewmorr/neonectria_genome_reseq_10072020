@@ -6,7 +6,7 @@
 
 cd ~/SPANDx_Nf/Outputs/Master_vcf/
 
-module/purge
+module purge
 module load anaconda/colsa
 
 conda activate vcfR
