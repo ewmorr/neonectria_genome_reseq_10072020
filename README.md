@@ -169,10 +169,11 @@ Stored locally at the home dir `coverage/Nf/`
 
 
 
-### Next will need to perform coverage based filtering based on these reults. Likely 5 read minimum
-
-
-
+### Next will need to perform coverage based filtering based on these reults. 4 read minimum 22 read max
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max25.slurm 
+```
 
 
 
