@@ -133,7 +133,7 @@ nextflow run ~/SPANDx_git_clone/ --resume
 ```
 cd ~/SPANDx_Nf/Outputs/Master_vcf
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
-grep -v "##" out.filtered.PASS.vcf | wc -l
+grep -v "##\|#" out.filtered.PASS.vcf | wc -l
 ```
 312,333 SNPs remaining X 71 sampes = 22,175,643
 ```
@@ -173,9 +173,13 @@ Stored locally at the home dir `coverage/Nf/`
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max25.slurm
+grep -v "##\|#" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
+grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 ```
-
-
+#### Note that `vcftools` recodes NA values "." as diploid NA "./."
+312,333 variants
+5,155,517 NA
+5,155,517/22,175,643 = 23.2%
 
 ### Perform LD filtering before population structure analyses
 Using BCFtools
