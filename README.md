@@ -222,6 +222,7 @@ Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome s
 ```
 plink2 does not use PED files (?!). Instead try plink1.9  `plink1.9_conda_install.sh`
 ```
+cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 ```
 This appears to work.... Note that for ADMIXTURE this needs to be recoded using `--recode12` and not `--recode`
@@ -229,7 +230,7 @@ This appears to work.... Note that for ADMIXTURE this needs to be recoded using 
 
 ### Running admixture CV
 ```
-cd neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
+cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
 mkdir admixture
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
