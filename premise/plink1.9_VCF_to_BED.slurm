@@ -11,5 +11,4 @@ conda activate plink1.9
 
 cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
 
-srun plink --vcf Nf.out.filtered.LD_filtered_0.5_10Kb.lt25missing.vcf --out Nf.out.filtered.LD_filtered_0.5_10Kb.vcf --allow-extra-chr --make-bed
-
+srun plink --vcf Nf.out.filtered.LD_filtered_0.5_10Kb.vcf --out Nf.out.filtered.LD_filtered_0.5_10Kb --allow-extra-chr --make-bed

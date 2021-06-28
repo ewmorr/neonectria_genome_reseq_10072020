@@ -228,9 +228,10 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.slurm
 ```
 This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--recode`
 
-### LD filtered VCF and PED files are at
+### LD filtered VCF, PED, and BED files are at
 ```
 ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.ped
+~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.bed
 ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
 ```
 ### Full SNP set (i.e., quality filtered but not LD filtered) is at
