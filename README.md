@@ -211,7 +211,7 @@ Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome s
 
 ### Convert VCF to PED format for input to ADMIXTURE or LEA
 
-#PED conversion. We use using plink 1.9 after trying several options. Different attempts are retained for *knowledge*
+#PED conversion. We use using plink 1.9 after trying several options. Different attempts are retained for reference
 ```
 #sbatch ~/repo/neonectria_genome_reseq_10072020/premise/convert_VCF_to_PED.slurm
 ```
