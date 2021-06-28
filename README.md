@@ -224,9 +224,19 @@ plink2 does not use PED files (?!). Instead try plink1.9  `plink1.9_conda_instal
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.slurm
 ```
-This appears to work.... Note that for ADMIXTURE this needs to be recoded using `--recode12` and not `--recode`
+This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--recode`
 
+### LD filtered VCF and PED files are at
+```
+~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.ped
+~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
+```
+### Full SNP set (i.e., quality filtered but not LD filtered) is at
+```
+~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.vcf
+```
 
 ### Running admixture CV
 ```
@@ -237,11 +247,6 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 ```
 
 #### Making test data for conversion to PED to try with LEA
-```
-cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
-head -n 150 Nf.out.filtered.LD_filtered_0.5_10Kb.vcf > test_dat.vcf
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.test_dat.slurm
-```
 
 The .geno file produced by LEA from the new PED is still throwing errors. `Error: It seems that individuals 12 and 1 have too many missing data.` Trying removing those individuals
 

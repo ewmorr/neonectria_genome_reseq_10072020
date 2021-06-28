@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --ntasks=1
-#SBATCH --job-name="vcf2ped"
+#SBATCH --job-name="vcf2bed"
 #SBATCH --output=plink1.9.out
 #SBATCH --partition=shared
 
@@ -11,7 +11,5 @@ conda activate plink1.9
 
 cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
 
-srun plink --vcf Nf.out.filtered.LD_filtered_0.5_10Kb.lt25missing.vcf --recode12 --out Nf.out.filtered.LD_filtered_0.5_10Kb.lt25missing --allow-extra-chr --make-bed --missing-genotype 9
-
-srun plink --vcf Nf.out.filtered.LD_filtered_0.5_50Kb.lt25missing.vcf --recode12 --out Nf.out.filtered.LD_filtered_0.5_50Kb.lt25missing --allow-extra-chr --make-bed --missing-genotype 9
+srun plink --vcf Nf.out.filtered.LD_filtered_0.5_10Kb.lt25missing.vcf --out Nf.out.filtered.LD_filtered_0.5_10Kb.vcf --allow-extra-chr --make-bed
 
