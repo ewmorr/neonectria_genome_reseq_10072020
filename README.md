@@ -227,7 +227,12 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.slurm
 ```
 This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--recode`
-
+- ADMIXTURE also requires that the `.map` file containes only numerics in "chromosome" (contig) names
+```
+~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
+cp Nf.out.filtered.LD_filtered_0.5_10Kb.map Nf.out.filtered.LD_filtered_0.5_10Kb.map.original
+sed 's/[a-z,_]*//g' Nf.out.filtered.LD_filtered_0.5_10Kb.map.original > Nf.out.filtered.LD_filtered_0.5_10Kb.map
+```
 ### LD filtered VCF, PED, and BED files are at
 ```
 ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.ped
@@ -238,6 +243,11 @@ This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `
 ```
 ~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.vcf
 ```
+Also producing BED files of non-LD-filtered VCF for pcadapt
+```
+cd ~/neonectria_genome_reseq_10072020
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.full_dat.slurm
+```
 
 ### Running admixture CV
 ```
@@ -246,6 +256,7 @@ mkdir admixture
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 ```
+Ran ADMIXTURE with --haploid flag set (after realizing it is available) and also with not (before realizing). Does not appear to make a difference for the CV results.
 
 #### Making test data for conversion to PED to try with LEA
 

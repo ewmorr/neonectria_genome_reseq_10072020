@@ -20,9 +20,11 @@ sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 1)
 sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 2)
 
 x_K30 <- pcadapt(input = makeBed.file, K = 30, ploidy = 2) #K must be less than the number of species
+x_K50 <- pcadapt(input = makeBed.file, K = 50, ploidy = 2) #K must be less than the number of species
 
 plot(x, option = "screeplot")
 plot(x_K30, option = "screeplot")
+plot(x_K50, option = "screeplot")
 
 plot(x, option = "scores")
 plot(x, option = "manhattan") #This is useful for full dataset
@@ -30,6 +32,23 @@ plot(x, option = "qqplot") #Another representation of p-value for SNP
 plot(x, option = "stat.distribution") #chi.sq distribution
 
 #Extract data for pretty plotting
+
+#Plot scree plot (can use any of the different K val PCAs
+#The singular values vector within PCA object contains the square root of porportion variance explained
+scree_dat = data.frame(prop.var = x_K50$singular.values^2, PC = 1:length(x_K50$singular.values))
+
+p1 = ggplot(scree_dat, aes(PC, prop.var)) +
+geom_point() +
+geom_line() +
+scale_x_continuous(breaks = c(1,10,20,30,40,50)) +
+labs(x = "PC axis", y = "Proportion variance explained") +
+my_gg_theme
+
+pdf("figures/Nf.LD_filtered.PCA_scree_plot.pdf", width = 6, height = 5)
+p1
+dev.off()
+
+#Plot PCA scores
 fam_info = read.table("Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.fam", header = F)
 sample_metadata = read.table("sample_metadata/sample_metadata.txt", header = T)
 
@@ -80,7 +99,7 @@ geom_point(size = 3, alpha = 0.7) +
 scale_color_manual(values = state.colors) +
 my_gg_theme
 
-pdf("figures/Nf_PCA_plot.pdf", width = 16, height = 8)
+pdf("figures/Nf.LD_filtered.PCA_plot.pdf", width = 16, height = 8)
 grid.arrange(p1,p2,p3,p4,p5,p6, nrow = 2, widths = c(0.3, 0.3, 0.4))
 dev.off()
 
