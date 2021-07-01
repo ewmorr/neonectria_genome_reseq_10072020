@@ -270,6 +270,7 @@ Ran ADMIXTURE with --haploid flag set (after realizing it is available) and also
 ```
 cd ~/neonectria_genome_reseq_10072020/
 mkdir Nf_post_SPANDx/LD_filter/faststructure
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure.slurm
 ```
 
 
