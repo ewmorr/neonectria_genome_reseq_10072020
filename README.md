@@ -135,7 +135,7 @@ cd ~/SPANDx_Nf/Outputs/Master_vcf
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
 grep -v "##\|#" out.filtered.PASS.vcf | wc -l
 ```
-312,333 SNPs remaining X 71 sampes = 22,175,643
+312,333 SNPs remaining * 71 sampes = 22,175,643
 ```
 grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
 ```
@@ -248,6 +248,14 @@ Also producing BED files of non-LD-filtered VCF for pcadapt
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.full_dat.slurm
 ```
+located on remote at
+```
+~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.bed
+```
+located locally
+```
+~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.bed
+```
 
 ### Running admixture CV
 ```
@@ -256,7 +264,14 @@ mkdir admixture
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 ```
-Ran ADMIXTURE with --haploid flag set (after realizing it is available) and also with not (before realizing). Does not appear to make a difference for the CV results.
+Ran ADMIXTURE with --haploid flag set (after realizing it is available) and also with not (before realizing). Does not appear to make a difference for the CV results. `--haploid` run is being used and is stored locally
+
+### Running fastSTRUCTURE
+```
+cd ~/neonectria_genome_reseq_10072020/
+mkdir Nf_post_SPANDx/LD_filter/faststructure
+```
+
 
 #### Making test data for conversion to PED to try with LEA
 

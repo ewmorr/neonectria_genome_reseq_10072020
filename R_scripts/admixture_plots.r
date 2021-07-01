@@ -1,6 +1,7 @@
 require(dplyr)
 require(ggplot2)
 require(tidyr)
+require(gridExtra)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 #reading in different levels of K for admixture plotting. Using PC 2-8 based on pcadapt analyses (obviously K = 1 is pointless)
@@ -183,3 +184,9 @@ theme(
 strip.background=element_rect(colour="black", fill=NA),
 axis.text.x = element_blank()
 )
+
+
+pdf("figures/Nf.LD_filtered.admixture.pdf", width = 20, height = 16)
+grid.arrange(p.K2,p.K3,p.K4,p.K5,p.K6,p.K7,p.K8,ncol = 1, heights = c(rep(0.14, 6), 0.16) )
+dev.off()
+
