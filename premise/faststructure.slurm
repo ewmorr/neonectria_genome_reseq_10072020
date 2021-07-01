@@ -25,5 +25,5 @@ do(
 )
 done
 
-srun python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/simple > simple.chooseK.txt
-srun python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/logistic > logistic.chooseK.txt
+srun ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/simple > simple.chooseK.txt
+srun ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/logistic > logistic.chooseK.txt
