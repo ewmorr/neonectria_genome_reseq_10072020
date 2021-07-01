@@ -11,15 +11,82 @@ conda activate faststructure
 
 cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
 
-#for K in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
-for K in 3 4 5 6 7 8 9 10 11 12 13 14 15
-do(
-    ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K $K \
-        --input=Nf.out.filtered.LD_filtered_0.5_10Kb \
-        --output=faststructure/logistic \
-        --full --seed=100 --prior=logistic &
-)
-done
+#serial calls of faststructure because `wait` seemingly doesn't work with for loop in slurm
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 1 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 2 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 3 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 4 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 5 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 6 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 7 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 8 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 9 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 10 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 11 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 12 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 13 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 14 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
+~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 15 \
+--input=Nf.out.filtered.LD_filtered_0.5_10Kb \
+--output=faststructure/logistic \
+--full --seed=100 --prior=logistic &
+
 wait
 
-srun ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/logistic > logistic.chooseK.txt
