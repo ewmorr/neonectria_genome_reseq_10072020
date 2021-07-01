@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --job-name="faststructure"
-#SBATCH --output=faststructure.out
+#SBATCH --output=faststructure2.out
 #SBATCH --partition=shared
 
 module purge
@@ -21,6 +21,3 @@ do(
 )
 done
 wait
-
-srun ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/simple > simple.chooseK.txt
-
