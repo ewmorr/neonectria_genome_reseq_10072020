@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --job-name="faststructure"
-#SBATCH --output=faststructure.out
+#SBATCH --output=faststructure_logistic.out
 #SBATCH --partition=shared
 
 module purge
@@ -16,11 +16,10 @@ for K in 3 4 5 6 7 8 9 10 11 12 13 14 15
 do(
     ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K $K \
         --input=Nf.out.filtered.LD_filtered_0.5_10Kb \
-        --output=faststructure/simple \
-        --full --seed=100 &
+        --output=faststructure/logistic \
+        --full --seed=100 --prior=logistic &
 )
 done
 wait
 
-srun ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/simple > simple.chooseK.txt
-
+srun ~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/chooseK.py --input=faststructure/logistic > logistic.chooseK.txt
