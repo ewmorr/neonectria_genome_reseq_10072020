@@ -273,7 +273,11 @@ mkdir Nf_post_SPANDx/LD_filter/faststructure
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure_logistic.slurm
 ```
-
+The `simple` prior version runs fairly quickly through K 1-15 (about an hour) but it looks like the `logistic` prior will take a while to finish (K = 2 was taking over 2 hours). Wait until each run is finisiahed and then run the respective chooseK script
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure_chooseK.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure_logistic_chooseK.slurm
+```
 
 #### Making test data for conversion to PED to try with LEA
 
