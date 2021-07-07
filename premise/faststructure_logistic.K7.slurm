@@ -7,16 +7,15 @@
 module purge
 module load anaconda/colsa
 
-conda activate faststructure
-export PATH=~/.conda/envs/faststructure/bin:$PATH
+conda activate faststructure_mod
+
+export PATH=~/.conda/envs/faststructure_mod/bin:$PATH
 
 cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
 
-#serial calls of faststructure because `wait` seemingly doesn't work with for loop in slurm
+#need to call full path to the structure.py script unless within the fastructure repo dir
 
-~/.conda/envs/faststructure/bin/python ~/.conda/envs/faststructure/bin/structure.py -K 7 \
+python ~/.conda/envs/faststructure_mod/bin/structure.py -K 7 \
 --input=Nf.out.filtered.LD_filtered_0.5_10Kb \
 --output=faststructure/logistic \
 --full --seed=100 --prior=logistic --tol=1e-4 
-
-
