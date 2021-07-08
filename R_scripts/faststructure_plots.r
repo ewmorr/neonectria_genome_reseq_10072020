@@ -192,10 +192,14 @@ axis.text.x = element_blank()
 
 ######
 #K9 plot
+
+state_order = c("WV", "NC", "ME.N", "ME.S", "MI", "NJ", "NY.N", "NY.S", "PA", "NH") #REset to approximately coincide with site distance
+state_order = c("MI", "NC", "WV", "PA", "NJ", "NY.S", "NY.N", "NH", "ME.S", "ME.N") #REset to approximately coincide with site distance
+
 K9.fam = data.frame(K9, sample = fam_info[,1])
 K9.meta = left_join(K9.fam, sample_metadata)
 
-sample_order.K9 = K9.meta[with(K9.meta, order(State, V1, V2, V3)),] %>% select(sample)
+sample_order.K9 = K9.meta[with(K9.meta, order(State, V1, V2, V3, V5, V6, V7, V8, V9)),] %>% select(sample)
 
 K9.long = pivot_longer(K9.meta, names_to = "ancestor", values_to = "proportion", cols = starts_with("V"))
 K9.long$sample = factor(K9.long$sample, levels = as.factor(sample_order.K9$sample))
@@ -209,6 +213,8 @@ scale_fill_manual(values = twelvePaired) +
 my_gg_theme +
 theme(
 strip.background=element_rect(colour="black", fill=NA),
+strip.text.x = element_blank(),
+axis.title.x = element_blank(),
 axis.text.x = element_blank()
 )
 
@@ -217,7 +223,7 @@ axis.text.x = element_blank()
 K10.fam = data.frame(K10, sample = fam_info[,1])
 K10.meta = left_join(K10.fam, sample_metadata)
 
-sample_order.K10 = K10.meta[with(K10.meta, order(State, V1, V2, V3)),] %>% select(sample)
+sample_order.K10 = K10.meta[with(K10.meta, order(State, V1, V2, V3, V5, V6, V7, V8, V9, V10)),] %>% select(sample)
 
 K10.long = pivot_longer(K10.meta, names_to = "ancestor", values_to = "proportion", cols = starts_with("V"))
 K10.long$sample = factor(K10.long$sample, levels = as.factor(sample_order.K10$sample))
@@ -231,6 +237,8 @@ scale_fill_manual(values = twelvePaired) +
 my_gg_theme +
 theme(
 strip.background=element_rect(colour="black", fill=NA),
+strip.text.x = element_blank(),
+axis.title.x = element_blank(),
 axis.text.x = element_blank()
 )
 
@@ -239,7 +247,7 @@ axis.text.x = element_blank()
 K11.fam = data.frame(K11, sample = fam_info[,1])
 K11.meta = left_join(K11.fam, sample_metadata)
 
-sample_order.K11 = K11.meta[with(K11.meta, order(State, V1, V2, V3)),] %>% select(sample)
+sample_order.K11 = K11.meta[with(K11.meta, order(State, V1, V2, V3, V5, V6, V7, V8, V9, V10, V11)),] %>% select(sample)
 
 K11.long = pivot_longer(K11.meta, names_to = "ancestor", values_to = "proportion", cols = starts_with("V"))
 K11.long$sample = factor(K11.long$sample, levels = as.factor(sample_order.K11$sample))
@@ -256,7 +264,10 @@ strip.background=element_rect(colour="black", fill=NA),
 axis.text.x = element_blank()
 )
 
-pdf("figures/Nf.LD_filtered.admixture.pdf", width = 20, height = 16)
+pdf("figures/Nf.LD_filtered.faststructure_simple.pdf", width = 20, height = 16)
 grid.arrange(p.K2,p.K3,p.K4,p.K5,p.K6,p.K7,p.K8,ncol = 1, heights = c(rep(0.14, 6), 0.16) )
 dev.off()
 
+pdf("figures/Nf.LD_filtered.faststructure_simple.K9-K11.pdf", width = 20, height = 8)
+grid.arrange(p.K9,p.K10,p.K11,ncol = 1, heights = c(0.3,0.3,0.4))
+dev.off()

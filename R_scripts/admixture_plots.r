@@ -13,6 +13,9 @@ K5 = read.table("Nf_post_SPANDx/LD_filter/admixture/Nf.out.filtered.LD_filtered_
 K6 = read.table("Nf_post_SPANDx/LD_filter/admixture/Nf.out.filtered.LD_filtered_0.5_10Kb.6.Q", header = F)
 K7 = read.table("Nf_post_SPANDx/LD_filter/admixture/Nf.out.filtered.LD_filtered_0.5_10Kb.7.Q", header = F)
 K8 = read.table("Nf_post_SPANDx/LD_filter/admixture/Nf.out.filtered.LD_filtered_0.5_10Kb.8.Q", header = F)
+K9 = read.table("Nf_post_SPANDx/LD_filter/admixture/Nf.out.filtered.LD_filtered_0.5_10Kb.9.Q", header = F)
+K10 = read.table("Nf_post_SPANDx/LD_filter/admixture/Nf.out.filtered.LD_filtered_0.5_10Kb.10.Q", header = F)
+K11 = read.table("Nf_post_SPANDx/LD_filter/admixture/Nf.out.filtered.LD_filtered_0.5_10Kb.11.Q", header = F)
 
 #each row represents a sample, and each column represents the proportion of the ancestral genotype from which that sample was derived
 fam_info = read.table("Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.fam", header = F)
@@ -185,8 +188,85 @@ strip.background=element_rect(colour="black", fill=NA),
 axis.text.x = element_blank()
 )
 
+######
+#K9 plot
+
+state_order = c("WV", "NC", "ME.N", "ME.S", "MI", "NJ", "NY.N", "NY.S", "PA", "NH") #REset to approximately coincide with site distance
+state_order = c("MI", "NC", "WV", "PA", "NJ", "NY.S", "NY.N", "NH", "ME.S", "ME.N") #REset to approximately coincide with site distance
+
+K9.fam = data.frame(K9, sample = fam_info[,1])
+K9.meta = left_join(K9.fam, sample_metadata)
+
+sample_order.K9 = K9.meta[with(K9.meta, order(State, V1, V2, V3, V5, V6, V7, V8, V9)),] %>% select(sample)
+
+K9.long = pivot_longer(K9.meta, names_to = "ancestor", values_to = "proportion", cols = starts_with("V"))
+K9.long$sample = factor(K9.long$sample, levels = as.factor(sample_order.K9$sample))
+
+p.K9 = ggplot(K9.long, aes(sample, proportion, fill = ancestor)) +
+geom_bar(stat = "identity") +
+facet_grid(~factor(State, levels = state_order), scales = "free_x", switch = "x", space = "free_x") + #Note the use of levels here at the facet argument. This is a pain in the butt to get to work (ordering a factor for index level ordering and then also ordering facets
+guides(fill = "none") +
+labs(y = "K = 9", x = "Genotype") +
+scale_fill_manual(values = twelvePaired) +
+my_gg_theme +
+theme(
+strip.background=element_rect(colour="black", fill=NA),
+strip.text.x = element_blank(),
+axis.title.x = element_blank(),
+axis.text.x = element_blank()
+)
+
+######
+#K10 plot
+K10.fam = data.frame(K10, sample = fam_info[,1])
+K10.meta = left_join(K10.fam, sample_metadata)
+
+sample_order.K10 = K10.meta[with(K10.meta, order(State, V1, V2, V3, V5, V6, V7, V8, V9, V10)),] %>% select(sample)
+
+K10.long = pivot_longer(K10.meta, names_to = "ancestor", values_to = "proportion", cols = starts_with("V"))
+K10.long$sample = factor(K10.long$sample, levels = as.factor(sample_order.K10$sample))
+
+p.K10 = ggplot(K10.long, aes(sample, proportion, fill = ancestor)) +
+geom_bar(stat = "identity") +
+facet_grid(~factor(State, levels = state_order), scales = "free_x", switch = "x", space = "free_x") + #Note the use of levels here at the facet argument. This is a pain in the butt to get to work (ordering a factor for index level ordering and then also ordering facets
+guides(fill = "none") +
+labs(y = "K = 10", x = "Genotype") +
+scale_fill_manual(values = twelvePaired) +
+my_gg_theme +
+theme(
+strip.background=element_rect(colour="black", fill=NA),
+strip.text.x = element_blank(),
+axis.title.x = element_blank(),
+axis.text.x = element_blank()
+)
+
+######
+#K11 plot
+K11.fam = data.frame(K11, sample = fam_info[,1])
+K11.meta = left_join(K11.fam, sample_metadata)
+
+sample_order.K11 = K11.meta[with(K11.meta, order(State, V1, V2, V3, V5, V6, V7, V8, V9, V10, V11)),] %>% select(sample)
+
+K11.long = pivot_longer(K11.meta, names_to = "ancestor", values_to = "proportion", cols = starts_with("V"))
+K11.long$sample = factor(K11.long$sample, levels = as.factor(sample_order.K11$sample))
+
+p.K11 = ggplot(K11.long, aes(sample, proportion, fill = ancestor)) +
+geom_bar(stat = "identity") +
+facet_grid(~factor(State, levels = state_order), scales = "free_x", switch = "x", space = "free_x") + #Note the use of levels here at the facet argument. This is a pain in the butt to get to work (ordering a factor for index level ordering and then also ordering facets
+guides(fill = "none") +
+labs(y = "K = 11", x = "Genotype") +
+scale_fill_manual(values = twelvePaired) +
+my_gg_theme +
+theme(
+strip.background=element_rect(colour="black", fill=NA),
+axis.text.x = element_blank()
+)
 
 pdf("figures/Nf.LD_filtered.admixture.pdf", width = 20, height = 16)
 grid.arrange(p.K2,p.K3,p.K4,p.K5,p.K6,p.K7,p.K8,ncol = 1, heights = c(rep(0.14, 6), 0.16) )
+dev.off()
+
+pdf("figures/Nf.LD_filtered.admixture.K9-K11.pdf", width = 20, height = 8)
+grid.arrange(p.K9,p.K10,p.K11,ncol = 1, heights = c(0.3,0.3,0.4) )
 dev.off()
 

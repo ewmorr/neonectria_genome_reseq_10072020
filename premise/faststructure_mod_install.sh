@@ -28,7 +28,7 @@ which python
 echo $PATH
 #check to make sure that correct version of python is being used and .conda/envs/faststructure_mod/bin is in the path
 #export PATH=~/.conda/envs/faststructure_mod/bin:$PATH
-#This doesn't appear to be necessary after deactivating and reactivating the env
+#This doesn't appear to be necessary after deactivating and reactivating the env (the main conda bin shows up after instead of before the .local after deactivate and activate)
 
 #pip install git+git://github.com/ewmorr/faststructure@master
 #The pip install doesn't work because of no python 2.7 support
@@ -49,4 +49,4 @@ python setup.py build_ext --inplace
 cd ..
 python setup.py build_ext -f --inplace
 
-python ~/.conda/envs/faststructure_mod/bin/structure.py
+python ~/repo/faststructure/structure.py
