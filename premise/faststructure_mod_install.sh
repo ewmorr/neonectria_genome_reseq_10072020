@@ -50,3 +50,8 @@ cd ..
 python setup.py build_ext -f --inplace
 
 python ~/repo/faststructure/structure.py
+
+#test
+mkdir ~/faststructure_mod_test
+python ~/repo/faststructure/structure.py -K 3 --input=/mnt/home/garnas/ericm/repo/faststructure/test/testdata --output=/mnt/home/garnas/ericm/faststructure_mod_test/simple --full --seed=100
+python ~/repo/faststructure/structure.py -K 3 --input=/mnt/home/garnas/ericm/repo/faststructure/test/testdata --output=/mnt/home/garnas/ericm/faststructure_mod_test/logistic --full --seed=100 --prior=logistic
