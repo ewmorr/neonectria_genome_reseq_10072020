@@ -309,7 +309,8 @@ plink --bfile Nf.out.filtered.LD_filtered_0.5_10Kb --out Nf.out.filtered.LD_filt
 ```
 Run structure_threader
 ```
-
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
 ```
 
 
