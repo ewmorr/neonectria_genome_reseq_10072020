@@ -322,6 +322,11 @@ Edits
 pgdspider -inputfile Nf.out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -outputfile Nf.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE -spid template_VCF_STRUCTURE.spid
 awk '{print NF}' Nf.out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
 ```
+pgspider is removing some SNPs. Try MAF filtering with VCF tools
+```
+cd neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_MAF_filter_min0.01.slurm
+```
 
 Run structure_threader
 ```
