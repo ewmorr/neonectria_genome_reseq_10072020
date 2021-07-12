@@ -295,18 +295,33 @@ Download the params file to edit and retain a local copy if desired. The default
 - set PLOIDY to 1
 - NUMINDS 71
 - NUMLOCI 26353
-- MISSING 0
+- MISSING -9
 - POPDATA 0
 - MAXPOPS 15 #although this is set by -K on the command line
-- EXTRACOLS 1 #There is a sample label column
 
 Convert VCF to structure format
 ```
 module load anaconda/colsa
-conda activate plink1.9
+conda find PGDspider
+module purge
+module load linuxbrew/colsa
 cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
-plink --bfile Nf.out.filtered.LD_filtered_0.5_10Kb --out Nf.out.filtered.LD_filtered_0.5_10Kb --allow-extra-chr --recode structure
 ```
+First run pgdspider with no -spid to generate template
+```
+pgdspider -inputfile Nf.out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -outputfile Nf.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE -spid
+```
+Edits
+- VCF_PARSER_PLOIDY_QUESTION=HAPLOID
+- VCF_PARSER_POP_QUESTION=false
+- VCF_PARSER_PL_QUESTION=false
+- STRUCTURE_WRITER_LOCI_DISTANCE_QUESTION=false
+- STRUCTURE_WRITER_DATA_TYPE_QUESTION=SNP
+- STRUCTURE_WRITER_FAST_FORMAT_QUESTION=false
+```
+pgdspider -inputfile Nf.out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -outputfile Nf.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE -spid template_VCF_STRUCTURE.spid
+```
+
 Run structure_threader
 ```
 cd ~/neonectria_genome_reseq_10072020/
