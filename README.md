@@ -307,7 +307,10 @@ conda activate plink1.9
 cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
 plink --bfile Nf.out.filtered.LD_filtered_0.5_10Kb --out Nf.out.filtered.LD_filtered_0.5_10Kb --allow-extra-chr --recode structure
 ```
+Run structure_threader
+```
 
+```
 
 
 

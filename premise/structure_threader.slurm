@@ -7,6 +7,8 @@
 module purge
 module load anaconda/colsa
 
+export PATH=~/.local/bin:$PATH
+
 cd ~/neonectria_genome_reseq_10072020/
 
 structure_threader run -K 15 -R 5 \
