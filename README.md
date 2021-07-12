@@ -320,6 +320,7 @@ Edits
 - STRUCTURE_WRITER_FAST_FORMAT_QUESTION=false
 ```
 pgdspider -inputfile Nf.out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -outputfile Nf.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE -spid template_VCF_STRUCTURE.spid
+awk '{print NF}' Nf.out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
 ```
 
 Run structure_threader
