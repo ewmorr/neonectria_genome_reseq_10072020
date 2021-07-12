@@ -1,15 +1,33 @@
 #!/bin/bash
 #SBATCH --ntasks=1
-#SBATCH --job-name="str_th"
-#SBATCH --output=structure_threader.out
+#SBATCH --job-name="bbduk"
+#SBATCH --output=trimmomatic.out
 #SBATCH --partition=shared
 
 module purge
-module load anaconda/colsa
+module load linuxbrew/colsa
 
 cd ~/neonectria_genome_reseq_10072020/
 
-structure_threader run -K 15 -R 5 \
-    -i ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.recode.strct_in \
-    -o ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/structure_th \
-    -t 24 -st structure
+INDIR=reads
+OUTDIR=reads/trimmomatictrimmed
+mkdir $OUTDIR
+
+ADAPTERS=/mnt/lustre/software/linuxbrew/colsa/Cellar/trimmomatic/0.39/share/trimmomatic/adapters/TruSeq3-PE.fa
+
+for i in reads/*R1*.fastq.gz
+do
+
+    FILE=${i##*/}
+    BEFFILE=${FILE%R1*}
+    AFTFILE=${FILE##*R1}
+    FORWARD=$FILE
+    REVERSE=${BEFFILE}R2${AFTFILE}
+
+    srun trimmomatic PE -threads 24 $INDIR/$FORWARD $INDIR/$REVERSE\
+        $OUTDIR/$FORWARD $OUTDIR/$FORWARD\
+        $OUTDIR/$REVERSE $OUTDIR/$REVERSE\
+        ILLUMINACLIP:$ADAPTERS:2:30:10\
+        SLIDINGWINDOW:4:15 MINLEN:36
+
+done
