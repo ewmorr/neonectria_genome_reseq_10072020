@@ -181,7 +181,7 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 5,155,517 NA
 5,155,517/22,175,643 = 23.2%
 
-### Missing data filter. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. Try filtering on missing data
+### Missing data filter. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. There are also three samples with greater than 26% missing data (one has just over 25%). Try filtering on missing data at both allele and sample. First filtering sites based on missing data
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
 ```
@@ -192,10 +192,36 @@ module load linucbrew/colsa
 bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
+less out.imiss
 ```
 217,805 remaining variants
 2,221,268 NA
 2,221,268/15464155 = 14.3% NA
+
+### Filtering sites based on minor allele *count* `--mac` of 3 (at least 3 samples) and then filtering samples based on missing data
+```
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --mac 2 --recode --out out.filtered.PASS.DP_filtered.lt25missing.mac2
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --mac 2 --recode --out out.filtered.PASS.DP_filtered.lt25missing.mac2
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.mac2.recode.vcf | wc -l
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.mac3.recode.vcf | wc -l
+```
+113,891 sites remaining at --mac 2
+84,060 sites remaining at --mac 3
+using mac 2
+```
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.recode.vcf --missing-indv
+awk '$5 > 0.3' out.imiss | cut -f1 > lowDP.indv
+```
+2 samples flagged. will also remove the sequencing replicates (samples sequenced twice) for downstream analyses. These will be usefull for calling false positive call rate but want to exclude from analyses for now. The sample pairs (missing data) are:
+- NG76 (0.12) - NG10 (0.09)
+- NG77 (0.13) - NG28 (0.09)
+- NG78 (0.10) - NG48 (0.16)
+- NG79 (0.185) - NG62 (0.176)
+Add (NG76, NG77, NG48, NG79) to `lowDP.indv` manually
+```
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.recode.vcf --remove lowDP.indv --recode --out out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps
+```
+65 individuals and 113891 sites remaining
 
 ### Perform LD filtering before population structure analyses
 Using BCFtools
@@ -294,10 +320,12 @@ Download the params file to edit and retain a local copy if desired. The default
 #### Edits to `mainparams`
 - set PLOIDY to 1
 - NUMINDS 71
-- NUMLOCI 26353
+- NUMLOCI 21915 #SNPs remaining after pgspider
 - MISSING -9
-- POPDATA 0
+- LABEL 1
+- POPDATA 1
 - MAXPOPS 15 #although this is set by -K on the command line
+
 
 Convert VCF to structure format
 ```
@@ -327,6 +355,13 @@ pgspider is removing some SNPs. Try MAF filtering with VCF tools
 cd neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_MAF_filter_min0.01.slurm
 ```
+This retains 26156 of 26353. retry pgspider
+
+```
+pgdspider -inputfile Nf.out.filtered.LD_filtered_0.5_10Kb.MAF_gt0.1.recode.vcf -inputformat VCF -outputfile Nf.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE -spid template_VCF_STRUCTURE.spid
+awk '{print NF}' Nf.out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
+```
+Still is leaving 21915 SNPs... will move forward with structure run but will need to investigate. Set mainparams loci number to 21915,  LABEL to 1 and POPDATA to 1.
 
 Run structure_threader
 ```
