@@ -230,9 +230,9 @@ cd ~/neonectria_genome_reseq_10072020
 #sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_50KB.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
 #grep -v "^##" Nf.out.filtered.LD_filtered_0.5_50Kb.vcf | wc -l
-grep -v "^##" Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
+grep -v "^##" ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
-Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 26,354 SNPs remaing at 10Kb filter
+Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 29,803 SNPs remaing at 10Kb filter
 
 
 ### Convert VCF to PED format for input to ADMIXTURE or LEA
@@ -255,7 +255,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.slurm
 This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--recode`
 - ADMIXTURE also requires that the `.map` file containes only numerics in "chromosome" (contig) names
 ```
-~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
+cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
 cp Nf.out.filtered.LD_filtered_0.5_10Kb.map Nf.out.filtered.LD_filtered_0.5_10Kb.map.original
 sed 's/[a-z,_]*//g' Nf.out.filtered.LD_filtered_0.5_10Kb.map.original > Nf.out.filtered.LD_filtered_0.5_10Kb.map
 ```
@@ -267,7 +267,7 @@ sed 's/[a-z,_]*//g' Nf.out.filtered.LD_filtered_0.5_10Kb.map.original > Nf.out.f
 ```
 ### Full SNP set (i.e., quality filtered but not LD filtered) is at
 ```
-~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.vcf
+~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf
 ```
 Also producing BED files of non-LD-filtered VCF for pcadapt
 ```

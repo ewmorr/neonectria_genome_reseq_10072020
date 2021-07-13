@@ -11,4 +11,4 @@ conda activate plink1.9
 
 cd ~/SPANDx_Nf/Outputs/Master_vcf
 
-srun plink --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --out out.filtered.PASS.DP_filtered.lt25missing --allow-extra-chr --make-bed
+srun plink --vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf --out out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode --allow-extra-chr --make-bed

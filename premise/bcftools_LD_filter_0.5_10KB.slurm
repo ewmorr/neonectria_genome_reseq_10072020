@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --job-name="bcftools_LD"
 #SBATCH --output=bcftools_LD.out
