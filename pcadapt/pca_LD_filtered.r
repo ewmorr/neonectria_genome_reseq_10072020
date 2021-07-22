@@ -15,9 +15,6 @@ sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 2)
 
 x <- pcadapt(input = makeBed.file, K = 20, ploidy = 2) #K must be less than the number of species
 #Ploidy is set to 2 because the function throws an error otherwise. This looks like because the conversion from BED is not recognizing haploid data. A look at `bed_mat.makeBed` shows SNPs encoded as 0 or 2 with no outcomes of 1 (i.e., het gentypes).
-sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 0)
-sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 1)
-sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 2)
 
 x_K30 <- pcadapt(input = makeBed.file, K = 30, ploidy = 2) #K must be less than the number of species
 x_K50 <- pcadapt(input = makeBed.file, K = 50, ploidy = 2) #K must be less than the number of species
@@ -73,6 +70,16 @@ p1 = ggplot(pc_scores.metadata, aes(PC1, PC2, color = State)) +
 geom_point(size = 3) +
 scale_color_manual(values = state.colors, guide = "none") +
 my_gg_theme
+
+p1.guide = ggplot(pc_scores.metadata, aes(PC1, PC2, color = State)) +
+geom_point(size = 3) +
+scale_color_manual(values = state.colors) +
+labs(x = "PC1 (11.4% variance)", y = "PC2 (8.0% variance)") +
+my_gg_theme
+
+pdf("figures/Nf.LD_filtered.PCA_plot.P1-P2.pdf", width = 8, height = 5)
+p1.guide
+dev.off()
 
 p2 = ggplot(pc_scores.metadata, aes(PC1, PC3, color = State)) +
 geom_point(size = 3) +

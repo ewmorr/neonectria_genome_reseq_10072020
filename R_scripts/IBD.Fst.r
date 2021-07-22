@@ -7,7 +7,7 @@ require(dartR)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 #filtered VCF
-vcf <- read.vcfR("Nf_post_SPANDx/LD_filter/Nf.out.filtered.PASS.DP_filtered.lt25missing.vcf", verbose = FALSE)
+vcf <- read.vcfR("Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf", verbose = FALSE)
 gl = vcfR2genlight(vcf)
 #Warning message:
 #In vcfR2genlight(vcf) : Found 3027 loci with more than two alleles.
@@ -31,12 +31,25 @@ gl@other$ind.metrics = ind.metrics
 gl@other$latlong = ind.metrics[,3:4]
 gl@other$latlong
 gl@pop = ind.metrics$State #need to set pop for the ibd test to work
+gl@ploidy = rep(as.integer(1), 65)
 nPop(gl)
 pop(gl)
 
-#x = gl #for testing
-#colnames(gl@other$latlong) = c("lat", "long") #the finction actually converts "long" back to "lon"
+#remove the ME.N and NJ samples because of small sample size
+rm.ind.list = data.frame(gl@ind.names, pop(gl)) %>% filter(pop.gl. == "ME.N" | pop.gl. == "NJ")
+gl.subset = gl[!gl@ind.names %in% rm.ind.list$gl.ind.names]
 
-gl_ibd_test = gl.ibd(x=gl)
+x = gl.subset
+#calculate Mercator prjected distance
+xy <- dismo::Mercator(x@other$latlong[,c("lon","lat")])
 
-gl.ibd(Dgen = gl_ibd_test$Dgen, Dgeo = gl_ibd_test$Dgeo)
+x.Fst = StAMPP::stamppFst(x, nboots=1, nclusters = 4) #nclusters is the number of threads. Set to four for local
+Dgen <- as.dist(x.Fst)
+
+
+#Most values are negative and should be treated as zero (negative Fst doesn't make much sense)
+#positive values are between NH-NY.S, NH-WV, NH-NC
+
+x.Fst.pval = StAMPP::stamppFst(x, nboots=100, nclusters = 4, percent = 95) #nclusters is the number of threads. Set to four for local
+
+#Fst test produces the same as from dartR
