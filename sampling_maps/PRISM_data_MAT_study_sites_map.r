@@ -44,7 +44,7 @@ mutate(MAT = value)%>%
 dplyr::select(-value)
 
 min_max = m.df.study_area$MAT %>% range
-min_max[2] = min_max[2]+2
+#min_max[2] = min_max[2]+2
 mid_point = (min_max[1]+min_max[2])/2
 
 p1 = ggplot()+
@@ -123,12 +123,49 @@ legend.position = c(0.825,0.225)
 ) +
 scale_color_manual(values = c("y" = "black", "n" = "grey45"), guide = F)
 
+min_max = m.df.study_area$MAT %>% range
+min_max[2] = 15
+mid_point = (min_max[1]+min_max[2])/2
+
+p4 = ggplot()+
+geom_raster(data=m.df.study_area, aes(x=lon, y=lat, fill=MAT))+
+geom_point(data=site_coords %>% filter(state.name != "WI"), aes(x=lon, y = lat, color = sample), size = 2) +
+labs(x = "longitude", y = "latitude") +
+my_gg_theme +
+theme(
+legend.title = element_text(size = 20)
+) +
+scale_fill_gradient2(expression("MAT ("*degree*C*")"),
+    low="#053061",
+    mid="#d1e5f0",
+    high = "#b2182b",
+    midpoint=mid_point,
+    limits = c(min_max[1], min_max[2])
+)+
+scale_color_manual("Sample status",
+    values = c("y" = "black", "c" = "grey45", "p" = "white"),
+    labels = c("y" = "sequenced", "c" = "collected", "p" = "potential"),
+) +
+theme(
+    legend.title = element_text(size = 25),
+    legend.text = element_text(size = 25),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    legend.position = c(0.825,0.225),
+    legend.key = element_rect(fill = "grey")
+)
 
 plot_height = (maxLat-minLat)/2
 plot_width = (maxLon-minLon)/2
 
 pdf("figures/MAT_site_map.pdf", height = plot_height, width = plot_width)
 print(p3)
+dev.off()
+
+pdf("figures/MAT_site_map.potential_sites.pdf", height = plot_height*1.2, width = plot_width*1.2)
+print(p4)
 dev.off()
 
 #big text
