@@ -378,6 +378,12 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
 ```
 
+#### Plot evanno
+Run locally
+```
+Rscript plot_evanno.r
+```
+
 ### Run PCADAPT locally `repo/pcadapt`
 For local pcadapt. sftp:
 ```
