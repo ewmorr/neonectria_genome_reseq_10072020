@@ -129,6 +129,14 @@ screen
 nextflow run ~/SPANDx_git_clone/ --resume
 ```
 
+### Generate BUSCO gene models using `busco --long`
+Using the reference sequence at `SPANDx_Nf/ref.fasta`
+```
+cp neonectria_minion/Nf_canu_run0/config.ini SPANDx_Nf/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_long_Nf.slurm
+```
+gene_models should be written to `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long` and can then rename OR may be written to working dir
+
 ### Filter out SNPs that FAIL filtering
 ```
 cd ~/SPANDx_Nf/Outputs/Master_vcf
@@ -413,5 +421,11 @@ The .geno file produced by LEA from the new PED is still throwing errors. `Error
 the pcadapt package is throwing errors about sising data as well. There may be something wrong with the PED file conversion
 
 
+### Calculating pairwise Fst of pops(sites) on genome-wide LD filtered SNPs using vcftools
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_calculate_Fst_LD_filtered.sh
+```
+vcftools doesn't work with haploid data so this will not work...
 
 
