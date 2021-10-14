@@ -295,6 +295,8 @@ sed 's/[a-z,_]*//g' Nf.out.filtered.LD_filtered_0.5_10Kb.map.original > Nf.out.f
 ```
 REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). The resulting PED will need the first 6 columns removed.
 ```
+cd ~/neonectria_genome_reseq_10072020
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.full_dat_LFMM.slurm
 
 ```
 
