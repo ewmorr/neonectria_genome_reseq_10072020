@@ -293,12 +293,19 @@ cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
 cp Nf.out.filtered.LD_filtered_0.5_10Kb.map Nf.out.filtered.LD_filtered_0.5_10Kb.map.original
 sed 's/[a-z,_]*//g' Nf.out.filtered.LD_filtered_0.5_10Kb.map.original > Nf.out.filtered.LD_filtered_0.5_10Kb.map
 ```
-REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). The resulting PED will need the first 6 columns removed.
+REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). First need to filter for biallelic SNPs. The resulting PED will need the first 6 columns removed. We also remove everyother line because plink is stupid and doubles every SNP assuming diploid data
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.full_dat_LFMM.slurm
 
+cd SPANDx_Nf//Outputs/Master_vcf/
+
+cut out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.ped -d " " -f 1-6 --complement | awk  '{for (i=1;i<=NF;i+=2) printf "%s ", $i; printf "\n" }' > out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.lfmm
+
+cut out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.ped -d " " -f 1 > out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.sampleIDs
+
 ```
+Downloaded .lfmm file to `GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/`
 
 ### LD filtered VCF, PED, and BED files are at
 ```
@@ -547,3 +554,10 @@ bcftools view out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqRe
 done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/scaffolds.txt
 
 
+```
+
+Also running new gene mark annotations for LFMM
+
+```
+cd neonectria_genome_reseq_10072020/
+sbatch ~/repo/ONS_Nf/genemark.pilon_polished.slurm
