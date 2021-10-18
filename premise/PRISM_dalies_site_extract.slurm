@@ -9,4 +9,4 @@ module load anaconda/colsa
 
 conda activate PRISM
 
-srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/PRISM_dailies_ppt_download.r
+srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/tmin_tmax_ppt_dailys_site_extract.r

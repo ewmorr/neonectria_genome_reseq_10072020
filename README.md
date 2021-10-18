@@ -561,3 +561,23 @@ Also running new gene mark annotations for LFMM
 ```
 cd neonectria_genome_reseq_10072020/
 sbatch ~/repo/ONS_Nf/genemark.pilon_polished.slurm
+
+
+```
+
+### Extract PRISM data for new sites
+On Premise
+```
+module purge
+module load anaconda/colsa
+conda activate PRISM
+screen
+srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/PRISM_dailies_ppt_download.r
+srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/PRISM_dailies_download.r
+```
+Once the dailies are downloaded
+```
+sbatch PRISM_dalies_site_extract.slurm
+```
+Also process 30 yr normals locally using `sites_climate_dat.r`
+
