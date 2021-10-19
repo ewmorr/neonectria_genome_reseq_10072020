@@ -577,7 +577,7 @@ srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/PRISM_dailies_dow
 ```
 Once the dailies are downloaded
 ```
-sbatch PRISM_dalies_site_extract.slurm
+sbatch repo/neonectria_genome_reseq_10072020/premise/PRISM_dalies_site_extract.slurm
 ```
 Also process 30 yr normals locally using `sites_climate_dat.r`
 
