@@ -20,7 +20,7 @@ sites_climate_list = list()
 
 for(i in 1:num_files){
     
-#    print(i)
+    print(i)
     new_file<-i#this number corresponds to the row of the file of interest
 
     #set to tmax
@@ -38,7 +38,7 @@ for(i in 1:num_files){
     #nearest coords#
     
     nrst_coords = match_nrst_haversine(site_coords$lat, site_coords$lon, m.df$lat, m.df$lon)
-    m.df[nrst_coords$pos,]
+#    m.df[nrst_coords$pos,]
     
     #Get tmax and date
     sites_climate$tmax = m.df[nrst_coords$pos,colnames(m.df) == "value"]
@@ -60,7 +60,7 @@ for(i in 1:num_files){
     #nearest coords#
     
     nrst_coords = match_nrst_haversine(site_coords$lat, site_coords$lon, m.df$lat, m.df$lon)
-    m.df[nrst_coords$pos,]
+#    m.df[nrst_coords$pos,]
     
     #Get tmin
     sites_climate$tmin = m.df[nrst_coords$pos,colnames(m.df) == "value"]
@@ -81,7 +81,7 @@ for(i in 1:num_files){
     #nearest coords#
 
     nrst_coords = match_nrst_haversine(site_coords$lat, site_coords$lon, m.df$lat, m.df$lon)
-    m.df[nrst_coords$pos,]
+#    m.df[nrst_coords$pos,]
 
     #Get ppt
     sites_climate$ppt = m.df[nrst_coords$pos,colnames(m.df) == "value"]
