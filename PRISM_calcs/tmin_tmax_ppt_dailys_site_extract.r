@@ -25,7 +25,8 @@ for(i in 1:num_files){
 
     #set to tmax
     prism_set_dl_dir("/mnt/home/garnas/ericm/PRISM_dailies_tmax")
-
+    print("tmax")
+    
     RS <- pd_stack(prism_archive_ls()[new_file]) ##raster file of data
     proj4string(RS)<-CRS("+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
     
@@ -47,6 +48,7 @@ for(i in 1:num_files){
     
     #reset to get tmin
     prism_set_dl_dir("/mnt/home/garnas/ericm/PRISM_dailies_tmin")
+    print("tmin")
     
     RS <- pd_stack(prism_archive_ls()[new_file]) ##raster file of data
     proj4string(RS)<-CRS("+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
@@ -68,7 +70,8 @@ for(i in 1:num_files){
 
     #reset to get ppt
     prism_set_dl_dir("/mnt/home/garnas/ericm/PRISM_dailies_ppt")
-
+    print("ppt")
+    
     RS <- pd_stack(prism_archive_ls()[new_file]) ##raster file of data
     proj4string(RS)<-CRS("+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs")
 
