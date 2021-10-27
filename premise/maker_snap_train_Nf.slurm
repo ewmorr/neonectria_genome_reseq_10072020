@@ -29,11 +29,11 @@ cd    $base.hmm
 srun --ntasks=1 N=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
 
 # convert this GFF to a snap model:
-srun --ntasks=1 N=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
-srun --ntasks=1 N=1 fathom genome.ann genome.dna -categorize 1000
-srun --ntasks=1 N=1 fathom uni.ann uni.dna -export 1000 -plus
-srun --ntasks=1 N=1 forge export.ann export.dna
-srun --ntasks=1 N=1 hmm-assembler.pl $base . > $base.snap.hmm
+srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
+srun --ntasks=1 fathom genome.ann genome.dna -categorize 1000
+srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
+srun --ntasks=1 forge export.ann export.dna
+srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 #Move maker CTL files for second run
 cd ~/neonectria_genome_reseq_10072020/maker_run
@@ -60,11 +60,11 @@ cd    $base.hmm
 srun --ntasks=1 N=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
 
 # convert this GFF to a snap model:
-srun --ntasks=1 N=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
-srun --ntasks=1 N=1 fathom genome.ann genome.dna -categorize 1000
-srun --ntasks=1 N=1 fathom uni.ann uni.dna -export 1000 -plus
-srun --ntasks=1 N=1 forge export.ann export.dna
-srun --ntasks=1 N=1 hmm-assembler.pl $base . > $base.snap.hmm
+srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
+srun --ntasks=1 fathom genome.ann genome.dna -categorize 1000
+srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
+srun --ntasks=1 forge export.ann export.dna
+srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 
 #Move maker CTL files for final run
