@@ -1,5 +1,5 @@
 #-----Genome (these are always required)
-genome=~/SPANDx_Nf/ref.fasta #genome sequence (fasta file or fasta embeded in GFF3 file)
+genome=/mnt/home/garnas/ericm/SPANDx_Nf/ref.fasta #genome sequence (fasta file or fasta embeded in GFF3 file)
 organism_type=eukaryotic #eukaryotic or prokaryotic. Default is eukaryotic
 
 #-----Re-annotation Using MAKER Derived GFF3
@@ -14,26 +14,26 @@ other_pass=0 #passthrough anyything else in maker_gff: 1 = yes, 0 = no
 
 #-----EST Evidence (for best results provide a file for at least one)
 est= #set of ESTs or assembled mRNA-seq in fasta format
-altest=~/reference_genomes/Fusgr1/Fusgr1_GeneCatalog_transcripts_20110524.nt.fasta #EST/cDNA sequence file in fasta format from an alternate organism
+altest=/mnt/home/garnas/ericm/reference_genomes/Fusgr1/Fusgr1_GeneCatalog_transcripts_20110524.nt.fasta #EST/cDNA sequence file in fasta format from an alternate organism
 est_gff= #aligned ESTs or mRNA-seq from an external GFF3 file
 altest_gff= #aligned ESTs from a closly relate species in GFF3 format
 
 #-----Protein Homology Evidence (for best results provide a file for at least one)
-protein=~/reference_genomes/Fusgr1/Fusgr1_GeneCatalog_proteins_20110524.aa.fasta  #protein sequence file in fasta format (i.e. from mutiple oransisms)
+protein=/mnt/home/garnas/ericm/reference_genomes/Fusgr1/Fusgr1_GeneCatalog_proteins_20110524.aa.fasta  #protein sequence file in fasta format (i.e. from mutiple oransisms)
 protein_gff=  #aligned protein homology evidence from an external GFF3 file
 
 #-----Repeat Masking (leave values blank to skip repeat masking)
 model_org=all #select a model organism for RepBase masking in RepeatMasker
-rmlib=~/RepeatMaskerLib/fngrep.ref #provide an organism specific repeat library in fasta format for RepeatMasker
+rmlib=/mnt/home/garnas/ericm/RepeatMaskerLib/fngrep.ref #provide an organism specific repeat library in fasta format for RepeatMasker
 repeat_protein= #provide a fasta file of transposable element proteins for RepeatRunner
 rm_gff= #pre-identified repeat elements from an external GFF3 file
 prok_rm=0 #forces MAKER to repeatmask prokaryotes (no reason to change this), 1 = yes, 0 = no
 softmask=1 #use soft-masking rather than hard-masking in BLAST (i.e. seg and dust filtering)
 
 #-----Gene Prediction
-snaphmm=~/neonectria_genome_reseq_10072020/maker_run/maker2.hmm/maker2.snp.hmm #SNAP HMM file
+snaphmm=/mnt/home/garnas/ericm/neonectria_genome_reseq_10072020/maker_run/maker2.hmm/maker2.snp.hmm #SNAP HMM file
 gmhmm= #GeneMark HMM file
-augustus_species=~/SPANDx_Nf/run_Nf_buscos_long/augustus_output/retraining_parameters/ #Augustus gene prediction species model
+augustus_species=/mnt/home/garnas/ericm/SPANDx_Nf/run_Nf_buscos_long/augustus_output/retraining_parameters/ #Augustus gene prediction species model
 fgenesh_par_file= #FGENESH parameter file
 pred_gff= #ab-initio predictions from an external GFF3 file
 model_gff= #annotated gene models from an external GFF3 file (annotation pass-through)
