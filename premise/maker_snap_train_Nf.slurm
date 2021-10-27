@@ -2,7 +2,7 @@
 #SBATCH --partition=shared
 #SBATCH -J makerSNAP
 #SBATCH --output maker_SNAP.out
-#SBATCH --ntasks=48
+#SBATCH --ntasks=24
 
 module purge
 module load linuxbrew/colsa
@@ -12,7 +12,7 @@ cd ~/neonectria_genome_reseq_10072020/maker_run
 
 mv maker_opts_snap1.ctl maker_opts.ctl
 
-mpiexec -n 48 maker -base maker1 -f -fix_nucleotides
+mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
 wait
 
 #Combine and convert SNAP profiles
@@ -43,7 +43,7 @@ mv maker_opts_snap2.ctl maker_opts.ctl
 
 #Second maker run
 echo do second maker run
-mpiexec -n 48 maker -base maker2 -f -fix_nucleotides
+mpiexec -n 24 maker -base maker2 -f -fix_nucleotides
 wait
 
 #combine second SNAP run
@@ -73,7 +73,7 @@ mv maker_opts_snap3.ctl maker_opts.ctl
 
 #final maker run
 echo do final maker run
-mpiexec -n 48 maker -base maker3 -f -fix_nucleotides
+mpiexec -n 24 maker -base maker3 -f -fix_nucleotides
 wait
 
 mv mv maker_opts.ctl maker_opts_snap3.ctl
