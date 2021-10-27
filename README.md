@@ -138,6 +138,7 @@ cd neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_long_Nf.slurm
 ```
 gene_models should be written to `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long` and can then rename OR may be written to working dir
+Looks like augustus parameters are actually written to `~/SPANDx_Nf/run_Nf_buscos_long/augustus_output/retraining_parameters/`
 
 ### Filter out SNPs that FAIL filtering
 ```
@@ -293,7 +294,7 @@ cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
 cp Nf.out.filtered.LD_filtered_0.5_10Kb.map Nf.out.filtered.LD_filtered_0.5_10Kb.map.original
 sed 's/[a-z,_]*//g' Nf.out.filtered.LD_filtered_0.5_10Kb.map.original > Nf.out.filtered.LD_filtered_0.5_10Kb.map
 ```
-REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). First need to filter for biallelic SNPs. The resulting PED will need the first 6 columns removed. We also remove everyother line because plink is stupid and doubles every SNP assuming diploid data
+REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). First need to filter for biallelic SNPs. The resulting PED will need the first 6 columns removed. We also remove every other line because plink is stupid and doubles every SNP assuming diploid data
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.full_dat_LFMM.slurm
@@ -304,6 +305,9 @@ cut out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode0
 
 cut out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.ped -d " " -f 1 > out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.sampleIDs
 
+grep "##contig=<ID=" out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf > scaffold_lengths.txt
+
+sed -e 's/##contig=<ID=//' -e 's/length=//' -e 's/>//' scaffold_lengths.txt > scaffold_lengths.csv
 ```
 Downloaded .lfmm file to `GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/`
 
@@ -419,6 +423,7 @@ pgdspider -inputfile Nf.out.filtered.LD_filtered_0.5_10Kb.MAF_gt1.recode.vcf -in
 awk '{print NF}' Nf.out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
 ```
 Still is leaving 26252 SNPs... will move forward with structure run but will need to investigate. Set mainparams loci number to 26252,  LABEL to 1 and POPDATA to 1.
+There are multiallelic SNPs in the whole SNP set... PGSpider is most likely removing multi-allelic SNPs
 
 Run structure_threader
 ```
@@ -498,6 +503,8 @@ grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/N
 #grep "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf > headers.txt
 grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf | cut -f 1 | uniq \
     > GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/scaffolds.txt
+    
+cut -f 1 ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.map | uniq
 
 #
 conda activate bcftools

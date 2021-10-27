@@ -3,9 +3,7 @@ require(RColorBrewer)
 source("~/ggplot_theme.txt")
 
 #saveRDS(sites_climate_list, "intermediate_RDS/sites_daily_tmin_tmax_20072018.list.rds")
-sites_climate_list.df = readRDS(file = "intermediate_RDS/sites_daily_tmin_tmax_20072018.df.rds")
-sites_ppt_list.df = readRDS(file = "intermediate_RDS/sites_daily_ppt_20072018.df.rds")
-sites_climate_list.df = full_join(sites_climate_list.df, sites_ppt_list.df)
+sites_climate_list.df = readRDS(file = "sample_metadata/sites_daily_tmin_tmax_ppt_20072018.df.rds")
 
 #dates
 sites_climate_list.df$year = substr(sites_climate_list.df$day, 1, 4) %>% as.numeric
@@ -126,7 +124,7 @@ grow_season_dates.long = grow_season_dates %>%
 sites_climate.seasonal_summaries = full_join(sites_climate.seasonal_summaries, grow_season_dates.long)
 
 #order factor
-sites_climate.seasonal_summaries$Site = factor(sites_climate.seasonal_summaries$Site, levels = c("MEN1", "MES1", "ADN1", "ADS1", "CW1", "TSP1", "GK1j", "ASH2", "MI1", "WF1"))
+#sites_climate.seasonal_summaries$Site = factor(sites_climate.seasonal_summaries$Site, levels = c("MEN1", "MES1", "ADN1", "ADS1", "CW1", "TSP1", "GK1j", "ASH2", "MI1", "WF1"))
 
 #means and sd
 sites_climate.seasonal_summaries.means = sites_climate.seasonal_summaries %>%
@@ -143,11 +141,15 @@ sites_climate.seasonal_summaries.means = sites_climate.seasonal_summaries %>%
 
 )
 
-saveRDS(sites_climate.seasonal_summaries, file = "intermediate_RDS/summarized_12_year_climate_dailys.rds")
-saveRDS(sites_climate.seasonal_summaries.means, file = "intermediate_RDS/summarized_12_year_climate_dailys.means.rds")
+saveRDS(sites_climate.seasonal_summaries, file = "sample_metadata/summarized_12_year_climate_dailys.rds")
+saveRDS(sites_climate.seasonal_summaries.means, file = "sample_metadata/summarized_12_year_climate_dailys.means.rds")
 
-write.table(sites_climate.seasonal_summaries, file = "sample_data/summarized_12_year_climate_dailys.txt", quote = F, row.names = F, sep = "\t")
-write.table(sites_climate.seasonal_summaries.means, file = "sample_data/summarized_12_year_climate_dailys.means.txt", quote = F, row.names = F, sep = "\t")
+write.table(sites_climate.seasonal_summaries, file = "sample_metadata/summarized_12_year_climate_dailys.txt", quote = F, row.names = F, sep = "\t")
+write.table(sites_climate.seasonal_summaries.means, file = "sample_metadata/summarized_12_year_climate_dailys.means.txt", quote = F, row.names = F, sep = "\t")
+
+sites_climate.seasonal_summaries.means.wide = sites_climate.seasonal_summaries.means %>% pivot_wider(names_from = season, values_from = c(-Site, -season))
+
+write.table(sites_climate.seasonal_summaries.means.wide, file = "sample_metadata/site_cliamte.GDD.txt", quote = F, row.names = F, sep = "\t")
 
 #################
 #Plots
