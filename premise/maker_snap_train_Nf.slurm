@@ -10,7 +10,7 @@ module load linuxbrew/colsa
 #mkdir ~/neonectria_genome_reseq_10072020/maker_run
 cd ~/neonectria_genome_reseq_10072020/maker_run
 
-mv maker_opts_snap1.ctl maker_opts.ctl
+mv maker_opts_1.ctl maker_opts.ctl
 
 mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
 wait
@@ -36,8 +36,8 @@ srun --ntasks=1 N=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 #Move maker CTL files for second run
 cd ~/neonectria_genome_reseq_10072020/maker_run
-mv maker_opts.ctl maker_opts_snap1.ctl
-mv maker_opts_snap2.ctl maker_opts.ctl
+mv maker_opts.ctl maker_opts_1.ctl
+mv maker_opts_2.ctl maker_opts.ctl
 
 
 
@@ -68,13 +68,13 @@ srun --ntasks=1 N=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 #Move maker CTL files for final run
 cd ~/neonectria_genome_reseq_10072020/maker_run
-mv maker_opts.ctl maker_opts_snap2.ctl
-mv maker_opts_snap3.ctl maker_opts.ctl
+mv maker_opts.ctl maker_opts_2.ctl
+mv maker_opts_3.ctl maker_opts.ctl
 
 #final maker run
 echo do final maker run
 mpiexec -n 24 maker -base maker3 -f -fix_nucleotides
 wait
 
-mv mv maker_opts.ctl maker_opts_snap3.ctl
+mv mv maker_opts.ctl maker_opts_3.ctl
 
