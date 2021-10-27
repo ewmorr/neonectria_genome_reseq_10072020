@@ -8,6 +8,7 @@ module purge
 module load anaconda/colsa
 source activate maker-3.01.02
 
+AUGUSTUS_CONFIG_PATH=/mnt/home/garnas/ericm/augustus_config/config/
 #mkdir ~/neonectria_genome_reseq_10072020/maker_run
 cd ~/neonectria_genome_reseq_10072020/maker_run
 
