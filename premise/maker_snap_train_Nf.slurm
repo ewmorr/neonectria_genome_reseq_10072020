@@ -5,7 +5,8 @@
 #SBATCH --ntasks=24
 
 module purge
-module load linuxbrew/colsa
+module load anaconda/colsa
+source activate maker-3.01.02
 
 #mkdir ~/neonectria_genome_reseq_10072020/maker_run
 cd ~/neonectria_genome_reseq_10072020/maker_run

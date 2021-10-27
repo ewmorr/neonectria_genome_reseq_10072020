@@ -140,6 +140,14 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_long_Nf.slurm
 gene_models should be written to `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long` and can then rename OR may be written to working dir
 Looks like augustus parameters are actually written to `~/SPANDx_Nf/run_Nf_buscos_long/augustus_output/retraining_parameters/`
 
+### Maker run with SNAP training and augustus models
+```
+mkdir ~/neonectria_genome_reseq_10072020/maker_run/
+cp ~/repo/neonectria_genome_reseq_10072020/premise/maker_opts* ~/neonectria_genome_reseq_10072020/maker_run/
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker_snap_train_Nf.slurm
+```
+
 ### Filter out SNPs that FAIL filtering
 ```
 cd ~/SPANDx_Nf/Outputs/Master_vcf
