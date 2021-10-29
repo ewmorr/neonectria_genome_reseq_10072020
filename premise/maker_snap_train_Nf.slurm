@@ -14,7 +14,7 @@ cd ~/neonectria_genome_reseq_10072020/maker_run
 
 mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_1.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl
 
-mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
+#mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
 wait
 
 #Combine and convert SNAP profiles
@@ -27,7 +27,7 @@ cd    $base.hmm
 
 
 # maker creates an output folder with a datastore index. use gff3_merge to combine all the GFFs
-srun --ntasks=1 N=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
+srun --ntasks=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
 
 # convert this GFF to a snap model:
 srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
@@ -58,7 +58,7 @@ cd    $base.hmm
 
 
 # maker creates an output folder with a datastore index. use gff3_merge to combine all the GFFs
-srun --ntasks=1 N=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
+srun --ntasks=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
 
 # convert this GFF to a snap model:
 srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
