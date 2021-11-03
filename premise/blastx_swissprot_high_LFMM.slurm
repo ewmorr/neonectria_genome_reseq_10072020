@@ -10,5 +10,5 @@ module load linuxbrew/colsa
 
 srun blastx -task blastx -query ~/neonectria_genome_reseq_10072020/high_LFMM_SNP.fasta \
 -db ~/blast_dbs/swiss-prot_fungi/swiss-prot_fungi_reviewed.fasta \
--outfmt 6 -culling_limit 10 -num_threads 24 -evalue 1e-25 \
+-outfmt 6 -culling_limit 10 -num_threads 24 \
 -out ~/neonectria_genome_reseq_10072020/high_LFMM_SNP-swissprot_fungi_reviewed.blastp
