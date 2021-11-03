@@ -36,7 +36,7 @@ nPop(gl)
 pop(gl)
 
 #remove the ME.N and NJ samples because of small sample size
-rm.ind.list = data.frame(gl@ind.names, pop(gl)) %>% filter(pop.gl. == "ME.N" | pop.gl. == "NJ")
+rm.ind.list = data.frame(gl@ind.names, pop(gl)) %>% filter(pop.gl. == "ME.N" | pop.gl. == "NJ" | pop.gl. == "MI")
 gl.subset = gl[!gl@ind.names %in% rm.ind.list$gl.ind.names]
 
 x = gl.subset
@@ -45,7 +45,7 @@ xy <- dismo::Mercator(x@other$latlong[,c("lon","lat")])
 
 #Need to convert to genpop for adegenet dist.genpop
 gi.subset = gl2gi(x)
-gi.subset@ploidy = rep(as.integer(1), 61)
+gi.subset@ploidy = rep(as.integer(1), 59)
 
 gp = genind2genpop(gi.subset)
 
@@ -56,8 +56,8 @@ Dgen.4 <- dist.genpop(gp,method=4)
 Dgen.5 <- dist.genpop(gp,method=5)
 
 #Get pariwise site distances
-site_coords.subset = site_coords %>% filter(state.name %in% c("ME-S", "MI", "NC", "NH-CW", "NY-N", "NY-S", "PA", "WV"))
-site_order = c("ME-S", "MI", "NC", "NH-CW", "NY-N", "NY-S", "PA", "WV")
+site_coords.subset = site_coords %>% filter(state.name %in% c("ME.S", "NC", "NH.CW", "NY.N", "NY.S", "PA", "WV"))
+site_order = c("ME.S", "NC", "NH.CW", "NY.N", "NY.S", "PA", "WV")
 site_coords.subset.order = site_coords.subset[match(site_order, site_coords.subset$state.name), ]
 rownames(site_coords.subset.order) = site_coords.subset.order$state.name
 

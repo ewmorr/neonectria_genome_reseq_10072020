@@ -742,3 +742,58 @@ grid.draw(g)
 dev.off()
 
 
+#Find high density peaks in scf3
+
+ggplot(pv.with_pos %>% filter(scaffold == "tig00000025_pilon" & position > 2.5*10^6 & position < 3.1*10^6), aes(x = position, y = calibrated.p, color = FDR.sig)) +
+geom_point(alpha = 0.5, size = 1) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "P value") +
+theme(
+strip.text.x = element_blank(),
+axis.text.x = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+
+
+#Should find a way to do this programmatically, but...
+
+ggplot(pv.with_pos %>% filter(scaffold == "tig00000025_pilon" & position > 2.5*10^6 & position < 2.6*10^6), aes(x = position, y = calibrated.p, color = FDR.sig)) +
+geom_point(alpha = 0.5, size = 1) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "P value") +
+theme(
+strip.text.x = element_blank(),
+axis.text.x = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+pv.with_pos %>% filter(scaffold == "tig00000025_pilon" & position > 2.5*10^6 & position < 2.6*10^6 & FDR.sig == "sig") %>% select(position) %>% nrow
+#39
+pv.with_pos %>% filter(scaffold == "tig00000025_pilon" & position > 2.5*10^6 & position < 2.6*10^6 & FDR.sig == "sig") %>% select(position) %>% range
+#2524273-2544922
+
+
+ggplot(pv.with_pos %>% filter(scaffold == "tig00000025_pilon" & position > 3.05*10^6 & position < 3.1*10^6), aes(x = position, y = calibrated.p, color = FDR.sig)) +
+geom_point(alpha = 0.5, size = 1) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "P value") +
+theme(
+strip.text.x = element_blank(),
+axis.text.x = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+pv.with_pos %>% filter(scaffold == "tig00000025_pilon" & position > 3.05*10^6 & position < 3.1*10^6 & FDR.sig == "sig") %>% select(position) %>% nrow
+#98
+pv.with_pos %>% filter(scaffold == "tig00000025_pilon" & position > 3.05*10^6 & position < 3.1*10^6 & FDR.sig == "sig") %>% select(position) %>% range
+#3070669-3078240
