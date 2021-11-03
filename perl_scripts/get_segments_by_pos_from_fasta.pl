@@ -26,7 +26,7 @@ sub get_seqs{
     my($fasRef, $seqNam, $pos1, $pos2) = @_;
     my %fas = %$fasRef;
     my $seq = substr($fas{$seqNam}, $pos1-1, $pos2-$pos1+1);
-    print $seq, "\n";
+    print ">".$seqNam."_".$pos1."-".$pos2, "\n", $seq, "\n";
 }
 
 #MAIN

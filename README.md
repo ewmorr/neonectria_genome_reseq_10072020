@@ -577,8 +577,13 @@ Also running new gene mark annotations for LFMM
 cd neonectria_genome_reseq_10072020/
 sbatch ~/repo/ONS_Nf/genemark.pilon_polished.slurm
 
+```
+Get a couple of regions of high SNP correlation
+```
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_segments_by_pos_from_fasta.pl ~/neonectria_minion/MAT2_polish/pilon_.fasta tig00000025_pilon 2524273 2544922 > neonectria_genome_reseq_10072020/high_LFMM_snp_tig00000025_pilon_2524273-2544922.fasta
 
 ```
+
 
 ### Extract PRISM data for new sites
 On Premise
