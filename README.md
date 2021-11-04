@@ -147,6 +147,31 @@ cp ~/repo/neonectria_genome_reseq_10072020/premise/maker_opts* ~/neonectria_geno
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker_snap_train_Nf.slurm
 ```
+###
+genemark run
+```
+cd
+sbatch repo/ONS_Nf/genemark.pilon_polished.slurm
+mkdir neonectria_genome_reseq_10072020/genemark_run
+mv prot_seq.faa neonectria_genome_reseq_10072020/genemark_run
+mv nuc_seq.fna neonectria_genome_reseq_10072020/genemark_run
+mv genemark.gtf neonectria_genome_reseq_10072020/genemark_run
+mv run/ neonectria_genome_reseq_10072020/genemark_run
+mv data/ neonectria_genome_reseq_10072020/genemark_run
+mv output/ neonectria_genome_reseq_10072020/genemark_run
+```
+search for genes in areas of high SNP sig density (from LFMM below) which occur on contig tig00000025_pilon b\n positions 2524273-2544922 and 3070669-3078240
+```
+grep tig00000025_pilon genemark.gtf | grep CDS | grep "\s252"
+grep tig00000025_pilon genemark.gtf | grep CDS | grep "\s253"
+```
+4085_g, 3399_g
+```
+grep tig00000025_pilon genemark.gtf | grep CDS | grep "\s307"
+```
+4236_g, 4237_g
+
+
 
 ### Filter out SNPs that FAIL filtering
 ```
@@ -590,7 +615,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastx_swissprot_high_LFM
 ```
 Also blast maker proteins for cpmparison
 ```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_maker1.slurm 
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_maker1.slurm
 ```
 
 ### Extract PRISM data for new sites
