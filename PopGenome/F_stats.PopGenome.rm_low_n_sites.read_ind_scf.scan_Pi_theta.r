@@ -438,6 +438,59 @@ grid.draw(g)
 dev.off()
 
 
+p7 = ggplot() +
+geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi, color = outlier.pi), alpha = 0.5, size = 1) +
+geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi), color = "black", alpha = 0.5) +
+facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_color_manual(values = c("white", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = expression(Pi)) +
+theme(
+strip.text.x = element_blank(),
+strip.text.y = element_text(size = 8),
+#axis.text.x = element_text(size = 8),
+axis.text.y = element_text(size = 8),
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
+p8 = ggplot() +
+geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = theta, color = outlier.theta), alpha = 0.5, size = 1) +
+geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta), color = "black", alpha = 0.5) +
+facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_color_manual(values = c("white", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = expression(theta)) +
+theme(
+strip.text.x = element_blank(),
+strip.text.y = element_text(size = 8),
+#axis.text.x = element_text(size = 8),
+axis.text.y = element_text(size = 8),
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
+
+p5 = ggplot() +
+geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD, color = outlier.tajD), alpha = 0.5, size = 1) +
+geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD), color = "black", alpha = 0.5) +
+facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_color_manual(values = c("white", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "Tajima's D") +
+theme(
+strip.text.x = element_blank(),
+strip.text.y = element_text(size = 8),
+axis.text.x = element_text(size = 8),
+axis.text.y = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+
 
 #########################
 #########################

@@ -588,7 +588,10 @@ cat high_LFMM_snp_tig00000025_pilon_2524273-2544922.fasta high_LFMM_snp_tig00000
 
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastx_swissprot_high_LFMM.slurm
 ```
-
+Also blast maker proteins for cpmparison
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_maker1.slurm 
+```
 
 ### Extract PRISM data for new sites
 On Premise
