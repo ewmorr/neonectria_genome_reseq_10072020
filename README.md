@@ -170,7 +170,15 @@ grep tig00000025_pilon genemark.gtf | grep CDS | grep "\s253"
 grep tig00000025_pilon genemark.gtf | grep CDS | grep "\s307"
 ```
 4236_g, 4237_g
+##### get sequences
+```
+cd neonectria_genome_reseq_10072020/genemark_run/
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_seqs_by_name_from_fasta.pl prot_seq.faa 4085_g > LFMM_query_seqs.faa
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_seqs_by_name_from_fasta.pl prot_seq.faa 3399_g >> LFMM_query_seqs.faa
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_seqs_by_name_from_fasta.pl prot_seq.faa 4236_g >> LFMM_query_seqs.faa
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_seqs_by_name_from_fasta.pl prot_seq.faa 4237_g >> LFMM_query_seqs.faa
 
+```
 
 
 ### Filter out SNPs that FAIL filtering

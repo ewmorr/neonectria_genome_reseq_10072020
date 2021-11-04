@@ -31,5 +31,5 @@ sub get_seqs{
 #MAIN
 {
     my $fasHashRef = hash_fasta();
-    get_seqs($fasHashRef, @ARGV[1]);
+    get_seqs($fasHashRef, $ARGV[1]);
 }
