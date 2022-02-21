@@ -621,10 +621,27 @@ cat high_LFMM_snp_tig00000025_pilon_2524273-2544922.fasta high_LFMM_snp_tig00000
 
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastx_swissprot_high_LFMM.slurm
 ```
-Also blast maker proteins for cpmparison
+Also blast maker proteins for comparison
 ```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_maker1.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_maker1.slurm #This got overwritten
 ```
+Also blast genemark proteins for comparison
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_genemark_LFMM.slurm
+```
+Top hits in order of 4085_g, 3399_g, 4236_g, 4236_g (note the last two don't have great hits based on e-value and this also blasts to a transposon region)
+```
+grep GIS2_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
+#Zinc finger protein GIS2; GO regulation of translation
+grep RHO3_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
+grep RHO3_ASHGO ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
+#GTP-binding protein RHO3
+grep YEG5_SCHPO ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
+#Ankyrin and IPT/TIG repeat-containing protein C26H5.05; GO regulation of transcription
+grep TIP20_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
+#Protein transport protein TIP20
+```
+
 
 ### Extract PRISM data for new sites
 On Premise

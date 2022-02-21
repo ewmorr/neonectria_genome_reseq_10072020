@@ -439,9 +439,9 @@ dev.off()
 
 
 p7 = ggplot() +
-geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi, color = outlier.pi), alpha = 0.5, size = 1) +
+geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = pi, color = outlier.pi), alpha = 1, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+#facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -450,15 +450,15 @@ theme(
 strip.text.x = element_blank(),
 strip.text.y = element_text(size = 8),
 #axis.text.x = element_text(size = 8),
-axis.text.y = element_text(size = 8),
+axis.text.y = element_text(size = 12),
 axis.text.x = element_blank(),
 axis.title.x = element_blank()
 )
 
 p8 = ggplot() +
-geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = theta, color = outlier.theta), alpha = 0.5, size = 1) +
+geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = theta, color = outlier.theta), alpha = 1, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+#facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -467,16 +467,16 @@ theme(
 strip.text.x = element_blank(),
 strip.text.y = element_text(size = 8),
 #axis.text.x = element_text(size = 8),
-axis.text.y = element_text(size = 8),
+axis.text.y = element_text(size = 12),
 axis.text.x = element_blank(),
 axis.title.x = element_blank()
 )
 
 
-p5 = ggplot() +
-geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD, color = outlier.tajD), alpha = 0.5, size = 1) +
+p9 = ggplot() +
+geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = tajD, color = outlier.tajD), alpha = 1, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+#facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -484,12 +484,22 @@ labs(x = "Position (Mbp)", y = "Tajima's D") +
 theme(
 strip.text.x = element_blank(),
 strip.text.y = element_text(size = 8),
-axis.text.x = element_text(size = 8),
-axis.text.y = element_text(size = 8)
+axis.text.x = element_text(size = 12),
+axis.text.y = element_text(size = 12)
 #axis.text.x = element_blank(),
 #axis.title.x = element_blank()
 )
 
+plots = list(p7, p8, p9)
+grobs <- lapply(plots, ggplotGrob)
+g <- do.call(gridExtra::gtable_rbind, grobs)
+panels <- g$layout$t[grep("panel", g$layout$name)]
+g$heights[panels] <- unit(c(1,1,1), "null")
+
+pdf("figures/pi_theta_tajD.sw.one_tig.pdf", width = 16, height = 8)
+grid.newpage()
+grid.draw(g)
+dev.off()
 
 
 #########################

@@ -129,7 +129,7 @@ mid_point = (min_max[1]+min_max[2])/2
 
 p4 = ggplot()+
 geom_raster(data=m.df.study_area, aes(x=lon, y=lat, fill=MAT))+
-geom_point(data=site_coords %>% filter(state.name != "WI"), aes(x=lon, y = lat, color = sample), size = 2) +
+geom_point(data=site_coords %>% filter(state.name != "WI" & state.name != "NH.HUBB"), aes(x=lon, y = lat, color = sample), size = 3) +
 labs(x = "longitude", y = "latitude") +
 my_gg_theme +
 theme(
@@ -143,8 +143,8 @@ scale_fill_gradient2(expression("MAT ("*degree*C*")"),
     limits = c(min_max[1], min_max[2])
 )+
 scale_color_manual("Sample status",
-    values = c("y" = "black", "c" = "grey45", "p" = "white"),
-    labels = c("y" = "sequenced", "c" = "collected", "p" = "potential"),
+    values = c("y" = "black", "c" = "white"),
+    labels = c("y" = "sequenced", "c" = "collected"),
 ) +
 theme(
     legend.title = element_text(size = 25),
@@ -172,7 +172,7 @@ dev.off()
 
 p1 = ggplot()+
 geom_raster(data=m.df.study_area, aes(x=lon, y=lat, fill=MAT))+
-geom_point(data=site_coords, aes(x=lon, y = lat, color = core), size = 5) +
+geom_point(data=site_coords, aes(x=lon, y = lat, color = sample), size = 5) +
 my_gg_theme +
 labs(y = NULL, x = NULL) +
 theme(
