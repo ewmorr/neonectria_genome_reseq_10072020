@@ -15,7 +15,9 @@ mv cobb.sr.unh.edu/managed/220328_A01346_0053_AHMYCGDRXY_16MerGARNAS_Neonectria/
 
 BBDUK adapter trimming and quality trimming
 ```
-sbatch ~/repo/neonectria_genome_reseq_10072020/bbduk_trim.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim.slurm
+#trim new treads
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim_033122_reads.slurm
 ```
 Trimmomatic adapter trimming and quality trimming
 ```
@@ -30,7 +32,9 @@ Either filtering dropped similar numbers of read pairs -- less than a tenth of a
 
 Merge bbtrimmed reads and derep (`vsearch`) for search and then map to Nf/Nd ITS seqs for species ID
 ```
-sbatch ~/repo/neonectria_genome_reseq_10072020/vsearch_Nf_Nd_ITS.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS.slurm
+#Also run 03312022 samples
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS_03312022.slurm
 ```
 Eight of the genomes are Nd based on this analysis
 #### ALSO comparing to MAT1 and MAT2 seqs
