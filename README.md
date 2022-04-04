@@ -6,6 +6,11 @@ mkdir neonectria_genome_reseq_10072020
 cd ~/neonectria_genome_reseq_10072020
 mkdir reads
 mv cobb.sr.unh.edu/managed/201002_SN7001360_0501_BHCKWTBCX3_16MerGARNAS_Neonectria/reads/*fastq.gz ./reads
+
+mkdir neonectria_genome_reseq_03312022
+cd neonectria_genome_reseq_03312022
+mkdir reads
+mv cobb.sr.unh.edu/managed/220328_A01346_0053_AHMYCGDRXY_16MerGARNAS_Neonectria/reads/*fastq.gz ./reads
 ```
 
 BBDUK adapter trimming and quality trimming
@@ -28,6 +33,10 @@ Merge bbtrimmed reads and derep (`vsearch`) for search and then map to Nf/Nd ITS
 sbatch ~/repo/neonectria_genome_reseq_10072020/vsearch_Nf_Nd_ITS.slurm
 ```
 Eight of the genomes are Nd based on this analysis
+#### ALSO comparing to MAT1 and MAT2 seqs
+```
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_MAT_otu_tab.slurm
+```
 
 #### Test run of SPANDx on six genomes of Nf
 The reference genome for Nf is based on CANU assembly of MinION reads (MAT1 isolate) with pilon polishing with Illumina reads (either MAT1 or MAT2 isolate). These are located at `~/neonectria_minion/MAT1_polish/pilon_.fasta` or at `~/neonectria_minion/MAT2_polish/pilon_.fasta`. We will use the MAT1 assembly despite slightly worse BUSCO completeness (see BUSCO and quast stats in these dirs) because this is assembled from a single isolate.
