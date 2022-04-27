@@ -14,27 +14,27 @@ cd ~/neonectria_genome_reseq_10072020/maker_run
 
 mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_1.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl
 
-#mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
-#wait
+mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
+wait
 
 #Combine and convert SNAP profiles
-#echo combining first SNAP
-#base=maker1
+echo combining first SNAP
+base=maker1
 
 #mv maker CTL files for first run
-#mkdir $base.hmm
-#cd    $base.hmm
+mkdir $base.hmm
+cd    $base.hmm
 
 
 # maker creates an output folder with a datastore index. use gff3_merge to combine all the GFFs
-#srun --ntasks=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
+srun --ntasks=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
 
 # convert this GFF to a snap model:
-#srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
-#srun --ntasks=1 fathom genome.ann genome.dna -categorize 1000
-#srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
-#srun --ntasks=1 forge export.ann export.dna
-#srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
+srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
+srun --ntasks=1 fathom genome.ann genome.dna -categorize 1000
+srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
+srun --ntasks=1 forge export.ann export.dna
+srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 #Move maker CTL files for second run
 cd ~/neonectria_genome_reseq_10072020/maker_run
@@ -44,7 +44,7 @@ mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_2.ctl ~/neonectria_ge
 
 
 #Second maker run
-echo do second maker run
+echo second maker run
 mpiexec -n 24 maker -base maker2 -f -fix_nucleotides
 wait
 
