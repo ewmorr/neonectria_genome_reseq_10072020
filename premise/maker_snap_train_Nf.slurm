@@ -6,23 +6,25 @@
 
 module purge
 module load anaconda/colsa
-source activate maker-3.01.02
+conda activate maker-3.01.02
+#conda activate maker3.01.03
 
 AUGUSTUS_CONFIG_PATH=/mnt/home/garnas/ericm/augustus_config/config/
 #mkdir ~/neonectria_genome_reseq_10072020/maker_run
 #
 cd ~/neonectria_genome_reseq_10072020/maker_run
 
+#mv maker CTL files for first run
 mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_1.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl
 
-mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
-wait
+#mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
+#wait
 
 #Combine and convert SNAP profiles
 echo combining first SNAP
 base=maker1
 
-#mv maker CTL files for first run
+
 mkdir $base.hmm
 cd    $base.hmm
 
@@ -31,7 +33,8 @@ cd    $base.hmm
 srun --ntasks=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
 
 # convert this GFF to a snap model:
-srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
+#srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
+srun --ntasks=1 maker2zff -n $base.all.gff
 srun --ntasks=1 fathom genome.ann genome.dna -categorize 1000
 srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
 srun --ntasks=1 forge export.ann export.dna
@@ -62,7 +65,7 @@ cd    $base.hmm
 srun --ntasks=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
 
 # convert this GFF to a snap model:
-srun --ntasks=1 ~/perl_scripts/maker2zff_mod.pl -n $base.all.gff
+srun --ntasks=1 maker2zff -n $base.all.gff
 srun --ntasks=1 fathom genome.ann genome.dna -categorize 1000
 srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
 srun --ntasks=1 forge export.ann export.dna
@@ -78,6 +81,25 @@ mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_3.ctl ~/neonectria_ge
 echo do final maker run
 mpiexec -n 24 maker -base maker3 -f -fix_nucleotides
 wait
+
+#combine second SNAP run
+echo combining second SNAP run
+
+base=maker3
+
+mkdir $base.hmm
+cd    $base.hmm
+
+
+# maker creates an output folder with a datastore index. use gff3_merge to combine all the GFFs
+srun --ntasks=1 gff3_merge -d ../$base.maker.output/$base\_master_datastore_index.log
+
+# convert this GFF to a snap model:
+srun --ntasks=1 maker2zff -n $base.all.gff
+srun --ntasks=1 fathom genome.ann genome.dna -categorize 1000
+srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
+srun --ntasks=1 forge export.ann export.dna
+srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_3.ctl
 
