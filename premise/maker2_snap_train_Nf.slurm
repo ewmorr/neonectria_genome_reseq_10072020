@@ -1,24 +1,21 @@
 #!/bin/bash
 #SBATCH --partition=shared
-#SBATCH -J makerSNAP
-#SBATCH --output maker_SNAP.out
+#SBATCH -J maker2
+#SBATCH --output maker2_SNAP.out
 #SBATCH --ntasks=24
 
 module purge
-module load anaconda/colsa
-conda activate maker-3.01.02
-#conda activate maker3.01.03
+module load linuxbrew/colsa
 
 AUGUSTUS_CONFIG_PATH=/mnt/home/garnas/ericm/augustus_config/config/
-#mkdir ~/neonectria_genome_reseq_10072020/maker_run
 #
-cd ~/neonectria_genome_reseq_10072020/maker_run
+cd ~/neonectria_genome_reseq_10072020/maker2_run
 
 #mv maker CTL files for first run
-mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_1.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl
+mv ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts_1.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl
 
-#mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
-#wait
+mpiexec -n 24 maker -base maker1 -f -fix_nucleotides
+wait
 
 #Combine and convert SNAP profiles
 echo combining first SNAP
@@ -41,9 +38,9 @@ srun --ntasks=1 forge export.ann export.dna
 srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 #Move maker CTL files for second run
-cd ~/neonectria_genome_reseq_10072020/maker_run
-mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_1.ctl
-mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_2.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl
+cd ~/neonectria_genome_reseq_10072020/maker2_run
+mv ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts_1.ctl
+mv ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts_2.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl
 
 
 
@@ -73,9 +70,9 @@ srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
 
 
 #Move maker CTL files for final run
-cd ~/neonectria_genome_reseq_10072020/maker_run
-mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_2.ctl
-mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_3.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl
+cd ~/neonectria_genome_reseq_10072020/maker2_run
+mv ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts_2.ctl
+mv ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts_3.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl
 
 #final maker run
 echo do final maker run
@@ -101,5 +98,5 @@ srun --ntasks=1 fathom uni.ann uni.dna -export 1000 -plus
 srun --ntasks=1 forge export.ann export.dna
 srun --ntasks=1 hmm-assembler.pl $base . > $base.snap.hmm
 
-mv ~/neonectria_genome_reseq_10072020/maker_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker_run/maker_opts_3.ctl
+mv ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts_3.ctl
 
