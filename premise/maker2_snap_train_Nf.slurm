@@ -3,6 +3,7 @@
 #SBATCH -J maker2
 #SBATCH --output maker2_SNAP.out
 #SBATCH --ntasks=24
+#SBATCH --exclude=node117,node118
 
 module purge
 module load linuxbrew/colsa
