@@ -4,6 +4,7 @@
 #SBATCH --output maker_SNAP.out
 #SBATCH --ntasks=24
 #SBATCH --exclude=node117,node118
+#SBATCH --mem=512000
 
 module purge
 module load anaconda/colsa
