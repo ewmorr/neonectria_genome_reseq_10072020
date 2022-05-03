@@ -187,17 +187,26 @@ cd neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_long_Nf.slurm
 ```
 gene_models should be written to `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long` and can then rename OR may be written to working dir
-Looks like augustus parameters are actually written to `~/SPANDx_Nf/run_Nf_buscos_long/augustus_output/retraining_parameters/`
+Looks like augustus parameters are actually written to `~/SPANDx_Nf/run_Nf_buscos_long/augustus_output/retraining_parameters/` and/or `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long_2292717447`
 
 ### Maker run with SNAP training and augustus models
 ```
 mkdir ~/neonectria_genome_reseq_10072020/maker_run/
 cp ~/repo/neonectria_genome_reseq_10072020/premise/maker_opts* ~/neonectria_genome_reseq_10072020/maker_run/
 cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker_snap_train_Nf.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker3_snap_train_Nf.slurm
 ```
+Maker v3 is throwing an error at annotating transcripts step where some contigs fail. Trying maker v2
+```
+mkdir ~/neonectria_genome_reseq_10072020/maker_run/
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_snap_train_Nf.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_final_run_Nf.slurm
+busco_maker_eval.slurm
+```
+
 ###
-genemark run
+genemark run (The genemark model generated below is used in the final run of maker))
 ```
 cd
 sbatch repo/ONS_Nf/genemark.pilon_polished.slurm
