@@ -8,6 +8,8 @@
 module purge
 module load linuxbrew/colsa
 
+#This needs to be added to find gmhmm_wrap if using a gene-mark HMM
+PATH=$PATH:/mnt/lustre/software/linuxbrew/colsa-20171116/Cellar/maker/2.31.9/libexec/lib/Widget/genemark
 
 AUGUSTUS_CONFIG_PATH=/mnt/home/garnas/ericm/augustus_config/config/
 #mkdir ~/neonectria_genome_reseq_10072020/maker2_run

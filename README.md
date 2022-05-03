@@ -202,7 +202,7 @@ mkdir ~/neonectria_genome_reseq_10072020/maker_run/
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_snap_train_Nf.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_final_run_Nf.slurm
-busco_maker_eval.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval.slurm
 ```
 
 ###
