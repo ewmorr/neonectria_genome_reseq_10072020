@@ -81,7 +81,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_MAT_otu_tab
 #### Test run of SPANDx on six genomes of Nf
 The reference genome for Nf is based on CANU assembly of MinION reads (MAT1 isolate) with pilon polishing with Illumina reads (either MAT1 or MAT2 isolate). These are located at `~/neonectria_minion/MAT1_polish/pilon_.fasta` or at `~/neonectria_minion/MAT2_polish/pilon_.fasta`. We will use the MAT1 assembly despite slightly worse BUSCO completeness (see BUSCO and quast stats in these dirs) because this is assembled from a single isolate.
 
-Make test tun dir and copy test files with rename of sequence files to follow the format expected by SPANDx
+Make test run dir and copy test files with rename of sequence files to follow the format expected by SPANDx
 ```
 mkdir SPANDx_test_run
 
@@ -94,7 +94,7 @@ done
 ```
 
 #### Make sure that nextflow.config is updated if necessary (https://github.com/dsarov/SPANDx#usage)
-The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM). Newer versions of the package also have `notrim` set to `ture`. THis should be `false` in that case. Also, note that we have cloned the git repo after installing via conda, and made some modificaations to the `main.nf` script (i.e., changing the `gatk HaplotypeCaller` comand at line 865 to include `--ploidy 1` flag) and to the `./bin/Master_vcf.sh` script (i.e., removing `-ploidy 1` from the `gatk GenotypeGVCFs` command). Also, note that `.bashrc` may need to be updated as described [here](./SPANDx_conda_install.sh). Finally, the reference genome assembly must be loacted in the SPANDx working directory (along with the reads), and can be indicated by path in the config file. Then, to run SPANDx (note that nextflow is pointed to the cloned git repo)
+The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM). Newer versions of the package also have `notrim` set to `true`. THis should be `false` in that case. Also, note that we have cloned the git repo after installing via conda, and made some modificaations to the `main.nf` script (i.e., changing the `gatk HaplotypeCaller` comand at line 865 to include `--ploidy 1` flag) and to the `./bin/Master_vcf.sh` script (i.e., removing `-ploidy 1` from the `gatk GenotypeGVCFs` command). Also, note that `.bashrc` may need to be updated as described [here](./SPANDx_conda_install.sh). Finally, the reference genome assembly must be loacted in the SPANDx working directory (along with the reads), and can be indicated by path in the config file. Then, to run SPANDx (note that nextflow is pointed to the cloned git repo)
 
 ```
 cd SPANDx_test_run
@@ -186,8 +186,7 @@ cp neonectria_minion/Nf_canu_run0/config.ini SPANDx_Nf/
 cd neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_long_Nf.slurm
 ```
-gene_models should be written to `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long` and can then rename OR may be written to working dir
-Looks like augustus parameters are actually written to `~/SPANDx_Nf/run_Nf_buscos_long/augustus_output/retraining_parameters/` and/or `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long_2292717447`
+augustus parameters are  written to `$HOME/augustus_config/config/species/BUSCO_Nf_buscos_long_2292717447`
 
 ### Maker run with SNAP training and augustus models
 ```
@@ -196,7 +195,7 @@ cp ~/repo/neonectria_genome_reseq_10072020/premise/maker_opts* ~/neonectria_geno
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker3_snap_train_Nf.slurm
 ```
-Maker v3 is throwing an error at annotating transcripts step where some contigs fail. Trying maker v2
+Maker v3 is throwing an error at annotating transcripts step where some contigs fail. Trying maker v2. 
 ```
 mkdir ~/neonectria_genome_reseq_10072020/maker_run/
 cd ~/neonectria_genome_reseq_10072020/
@@ -206,7 +205,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval.slurm
 ```
 
 ###
-genemark run (The genemark model generated below is used in the final run of maker))
+genemark run (The genemark model generated below is used in the final run of maker)
 ```
 cd
 sbatch repo/ONS_Nf/genemark.pilon_polished.slurm
