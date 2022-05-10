@@ -203,6 +203,20 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_snap_train_Nf.slur
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_final_run_Nf.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval.slurm
 ```
+Results of BUSCO search of transcripts
+```
+# Summarized benchmarking in BUSCO notation for file makerFINAL.transcripts.aed-1.0.fasta
+# BUSCO was run in mode: transcriptome
+
+        C:95.5%[S:95.2%,D:0.3%],F:3.0%,M:1.5%,n:3725
+
+        3555    Complete BUSCOs (C)
+        3545    Complete and single-copy BUSCOs (S)
+        10      Complete and duplicated BUSCOs (D)
+        113     Fragmented BUSCOs (F)
+        57      Missing BUSCOs (M)
+        3725    Total BUSCO groups searched
+```
 
 ###
 genemark run (The genemark model generated below is used in the final run of maker)
