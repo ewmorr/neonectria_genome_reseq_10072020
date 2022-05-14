@@ -7,7 +7,7 @@
 module purge
 module load linuxbrew/colsa
 
-cd ~/SPANDx_Nf_run2/Outputs/bams
+cd ~/Nf_SPANDx_all_seqs/Outputs/bams
 
 
 for i in *.bam
