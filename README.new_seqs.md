@@ -154,8 +154,13 @@ calculate raw coverage
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/sample_coverage.slurm
 ```
+
+## left off here
+
+
 concatenate coverage results
 ```
+cd ~/Nf_SPANDx_all_seqs/Outputs/bams
 for i in *.coverage_by_sequence.txt
 do
     cov="$(grep "genome" $i| cut -f 3)"

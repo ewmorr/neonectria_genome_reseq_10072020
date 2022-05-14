@@ -4,7 +4,7 @@ require(ggplot2)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 #filtered VCF
-vcf <- read.vcfR("~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.vcf", verbose = FALSE)
+vcf <- read.vcfR("~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.vcf", verbose = FALSE)
 dp <- extract.gt(vcf, element='DP', as.numeric=TRUE)
 
 dpf <- pivot_longer(data.frame(dp), names_to = "Sample", values_to = "Depth", cols = everything()) #DAMN YOU HADLEY!!!!
@@ -37,7 +37,7 @@ cov_mat = matrix(c("median", median(median_cov), "mean", mean(mean_cov) ), nrow 
 write.table(data.frame(cov_mat), "VCF.filtered.PASS.coverage.txt", quote = F, sep = "\t", row.names = F, col.names = F)
 
 #unfiltered VCF
-vcf <- read.vcfR("~/SPANDx_Nf/Outputs/Master_vcf/out.vcf", verbose = FALSE)
+vcf <- read.vcfR("~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.vcf", verbose = FALSE)
 dp <- extract.gt(vcf, element='DP', as.numeric=TRUE)
 
 dpf <- pivot_longer(data.frame(dp), names_to = "Sample", values_to = "Depth", cols = everything()) #DAMN YOU HADLEY!!!!
