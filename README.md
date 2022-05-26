@@ -292,7 +292,7 @@ Stored locally at the home dir `coverage/Nf/`
 
 
 
-### Next will need to perform coverage based filtering based on these results. 4 read minimum 22 read max
+### Next will need to perform coverage based filtering based on these results. 4 read minimum 22 read max (i.e, 1/2 or 3x of mean DP (7.5))
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max25.slurm

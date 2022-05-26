@@ -96,7 +96,7 @@ The config file is where CPUs etc are denoted as well as the resource manager (e
 
 ```
 
-#### Running full sample set of Nf
+#### Running full sample set of Nf SPANDx
 ```
 module purge
 module load anaconda/colsa
@@ -155,9 +155,6 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/sample_coverage.slurm
 ```
 
-## left off here
-
-
 concatenate coverage results
 ```
 cd ~/Nf_SPANDx_all_seqs/Outputs/bams
@@ -165,22 +162,30 @@ for i in *.coverage_by_sequence.txt
 do
     cov="$(grep "genome" $i| cut -f 3)"
     sample=${i%.coverage_by_sequence.txt}
-    echo -e "$sample\t$cov" >> ~/SPANDx_Nf_run2/Outputs/coverage_by_sample.dedup_bam.txt
+    echo -e "$sample\t$cov" >> ~/Nf_SPANDx_all_seqs/Outputs/coverage_by_sample.dedup_bam.txt
 done
 ```
+
 calculate coverage based on DP after spandx filtering. Note that the R script points to the file paths
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/cov_vcfR.slurm
 ```
-Stored locally at the home dir `coverage/Nf/`
 
+Stored locally at the home dir `coverage/Nf_all_seqs/`
 
+## left off here
 
-### Next will need to perform coverage based filtering based on these results. 4 read minimum 22 read max
+### Next will need to perform coverage based filtering based on these results. 4 read minimum 48 read max (0.25 or 3x of mean 15.8 DP. Note that median DP is 6 and the mean of the first set of samples was 7.5 so setting DP min = 4 allows to capture more valid SNPs across entire sample set)
+### The VCF file `out.filtered.PASS.vcf` first needs to be modified to exclude commas within quotes (i.e., description fields) in the ##INFO rows as vcftools will not handle these. Write to `out.filtered.PASS.no_comma.vcf` the easiest/most acurate way seems to be to modify manually
+```
+cp out.filtered.PASS.vcf out.filtered.PASS.no_comma.vcf
+vim out.filtered.PASS.no_comma.vcf
+```
+remove commas by hand
 ```
 cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max25.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max48.slurm
 grep -v "##\|#" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 ```
