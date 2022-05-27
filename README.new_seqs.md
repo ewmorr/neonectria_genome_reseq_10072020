@@ -201,22 +201,30 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 13,130,656 NA # second grep
 13130656/60410142 = 21.7%
 
-### Missing data filter, maximum 25%. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. There are also three samples with greater than 26% missing data (one has just over 25%). Try filtering on missing data at both allele and sample. First filtering sites based on missing data
+### Missing data filter, maximum 25%. 
+On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. There are also three samples with greater than 26% missing data (one has just over 25%). Try filtering on missing data at both allele and sample. First filtering sites based on missing data
 ```
+cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
 ```
 The slurm script is giving an illegal instrution error (WHY?) This is a small enough job to run on the head node but need to figure this out
 ```
 module purge
 module load linuxbrew/colsa
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 less out.imiss
 ```
-217,805 remaining variants
-2,221,268 NA
-2,221,268/15464155 = 14.3% NA
+433071 remaining variants x 117 = 50669307
+8921908 NA
+8921908/50669307 = 17.6% NA
+
+### Remove polyallelic sites
+```
+
+```
 
 ### Filtering sites based on minor allele *count* `--mac` of 3 (at least 3 samples) and then filtering samples based on missing data
 ```
