@@ -303,16 +303,16 @@ This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `
 # Left off here
 
 ```
-cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
-cp Nf.out.filtered.LD_filtered_0.5_10Kb.map Nf.out.filtered.LD_filtered_0.5_10Kb.map.original
-sed 's/[a-z,_]*//g' Nf.out.filtered.LD_filtered_0.5_10Kb.map.original > Nf.out.filtered.LD_filtered_0.5_10Kb.map
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
+cp out.filtered.LD_filtered_0.5_10Kb.map out.filtered.LD_filtered_0.5_10Kb.map.original
+sed 's/[a-z,_]*//g' out.filtered.LD_filtered_0.5_10Kb.map.original > out.filtered.LD_filtered_0.5_10Kb.map
 ```
 REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). First need to filter for biallelic SNPs. The resulting PED will need the first 6 columns removed. We also remove every other line because plink is stupid and doubles every SNP assuming diploid data
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.full_dat_LFMM.slurm
 
-cd SPANDx_Nf//Outputs/Master_vcf/
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
 
 cut out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.ped -d " " -f 1-6 --complement | awk  '{for (i=1;i<=NF;i+=2) printf "%s ", $i; printf "\n" }' > out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.lfmm
 
