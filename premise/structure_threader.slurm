@@ -1,5 +1,6 @@
 #!/usr/bin/bash
 #SBATCH --ntasks=1
+#SBATCH --cpus-per-task=48
 #SBATCH --job-name="str_th"
 #SBATCH --output=structure_threader.out
 #SBATCH --partition=shared
@@ -9,11 +10,11 @@ module load anaconda/colsa
 
 export PATH=~/.local/bin:$PATH
 
-cd ~/neonectria_genome_reseq_10072020/
+cd ~/Nf_SPANDx_all_seqs_structure_th/
 
 structure_threader run -K 15 -R 5 \
--i ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.structure \
--o ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/structure_th/ \
---params ~/neonectria_genome_reseq_10072020/mainparams \
--t 24 -st /mnt/home/garnas/ericm/.local/bin/structure
+-i ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.structure \
+-o ~/Nf_SPANDx_all_seqs_structure_th/ \
+--params ~/Nf_SPANDx_all_seqs_structure_th/mainparams \
+-t 48 -st /mnt/home/garnas/ericm/.local/bin/structure
 
