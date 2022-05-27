@@ -7,7 +7,7 @@
 module purge
 module load linuxbrew/colsa
 
-cd ~/SPANDx_Nf/Outputs/Master_vcf/
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 
 srun bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
 

@@ -137,7 +137,7 @@ cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
 grep -v "##\|#" out.filtered.PASS.vcf | wc -l
 ```
-516,326 SNPs remaining * 117 samples = 60410142
+516,326 SNPs remaining x 117 samples = 60410142
 ```
 grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
 ```
@@ -174,34 +174,41 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/cov_vcfR.slurm
 
 Stored locally at the home dir `coverage/Nf_all_seqs/`
 
-## left off here
+
 
 ### Next will need to perform coverage based filtering based on these results. 4 read minimum 48 read max (0.25 or 3x of mean 15.8 DP. Note that median DP is 6 and the mean of the first set of samples was 7.5 so setting DP min = 4 allows to capture more valid SNPs across entire sample set)
 ### The VCF file `out.filtered.PASS.vcf` first needs to be modified to exclude commas within quotes (i.e., description fields) in the ##INFO rows as vcftools will not handle these. Write to `out.filtered.PASS.no_comma.vcf` the easiest/most acurate way seems to be to modify manually
 ```
 cp out.filtered.PASS.vcf out.filtered.PASS.no_comma.vcf
 vim out.filtered.PASS.no_comma.vcf
+# remove commas by hand
 ```
-remove commas by hand
+
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max48.slurm
+
+```
+## left off here
+```
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 grep -v "##\|#" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 ```
 #### Note that `vcftools` recodes NA values "." as diploid NA "./."
-312,333 variants
-5,155,517 NA
-5,155,517/22,175,643 = 23.2%
+516326 variants # (first grep) x 117 samples
+60410142 total variants
+13,130,656 NA # second grep
+13130656/60410142 = 21.7%
 
-### Missing data filter. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. There are also three samples with greater than 26% missing data (one has just over 25%). Try filtering on missing data at both allele and sample. First filtering sites based on missing data
+### Missing data filter, maximum 25%. On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. There are also three samples with greater than 26% missing data (one has just over 25%). Try filtering on missing data at both allele and sample. First filtering sites based on missing data
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
 ```
 The slurm script is giving an illegal instrution error (WHY?) This is a small enough job to run on the head node but need to figure this out
 ```
 module purge
-module load linucbrew/colsa
+module load linuxbrew/colsa
 bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
@@ -272,18 +279,7 @@ grep -v "^##" ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out
 Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 29,803 SNPs remaing at 10Kb filter
 
 
-### Convert VCF to PED format for input to ADMIXTURE or LEA
-
-#PED conversion. We use using plink 1.9 after trying several options. Different attempts are retained for reference
-```
-#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/convert_VCF_to_PED.slurm
-```
-#This is still writing zero sites even with the warnings about commas removed. Maybe be an issue with vctools reading v4.2 VCF...
-#Trying plink2. First need to install from conda. See `plink2_conda_install.sh`
-```
-#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink2_VCF_to_PED.slurm
-```
-plink2 does not use PED files (?!). Instead try plink1.9  `plink1.9_conda_install.sh`
+### Convert VCF to PED format for input to ADMIXTURE or LEA. We use using plink 1.9 after trying several options (see old readme for more). 
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
@@ -354,20 +350,6 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 ```
 Ran ADMIXTURE with --haploid flag set (after realizing it is available) and also with not (before realizing). Does not appear to make a difference for the CV results. `--haploid` run is being used and is stored locally
 
-### Running fastSTRUCTURE
-```
-cd ~/neonectria_genome_reseq_10072020/
-mkdir Nf_post_SPANDx/LD_filter/faststructure
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure.slurm
-#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure_logistic.slurm
-```
-The `simple` prior version runs fairly quickly through K 1-15 (about an hour) but it looks like the `logistic` prior will take a while to finish (K = 2 was taking over 2 hours). Wait until each run is finished and then run the respective chooseK script
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure_chooseK.slurm
-#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/faststructure_logistic_chooseK.slurm
-```
-- after updated filtering based on individual NA data and --mac faststructure predicts 8-10 K instead of 9-11. No change in ADMIXTURE (steady rise in CV)
-- The logistic prior mode appears to be broken. About half of the runs stopped prematurely with nan model evidence (breaking the program). After attempted fix the model runs a very long time (days) which appearsto be a [known issue](https://groups.google.com/g/structure-software/c/V0SpSsbB7I0). Trying [structure_threader](https://structure-threader.readthedocs.io/en/latest/) with structure instead.
 
 ### Running structure_threader
 ```
