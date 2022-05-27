@@ -3,6 +3,7 @@
 #SBATCH --job-name="admixture"
 #SBATCH --output=admixture.out
 #SBATCH --partition=shared
+#SBATCH --exclude=node117,node118
 
 module purge
 module load linuxbrew/colsa
