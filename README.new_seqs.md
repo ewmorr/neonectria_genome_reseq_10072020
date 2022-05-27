@@ -331,8 +331,6 @@ cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.full_dat.slurm
 ```
 
-# Left off here
-
 ### STRUCTURE format
 Download `out.filtered.LD_filtered_0.5_10Kb.fam` to make indfile for structure `make_structure_indfile.r`
 Downloaded .fam, .lfmm file to `GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/`
@@ -412,6 +410,9 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
 ```
 
+# Left off here
+
+
 #### Plot evanno
 Run locally
 ```
@@ -420,8 +421,8 @@ Rscript plot_evanno.r
 
 ### Running admixture CV
 ```
-cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/
-mkdir admixture
+cd 
+mkdir Nf_SPANDx_all_seqs_admixture
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 ```
