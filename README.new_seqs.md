@@ -361,7 +361,7 @@ pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -out
 awk '{print NF}' out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
 ```
 
-PGSpider is leaving 40859 SNPs... will move forward with structure run but will need to investigate. Set mainparams loci number to 40859,  LABEL to 1 and POPDATA to 1.
+PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structure run but will need to investigate. Set mainparams loci number to 40859,  LABEL to 1 and POPDATA to 1.
 
 ### LD filtered VCF, PED, and BED files are at
 ```
@@ -400,7 +400,7 @@ Download the params file to edit and retain a local copy if desired. The default
 #### Edits to `mainparams`
 - set PLOIDY to 1
 - NUMINDS 102 #after filtering out seuqncing reps and high missing data
-- NUMLOCI 40859 #SNPs remaining after pgspider
+- NUMLOCI 40857 #SNPs remaining after pgspider
 - MISSING -9
 - LABEL 1
 - POPDATA 1
