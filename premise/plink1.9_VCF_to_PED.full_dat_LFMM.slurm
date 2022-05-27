@@ -9,8 +9,8 @@ module load anaconda/colsa
 
 conda activate plink1.9
 
-cd ~/SPANDx_Nf/Outputs/Master_vcf/
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 
-srun plink --vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf --recode 01 --missing-genotype 9 --out out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9 --allow-extra-chr
+srun plink --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf --recode 01 --missing-genotype 9 --out out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9 --allow-extra-chr
 
 

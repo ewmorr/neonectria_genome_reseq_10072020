@@ -9,8 +9,8 @@ module load anaconda/colsa
 
 conda activate plink1.9
 
-cd ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 
-srun plink --vcf Nf.out.filtered.LD_filtered_0.5_10Kb.vcf --recode12 --out Nf.out.filtered.LD_filtered_0.5_10Kb --allow-extra-chr
+srun plink --vcf out.filtered.LD_filtered_0.5_10Kb.vcf --recode12 --out out.filtered.LD_filtered_0.5_10Kb --allow-extra-chr
 
 
