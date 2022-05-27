@@ -291,7 +291,8 @@ Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome s
 
 ## Format conversions for downstream processes
 
-### Convert VCF to PED format for input to ADMIXTURE or LEA. We use using plink 1.9 after trying several options (see old readme for more). 
+### ADMIXTURE
+Convert VCF to PED format for input to ADMIXTURE or LEA. We use using plink 1.9 after trying several options (see old readme for more). 
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
@@ -300,13 +301,14 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.slurm
 This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--recode`
 - ADMIXTURE also requires that the `.map` file containes only numerics in "chromosome" (contig) names
 
-# Left off here
 
 ```
 cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
 cp out.filtered.LD_filtered_0.5_10Kb.map out.filtered.LD_filtered_0.5_10Kb.map.original
 sed 's/[a-z,_]*//g' out.filtered.LD_filtered_0.5_10Kb.map.original > out.filtered.LD_filtered_0.5_10Kb.map
 ```
+
+### LFMM
 REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). First need to filter for biallelic SNPs. The resulting PED will need the first 6 columns removed. We also remove every other line because plink is stupid and doubles every SNP assuming diploid data
 ```
 cd ~/neonectria_genome_reseq_10072020
@@ -314,17 +316,29 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.full_
 
 cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
 
-cut out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.ped -d " " -f 1-6 --complement | awk  '{for (i=1;i<=NF;i+=2) printf "%s ", $i; printf "\n" }' > out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.lfmm
+cut out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.ped -d " " -f 1-6 --complement | awk  '{for (i=1;i<=NF;i+=2) printf "%s ", $i; printf "\n" }' > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.lfmm
 
-cut out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.ped -d " " -f 1 > out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.sampleIDs
+cut out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.ped -d " " -f 1 > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.sampleIDs
 
-grep "##contig=<ID=" out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf > scaffold_lengths.txt
+grep "##contig=<ID=" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf > scaffold_lengths.txt
 
 sed -e 's/##contig=<ID=//' -e 's/length=//' -e 's/>//' scaffold_lengths.txt > scaffold_lengths.csv
 ```
-Downloaded .lfmm file to `GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/`
+### Pcadapt
+Also producing BED files of non-LD-filtered VCF for pcadapt
+```
+cd ~/neonectria_genome_reseq_10072020
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.full_dat.slurm
+```
+
+# Left off here
 
 ### STRUCTURE format
+Download `out.filtered.LD_filtered_0.5_10Kb.fam` to make indfile for structure `make_structure_indfile.r`
+Downloaded .fam, .lfmm file to `GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/`
+
+upload `Nf_SPANDx_all_seqs/ind_file.structure`
+
 ```
 module purge
 module load linuxbrew/colsa
@@ -336,7 +350,8 @@ pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -out
 ```
 Edits
 - VCF_PARSER_PLOIDY_QUESTION=HAPLOID
-- VCF_PARSER_POP_QUESTION=false
+- VCF_PARSER_POP_QUESTION=true
+- VCF_PARSER_POP_FILE_QUESTION=ind_file.structure
 - VCF_PARSER_PL_QUESTION=false
 - STRUCTURE_WRITER_LOCI_DISTANCE_QUESTION=false
 - STRUCTURE_WRITER_DATA_TYPE_QUESTION=SNP
@@ -357,11 +372,6 @@ Still is leaving 40859 SNPs... will move forward with structure run but will nee
 ### Full SNP set (i.e., quality filtered but not LD filtered) is at
 ```
 ~/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf
-```
-Also producing BED files of non-LD-filtered VCF for pcadapt
-```
-cd ~/neonectria_genome_reseq_10072020
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.full_dat.slurm
 ```
 located on remote at
 ```
