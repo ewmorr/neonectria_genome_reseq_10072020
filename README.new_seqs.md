@@ -215,7 +215,6 @@ cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
-less out.imiss
 ```
 433071 remaining variants x 117 = 50669307
 8921908 NA
@@ -223,15 +222,19 @@ less out.imiss
 
 ### Remove polyallelic sites
 ```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_polyalleles_rm.slurm 
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf | wc -l
+grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf | wc -l
 
 ```
 
 ### Filtering sites based on minor allele *count* `--mac` of 3 (at least 3 samples) and then filtering samples based on missing data
 ```
-vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --mac 2 --recode --out out.filtered.PASS.DP_filtered.lt25missing.mac2
-vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --mac 3 --recode --out out.filtered.PASS.DP_filtered.lt25missing.mac3
-grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.mac2.recode.vcf | wc -l
-grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.mac3.recode.vcf | wc -l
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf --mac 2 --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf --mac 3 --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf | wc -l
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3.recode.vcf | wc -l
 ```
 113,891 sites remaining at --mac 2
 84,060 sites remaining at --mac 3

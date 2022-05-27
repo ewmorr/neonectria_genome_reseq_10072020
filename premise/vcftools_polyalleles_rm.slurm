@@ -11,6 +11,6 @@ cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 
 ####This *should* set individual genotypes to "." rather than filtering out whole variants. Can then filter based on % missing genotypes. Will need to check number of rows PASS remaining and number NA genotypes
 
-srun vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --out out.filtered.PASS.DP_filtered --recode --max-alleles 2
+srun vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --out out.filtered.PASS.DP_filtered.lt25missing.biallele --recode --max-alleles 2
 
 
