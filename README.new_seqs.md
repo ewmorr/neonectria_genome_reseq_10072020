@@ -224,70 +224,71 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_polyalleles_rm.slurm 
-grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf | wc -l
-grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf | wc -l
-
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
+grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
 ```
+416688 remaining variants x 117 = 48752496
+8583122 NA
+8583122/48752496 = 17.6% NA
 
 ### Filtering sites based on minor allele *count* `--mac` of 3 (at least 3 samples) and then filtering samples based on missing data
+Run in interactive session! First start a tmux session
 ```
-vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf --mac 2 --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2
-vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.vcf --mac 3 --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3
+module purge
+tmux new -s vcf_filter
+srun --pty bash -i
+module purge
+module load linuxbrew/colsa
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf --mac 2 --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf --mac 3 --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf | wc -l
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3.recode.vcf | wc -l
 ```
-113,891 sites remaining at --mac 2
-84,060 sites remaining at --mac 3
+Don't for get to `exit` interactive session!
+130957 sites remaining at --mac 2
+94489 sites remaining at --mac 3
 using mac 2
+
+### need to look at proportion of missing data per individual. Useful to plot. This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
+Download to Nf_SPANDx_all_seqs. 15 samples with >30% missing data
+
+
 ```
-vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.recode.vcf --missing-indv
+srun --pty bash -i
+module purge
+module load linuxbrew/colsa
+
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf --missing-indv
+module purge
 awk '$5 > 0.3' out.imiss | cut -f1 > lowDP.indv
 ```
-2 samples flagged. will also remove the sequencing replicates (samples sequenced twice) for downstream analyses. These will be usefull for calling false positive call rate but want to exclude from analyses for now. The sample pairs (missing data) are:
-- NG76 (0.12) - NG10 (0.09)
-- NG77 (0.13) - NG28 (0.09)
-- NG78 (0.10) - NG48 (0.16)
-- NG79 (0.185) - NG62 (0.176)
-Add (NG76, NG77, NG48, NG79) to `lowDP.indv` manually
+15 samples flagged. 
 ```
-vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.recode.vcf --remove lowDP.indv --recode --out out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps
-```
-65 individuals and 113891 sites remaining
-80224 sites recognized by R::PopGenome
-105457 sets recongized including poly allelic
+module load linuxbrew/colsa
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf --remove lowDP.indv --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind
+grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | wc -l
+grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | wc -l
 
-New file with no sites with missing data
 ```
-bcftools view -i 'F_MISSING<0.01' out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.no_missing.vcf
-grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.no_missing.vcf | wc -l
-```
-only 180 sites with no missing data
-Count multiallelic sites after different filtering steps
-```
-grep -v "^#" out.filtered.vcf | cut -f 5 | grep "," | wc -l
-#43643
-grep -v "^#" out.filtered.PASS.vcf | cut -f 5 | grep "," | wc -l
-#21606
-grep -v "^#" out.filtered.PASS.DP_filtered.lt25missing.vcf | cut -f 5 | grep "," | wc -l
-#9760
-grep -v "^#" out.filtered.PASS.DP_filtered.lt25missing.mac2.recode.vcf | cut -f 5 | grep "," | wc -l
-#3239
-grep -v "^#" out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf | cut -f 5 | grep "," | wc -l
-#3239
-grep -v "^#" out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf | cut -f 5 | grep -v "," | wc -l
-#110652
-```
+102 individuals and 130957 sites remaining = 133576614
+1460689 NA
+1460689/133576614 = 1.1% NA
+
+#### Below numbers need to be updated for new dataset
+#80224 sites recognized by R::PopGenome
+#105457 sets recongized including poly allelic
+
 
 ### Perform LD filtering before population structure analyses
 Using BCFtools
 ```
 cd ~/neonectria_genome_reseq_10072020
-#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_50KB.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
-#grep -v "^##" Nf.out.filtered.LD_filtered_0.5_50Kb.vcf | wc -l
 grep -v "^##" ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
-Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 29,803 SNPs remaing at 10Kb filter
+Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. xx SNPs remaing at 10Kb filter
+# Left off here
 
 
 ### Convert VCF to PED format for input to ADMIXTURE or LEA. We use using plink 1.9 after trying several options (see old readme for more). 
