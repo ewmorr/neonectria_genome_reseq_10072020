@@ -129,7 +129,7 @@ nextflow run ~/SPANDx_git_clone/
 Ctrl-a Ctrl-d
 screen -list
 ```
-1832.pts-47.login01
+25526.pts-0.login01
 
 ### Filter out SNPs that FAIL filtering
 ```
@@ -364,7 +364,7 @@ PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structur
 ### LD filtered VCF, PED, and BED files are at
 ```
 ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.ped
-~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/LD_filter/out.filtered.LD_filtered_0.5_10Kb.bed
+~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.bed
 ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf
 ```
 ### Full SNP set (i.e., quality filtered but not LD filtered) is at
@@ -409,8 +409,17 @@ Run structure_threader
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
 ```
+The structures run has been going for 10 days 18 hours and there have been no processes completed. Try starting a new run using less cpus (48)
+```
+cd 
+mkdir Nf_SPANDx_all_seqs_structure_th_2
 
-# Left off here
+cp ~/Nf_SPANDx_all_seqs_structure_th/*params Nf_SPANDx_all_seqs_structure_th_2
+
+
+```
+
+# Left off here(also running admixture)
 
 
 #### Plot evanno
@@ -426,8 +435,12 @@ mkdir Nf_SPANDx_all_seqs_admixture
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 ```
-Ran ADMIXTURE with --haploid flag set (after realizing it is available) and also with not (before realizing). Does not appear to make a difference for the CV results. `--haploid` run is being used and is stored locally
-
+Ran ADMIXTURE with --haploid flag set 
+```
+grep "CV error" admixture.out
+less ~/Nf_SPANDx_all_seqs_admixture/CV_by_K.text 
+```
+Look for a dip in CV results. There is only a steady increase
 
 
 ### Run PCADAPT locally `repo/pcadapt`
@@ -444,12 +457,7 @@ For local ADMIXTURE plots. sftp:
 lcd GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/admixture
 get neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/admixture_haploid/*
 ```
-### Plot fastStructure plots locally
-For local ADMIXTURE plots. sftp:
-```
-lcd GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/faststructure
-get neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/faststructure/simple*
-```
+
 ### Run IBD locally (dartR method and also popgen/adegenet methods)
 
 #### Making test data for conversion to PED to try with LEA
@@ -470,7 +478,7 @@ vcftools doesn't work with haploid data so this will not work...
 ## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites
 ### R package PopGenome looks like will work but trying
 ### Goal is to perform whole genome and sliding window analyses
-#### Should use whole genome but cans tart with LD filtered to test (smaller dataset)
+#### Should use whole genome but can start with LD filtered to test (smaller dataset)
 LD filtered
 ```
 ~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
