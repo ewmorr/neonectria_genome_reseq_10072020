@@ -1,7 +1,9 @@
-### Repo for analysis of genome resequencing data of Neonectria faginata and Neonectria ditissima
+# Repo for analysis of genome resequencing data of Neonectria faginata and Neonectria ditissima
 #### Workflows performed on UNH Premise or locally using R as appropriate
 
-Set up dirs for performing SPANDx SNP calling (premise)
+## set up sequence files for SNP calling
+
+### Set up dirs for performing SPANDx SNP calling (premise)
 ```
 mkdir Nf_SPANDx_all_seqs
 mkdir Nd_SPANDx_all_seqs
@@ -12,7 +14,7 @@ local. Find matching sequence files by sample to combine
 Rscript sort_seq_files_for_SPANDx.r
 ```
 
-Cp seqs to new dirs using the lists of IDs created above. Some samples have two sets of sequences and those are concatenated
+### Cp seqs to new dirs using the lists of IDs created above. Some samples have two sets of sequences and those are concatenated
 ```
 #Nf first set
 while IFS= read -r line 
@@ -85,6 +87,7 @@ cat neonectria_genome_reseq_03312022/reads/NG106*R2*.fastq.gz neonectria_genome_
 
 ```
 
+## SPANDx SNP calling
 Copy the referece genomes into the SPANDx working dirs
 ```
 cp SPANDx_Nf/ref.fasta Nf_SPANDx_all_seqs/
@@ -96,7 +99,7 @@ The config file is where CPUs etc are denoted as well as the resource manager (e
 
 ```
 
-#### Running full sample set of Nf SPANDx
+Running full sample set of Nf SPANDx
 ```
 module purge
 module load anaconda/colsa
@@ -131,7 +134,9 @@ screen -list
 ```
 25526.pts-0.login01
 
-### Filter out SNPs that FAIL filtering
+## SNP and sample filtering
+
+### Filter out SNPs that SPANDx FAIL filtering
 ```
 cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
@@ -189,7 +194,7 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max48.slurm
 
 ```
-## left off here
+Count variants and NA vals
 ```
 cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 grep -v "##\|#" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
@@ -201,8 +206,7 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 13,130,656 NA # second grep
 13130656/60410142 = 21.7%
 
-### Missing data filter, maximum 25%. 
-On reexamining VCF files it appears there is a large proportion of missing data in the LD filtered data. There are also three samples with greater than 26% missing data (one has just over 25%). Try filtering on missing data at both allele and sample. First filtering sites based on missing data
+#### Missing data filter, maximum 25%. (i.e., no more than 25% of samples are NA at the site)
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
@@ -245,14 +249,13 @@ vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf --m
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf | wc -l
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3.recode.vcf | wc -l
 ```
-Don't for get to `exit` interactive session!
+Don't forget to `exit` interactive session!
 130957 sites remaining at --mac 2
 94489 sites remaining at --mac 3
 using mac 2
 
 ### need to look at proportion of missing data per individual. Useful to plot. This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
 Download to Nf_SPANDx_all_seqs. 15 samples with >30% missing data
-
 
 ```
 srun --pty bash -i
@@ -276,8 +279,8 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA
 1460689/133576614 = 1.1% NA
 
 #### Below numbers need to be updated for new dataset
-#80224 sites recognized by R::PopGenome
-#105457 sets recongized including poly allelic
+80224 sites recognized by R::PopGenome
+105457 sets recongized including poly allelic
 
 
 ### Perform LD filtering before population structure analyses
@@ -359,7 +362,7 @@ pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -out
 awk '{print NF}' out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
 ```
 
-PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structure run but will need to investigate. Set mainparams loci number to 40859,  LABEL to 1 and POPDATA to 1.
+PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structure run but will need to investigate. Set mainparams loci number to 40857,  LABEL to 1 and POPDATA to 1.
 
 ### LD filtered VCF, PED, and BED files are at
 ```
@@ -383,6 +386,7 @@ get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25miss
 ## population structure analyses
 
 ### Running structure_threader
+First generate the params files
 ```
 cd 
 mkdir Nf_SPANDx_all_seqs_structure_th
@@ -404,23 +408,13 @@ Download the params file to edit and retain a local copy if desired. The default
 - POPDATA 1
 - MAXPOPS 15 #although this is set by -K on the command line
 
-Run structure_threader
+Run structure_threader (started at 5/27 2p)
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
 ```
-The structures run has been going for 10 days 18 hours and there have been no processes completed. Try starting a new run using less cpus (48)
-```
-cd 
-mkdir Nf_SPANDx_all_seqs_structure_th_2
-
-cp ~/Nf_SPANDx_all_seqs_structure_th/*params Nf_SPANDx_all_seqs_structure_th_2
-
-
-```
-
-# Left off here(also running admixture)
-
+The  structure threader run started writing results at 11 days. After 14.75 days there are nine results written (K4 and K3). K8 started writing at 20d 14h (6/17 04:00), K1 has finished by 23d5h (06/19 20:00), K10 started writing at at 23d15h (06/20 0600) finished 24d14h (06/21 0400)
+#### Note that the run may be killed early due to Premise downtime starting 06/26. If that is the case can restart any jobs that didn't finish and/or use structureharvester outside of the structure threader wrapper to calculate evanno method
 
 #### Plot evanno
 Run locally
@@ -442,21 +436,16 @@ less ~/Nf_SPANDx_all_seqs_admixture/CV_by_K.text
 ```
 Look for a dip in CV results. There is only a steady increase
 
+# Left off here(also running admixture)
 
-### Run PCADAPT locally `repo/pcadapt`
-For local pcadapt. sftp:
+
+
+
+### Run PCADAPT locally `repo/pcadapt/pca_LD_filtered.r`
 ```
-lcd GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
-get neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb*
-lcd ..
-get /mnt/home/garnas/ericm/SPANDx_Nf/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode*
+out.filtered.LD_filtered_0.5_10Kb.bed
 ```
-### Plot ADMIXTURE plots locally
-For local ADMIXTURE plots. sftp:
-```
-lcd GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/admixture
-get neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/admixture_haploid/*
-```
+
 
 ### Run IBD locally (dartR method and also popgen/adegenet methods)
 

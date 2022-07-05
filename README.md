@@ -203,8 +203,17 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_snap_train_Nf.slur
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_final_run_Nf.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval.slurm
 ```
-Results of BUSCO search of transcripts
+#### maker2 run was suscessful and is loacted at `neonectria_genome_reseq_10072020/maker2_run/`
 ```
+grep ">" makerFINAL.all.maker.transcripts.fasta | wc -l
+#14064
+grep ">" makerFINAL.transcripts.aed-1.0.fasta | wc -l
+#9303
+```
+
+Results of BUSCO search of transcripts (running both AED<1.0 and all transcripts)
+```
+#AED<1.0
 # Summarized benchmarking in BUSCO notation for file makerFINAL.transcripts.aed-1.0.fasta
 # BUSCO was run in mode: transcriptome
 
