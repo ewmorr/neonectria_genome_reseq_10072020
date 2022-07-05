@@ -213,6 +213,12 @@ grep ">" makerFINAL.transcripts.aed-1.0.fasta | wc -l
 
 Results of BUSCO search of transcripts (running both AED<1.0 and all transcripts)
 ```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval.slurm 
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval_all.slurm  
+```
+
+```
 #AED<1.0
 # Summarized benchmarking in BUSCO notation for file makerFINAL.transcripts.aed-1.0.fasta
 # BUSCO was run in mode: transcriptome
