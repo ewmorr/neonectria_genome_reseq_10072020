@@ -5,10 +5,10 @@ source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 
 #READING DATA and checking it
-sample_metadata = read.table("sample_metadata/sample_metadata.Nf.txt", header = T)
+source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
 
 
-snp <- readData("Nf_post_SPANDx/scaffolds_split_rm_low_n", format="VCF", include.unknown = T)
+snp <- readData("Nf_SPANDx_all_seqs/scaffolds_split_rm_low_n", format="VCF", include.unknown = T)
 
 get.sum.data(snp)
 show.slots(snp)
@@ -19,12 +19,12 @@ sum(snp@n.biallelic.sites) + sum(snp@n.polyallelic.sites)
 #ADD POPULATION INFO to genome object
 pops <- get.individuals(snp)[[1]]
 sample_metadata.sorted = left_join(data.frame(sample = pops), sample_metadata)
-pop.levels = as.character(unique(sample_metadata.sorted$State))
+pop.levels = as.character(unique(sample_metadata.sorted$state.name))
 
 pop_levels.sampleID.list = list()
 
 for(i in 1:length(pop.levels)){
-    pop_levels.sampleID.list[[ pop.levels[i] ]] = as.character((filter(sample_metadata.sorted, State == pop.levels[i]))$sample)
+    pop_levels.sampleID.list[[ pop.levels[i] ]] = as.character((filter(sample_metadata.sorted, state.name == pop.levels[i]))$sample)
 }
 
 
@@ -32,15 +32,15 @@ snp  <- set.populations(snp, pop_levels.sampleID.list)
 snp@populations
 
 #Join pops to site data
-site.info = read.csv("sample_metadata/site_info.csv")
-site.GDD = read.table("sample_metadata/site_info.GDD.txt", header = T)
-site.climate = read.table("sample_metadata/sites_climate.txt", header = T)
-site.coords = read.table("sample_metadata/site_coords.txt", header = T)
+site.info = read.csv("sample_metadata/site_info.dur_inf.csv")
+#site.GDD = read.table("sample_metadata/site_info.GDD.txt", header = T) #need to update
+#site.climate = read.table("sample_metadata/sites_climate.txt", header = T) #need to update
+#site.coords = read.table("sample_metadata/site_coords_for_map.txt", header = T) #don't need this bc lat lon are in site.info
 
-site.info.all = left_join(data.frame(state = pop.levels), site.info, by = "state") %>%
-    left_join(., site.GDD, by = "Site") %>%
-    left_join(., site.climate, by = "Site") #%>%
-#    left_join(., site.coords, by = "Site")
+site.info.all = left_join(data.frame(state.name = pop.levels), site.info, by = "state.name") %>%
+#    left_join(., site.GDD, by = "Site") %>%
+#    left_join(., site.climate, by = "Site") #%>%
+#    left_join(., site.coords, by = "state.name")
 
 
 
@@ -71,7 +71,7 @@ snp@n.sites
 #E.G., scaffold 7 (len 278338) , 14 (len 7), 16 (24493), 18 (27481)
 
 #or can use conactenate command
-snp.concat = readData("Nf_post_SPANDx/scaffolds_split_rm_low_n", format="VCF", include.unknown = T)
+snp.concat = readData("Nf_SPANDx_all_seqs/scaffolds_split_rm_low_n", format="VCF", include.unknown = T)
 snp.concat = concatenate.regions(snp.concat)
 
 get.sum.data(snp.concat)
@@ -141,20 +141,25 @@ snp@Tajima.D
 
 site_div = left_join(
     data.frame(
-        state = pop.levels,
-        pop.name = paste("pop", seq(1:7)),
+        state.name = pop.levels,
+        pop.name = paste("pop", seq(1:12)),
         Pi = snp.concat@Pi[1,],
         Tajima.D = snp.concat@Tajima.D[1,],
         nuc_div_within = snp.concat@nuc.diversity.within[1,]
     ),
     site.info.all,
-    by = "state"
+    by = "state.name"
 )
 
 plot(Pi ~ duration_infection, data = site_div)
 summary(lm(Pi ~ duration_infection, data = site_div))
-plot(Tajima.D ~ duration_infection, data = site_div)
+
+plot(Tajima.D ~ duration_infection, data = site_div )
 summary(lm(Tajima.D ~ duration_infection, data = site_div))
+
+plot(Tajima.D ~ duration_infection, data = site_div %>% filter(state.name != "VA") )
+summary(lm(Tajima.D ~ duration_infection, data = site_div %>% filter(state.name != "VA") ))
+
 plot(nuc_div_within ~ duration_infection, data = site_div)
 summary(lm(nuc_div_within ~ duration_infection, data = site_div))
 
@@ -170,6 +175,12 @@ geom_smooth(method = "lm", color = "black", se = F, linetype = 2) +
 labs(x = "BBD infection duration (yrs)", y = "Tajima's D") +
 my_gg_theme
 
+p3 = ggplot(site_div %>% filter(state.name != "VA"), aes(x = duration_infection, y = Tajima.D)) +
+geom_point() +
+geom_smooth(method = "lm", color = "black", se = F, linetype = 2) +
+labs(x = "BBD infection duration (yrs)", y = "Tajima's D") +
+my_gg_theme
+
 pdf("figures/Pi_v_dur_inf.pdf", width = 6, height = 4)
 p1
 dev.off()
@@ -177,6 +188,10 @@ dev.off()
 
 pdf("figures/TajD_v_dur_inf.pdf", width = 6, height = 4)
 p2
+dev.off()
+
+pdf("figures/TajD_v_dur_inf.no_VA.pdf", width = 6, height = 4)
+p3
 dev.off()
 
 

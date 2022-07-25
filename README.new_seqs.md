@@ -154,6 +154,7 @@ grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
 
 #### Note that while the documentation/paper says that SPANDx performs depth filtering, it is not clear from the scripts that this is done (and there are many SNPs with DP == 1 in the filtered VCF)
 
+### Coverage calculations
 calculate raw coverage
 ```
 cd ~/neonectria_genome_reseq_10072020/
@@ -177,7 +178,7 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/cov_vcfR.slurm
 ```
 
-Stored locally at the home dir `coverage/Nf_all_seqs/`
+Depth results and plots stored locally at the home dir `coverage/Nf_all_seqs/`
 
 
 
@@ -274,9 +275,9 @@ grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_in
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | wc -l
 
 ```
-102 individuals and 130957 sites remaining = 133576614
+102 individuals and 130957 sites remaining = 13357614
 1460689 NA
-1460689/133576614 = 1.1% NA
+1460689/13357614 = 1.1% NA
 
 #### Below numbers need to be updated for new dataset
 80224 sites recognized by R::PopGenome
@@ -436,32 +437,25 @@ less ~/Nf_SPANDx_all_seqs_admixture/CV_by_K.text
 ```
 Look for a dip in CV results. There is only a steady increase
 
-# Left off here(also running admixture)
-
-
-
 
 ### Run PCADAPT locally `repo/pcadapt/pca_LD_filtered.r`
 ```
+#file
 out.filtered.LD_filtered_0.5_10Kb.bed
+#script
+pcadapt/pca_LD_filtered.r
 ```
 
-
-### Run IBD locally (dartR method and also popgen/adegenet methods)
-
-#### Making test data for conversion to PED to try with LEA
-
-The .geno file produced by LEA from the new PED is still throwing errors. `Error: It seems that individuals 12 and 1 have too many missing data.` Trying removing those individuals
-
-the pcadapt package is throwing errors about missing data as well. There may be something wrong with the PED file conversion
-
-
-### Calculating pairwise Fst of pops(sites) on genome-wide LD filtered SNPs using vcftools
+### Run IBD locally (popgen/adegenet methods)
 ```
-cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_calculate_Fst_LD_filtered.sh
+#file
+out.filtered.LD_filtered_0.5_10Kb.bed
+#script
+R_scripts/IBD.adegenet_metrics.multiple_subsamples.r
+partial_mantel_IBD_dur_inf.r
 ```
-vcftools doesn't work with haploid data so this will not work...
+
+# Left off here
 
 
 ## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites
@@ -483,47 +477,48 @@ Then IF doing locally need to activate conda env for bcftools -- OR just do all 
 
 #make dirs for processing VCF files to individual scaffolds
 
-mkdir ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/scaffolds_split
-mkdir ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/scaffolds_split
+mkdir ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds_split
+#mkdir ~/GARNAS_neonectria_genome_reseq_10072020/scaffolds_split
 #get scaffolds in LD filtered
 #grep "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf > headers.txt
-grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | cut -f 1 | uniq \
+#grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | cut -f 1 | uniq \
     > ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/scaffolds.txt
 #get scaffolds in full dataset
 #grep "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf > headers.txt
-grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf | cut -f 1 | uniq \
-    > GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/scaffolds.txt
+
+grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | cut -f 1 | uniq \
+    > GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.txt
     
-cut -f 1 ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.map | uniq
+cut -f 1 ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map | uniq
 
 #
 conda activate bcftools
 
 # LD filtered
-cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
+#cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
 
 #compress and index VCF file Ld filtered
-bgzip Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
-tabix -p vcf Nf.out.filtered.LD_filtered_0.5_10Kb.vcf.gz
+#bgzip Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
+#tabix -p vcf Nf.out.filtered.LD_filtered_0.5_10Kb.vcf.gz
 
-while read line
-do(
-    bcftools view Nf.out.filtered.LD_filtered_0.5_10Kb.vcf.gz $line > scaffolds_split/$line
-)
-done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/scaffolds.txt
+#while read line
+#do(
+#    bcftools view Nf.out.filtered.LD_filtered_0.5_10Kb.vcf.gz $line > scaffolds_split/$line
+#)
+#done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/scaffolds.txt
 
 ### NOT LD filtered
-cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx
+cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
 
-#compress and index VCF file Ld filtered
-bgzip out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf
-tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf.gz
+#compress and index VCF file 
+bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf
+tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz
 
 while read line
 do(
-bcftools view out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf.gz $line > scaffolds_split/$line
+bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz $line > scaffolds_split/$line
 )
-done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/scaffolds.txt
+done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.txt
 
 conda deactivate
 ```
@@ -532,25 +527,30 @@ conda deactivate
 ```
 Rscript F_stats.PopGenome.r
 ```
-Issues with calculating diversity stats in sites with low sample number inclduing ME.N, MI, and NJ. Have output of list of sample IDs associated with these sites and will filter out the samples.
-
+Issues with calculating diversity stats in sites with low sample number inclduing ME.N, MI, and NJ, etc. Have output of list of sample IDs associated with these sites and will filter out the samples.
+```
+list_low_samples_to_retain_n_ge4.r
+```
+Then rerun scaffold split
 ```
 conda activate bcftools
-cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx
+cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
 
-bcftools view --samples-file low_n_samples.txt out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf.gz > out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.rm_low_n_sites.vcf
-bgzip out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.rm_low_n_sites.vcf
-tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.rm_low_n_sites.vcf.gz
+bcftools view --samples-file retain_samples.txt out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
+bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
+tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf.gz
 
 mkdir scaffolds_split_rm_low_n
 
 while read line
 do(
-bcftools view out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.rm_low_n_sites.vcf.gz $line > scaffolds_split_rm_low_n/$line
+bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf.gz $line > scaffolds_split_rm_low_n/$line
 )
-done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/scaffolds.txt
-
-
+done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.txt
+```
+### Now running using popgenome with new script
+```
+PopGenome/F_stats.PopGenome.rm_low_n_sites.r
 ```
 
 Also running new gene mark annotations for LFMM

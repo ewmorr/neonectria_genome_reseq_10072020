@@ -12,16 +12,16 @@ module load linuxbrew/colsa
 PATH=$PATH:/mnt/lustre/software/linuxbrew/colsa-20171116/Cellar/maker/2.31.9/libexec/lib/Widget/genemark
 
 AUGUSTUS_CONFIG_PATH=/mnt/home/garnas/ericm/augustus_config/config/
-#mkdir ~/neonectria_genome_reseq_10072020/maker2_run
+#mkdir ~/neonectria_genome_reseq_10072020/maker2_run_uniprot
 #
-cd ~/neonectria_genome_reseq_10072020/maker2_run
+cd ~/neonectria_genome_reseq_10072020/maker2_run_uniprot
 
-mv ~/neonectria_genome_reseq_10072020/maker2_run/maker2_opts_final.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl
+mv ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/maker2_opts_final.ctl ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/maker_opts.ctl
 
 mpiexec -n 24 maker -base makerFINAL -f -fix_nucleotides
 wait
 
-mv ~/neonectria_genome_reseq_10072020/maker2_run/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker2_run/maker2_opts_final.ctl
+mv ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/maker_opts.ctl ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/maker2_opts_final.ctl
 
 base=makerFINAL
 

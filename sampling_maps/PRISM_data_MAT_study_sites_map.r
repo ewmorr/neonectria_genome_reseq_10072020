@@ -31,7 +31,7 @@ m.df <- melt(df, c("x", "y"))
 names(m.df)[1:2] <- c("lon", "lat") #rename columns
 
 
-site_coords = read.table("~/GARNAS_neonectria_genome_reseq_10072020/sample_metadata/site_coords.txt", header = T)
+site_coords = read.table("~/GARNAS_neonectria_genome_reseq_10072020/sample_metadata/site_coords_for_map.txt", header = T)
 
 minLat=min(site_coords$lat)-2
 maxLat=max(site_coords$lat)+2
@@ -99,7 +99,7 @@ legend.position = c(0.825,0.225)
 
 p3 = ggplot()+
 geom_raster(data=m.df.study_area, aes(x=lon, y=lat, fill=MAT))+
-geom_point(data=site_coords, aes(x=lon, y = lat, color = core), size = 4) +
+geom_point(data=site_coords, aes(x=lon, y = lat), color = "black", size = 4) +
 labs(x = "longitude", y = "latitude") +
 my_gg_theme +
 theme(
@@ -109,8 +109,8 @@ scale_fill_gradient2(expression("Mean\nannual\ntemp. ("*degree*C*")"),
 low='darkslateblue',
 mid="#d1e5f0",
 high = 'red',
-midpoint=mid_point,
-limits = c(min_max[1], min_max[2])
+midpoint=mid_point#,
+#limits = c(min_max[1], min_max[2])
 )+
 theme(
 legend.title = element_text(size = 25),
@@ -120,8 +120,7 @@ axis.ticks = element_blank(),
 axis.title.x = element_blank(),
 axis.title.y = element_blank(),
 legend.position = c(0.825,0.225)
-) +
-scale_color_manual(values = c("y" = "black", "n" = "grey45"), guide = F)
+)
 
 min_max = m.df.study_area$MAT %>% range
 min_max[2] = 15
@@ -188,7 +187,7 @@ scale_color_manual(values = c("y" = "black", "n" = "dark grey"), guide = F)
 plot_height = (maxLat-minLat)/2
 plot_width = (maxLon-minLon)/2
 
-pdf("PRISM_maps/site_MAT_map.big_text.pdf", height = plot_height, width = plot_width)
+pdf("figures/site_MAT_map.big_text.pdf", height = plot_height, width = plot_width)
 print(p1)
 print(p2)
 dev.off()

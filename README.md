@@ -197,13 +197,13 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker3_snap_train_Nf.slur
 ```
 Maker v3 is throwing an error at annotating transcripts step where some contigs fail. Trying maker v2. 
 ```
-mkdir ~/neonectria_genome_reseq_10072020/maker_run/
+mkdir ~/neonectria_genome_reseq_10072020/maker2_run/
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_snap_train_Nf.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_final_run_Nf.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval.slurm
 ```
-#### maker2 run was suscessful and is loacted at `neonectria_genome_reseq_10072020/maker2_run/`
+#### maker2 run was suscessful and is located at `neonectria_genome_reseq_10072020/maker2_run/` 
 ```
 grep ">" makerFINAL.all.maker.transcripts.fasta | wc -l
 #14064
@@ -231,7 +231,32 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval_all.slur
         113     Fragmented BUSCOs (F)
         57      Missing BUSCOs (M)
         3725    Total BUSCO groups searched
+#all transcripts
+# Summarized benchmarking in BUSCO notation for file makerFINAL.all.maker.transcripts.fasta
+# BUSCO was run in mode: transcriptome
+
+        C:96.2%[S:95.8%,D:0.4%],F:3.2%,M:0.6%,n:3725
+
+        3582    Complete BUSCOs (C)
+        3568    Complete and single-copy BUSCOs (S)
+        14      Complete and duplicated BUSCOs (D)
+        119     Fragmented BUSCOs (F)
+        24      Missing BUSCOs (M)
+        3725    Total BUSCO groups searched
+
 ```
+### This first run was performed with Fusarium graminearum proteins only. Running a second time with Uniprot reviewed fungal proteins downloaded 07252022
+```
+mkdir ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/
+cp  ~/neonectria_genome_reseq_10072020/maker2_run/*.ctl ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/
+cp  ~/repo/neonectria_genome_reseq_10072020/*.ctl ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_snap_train_Nf.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/maker2_final_run_Nf.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/busco_maker_eval.slurm
+
+```
+
 
 ###
 genemark run (The genemark model generated below is used in the final run of maker)

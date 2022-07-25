@@ -19,7 +19,7 @@ est_gff= #aligned ESTs or mRNA-seq from an external GFF3 file
 altest_gff= #aligned ESTs from a closly relate species in GFF3 format
 
 #-----Protein Homology Evidence (for best results provide a file for at least one)
-protein=/mnt/home/garnas/ericm/reference_genomes/Fusgr1/Fusgr1_GeneCatalog_proteins_20110524.aa.fasta  #protein sequence file in fasta format (i.e. from mutiple oransisms)
+protein=/mnt/home/garnas/ericm/blast_dbs/uniprot-fungi_reviewed_07252022.fasta  #protein sequence file in fasta format (i.e. from mutiple oransisms)
 protein_gff=  #aligned protein homology evidence from an external GFF3 file
 
 #-----Repeat Masking (leave values blank to skip repeat masking)
@@ -31,14 +31,14 @@ prok_rm=0 #forces MAKER to repeatmask prokaryotes (no reason to change this), 1 
 softmask=1 #use soft-masking rather than hard-masking in BLAST (i.e. seg and dust filtering)
 
 #-----Gene Prediction
-snaphmm=/mnt/home/garnas/ericm/neonectria_genome_reseq_10072020/maker2_run/maker3.hmm/maker3.snap.hmm #SNAP HMM file
-gmhmm=/mnt/home/garnas/ericm/neonectria_genome_reseq_10072020/genemark_run/output/gmhmm.mod #GeneMark HMM file
-augustus_species=BUSCO_Nf_buscos_long_2292717447 #Augustus gene prediction species model
+snaphmm= #SNAP HMM file
+gmhmm= #GeneMark HMM file
+augustus_species= #Augustus gene prediction species model
 fgenesh_par_file= #FGENESH parameter file
 pred_gff= #ab-initio predictions from an external GFF3 file
 model_gff= #annotated gene models from an external GFF3 file (annotation pass-through)
-est2genome=0 #infer gene predictions directly from ESTs, 1 = yes, 0 = no
-protein2genome=0 #infer predictions from protein homology, 1 = yes, 0 = no
+est2genome=1 #infer gene predictions directly from ESTs, 1 = yes, 0 = no
+protein2genome=1 #infer predictions from protein homology, 1 = yes, 0 = no
 trna=0 #find tRNAs with tRNAscan, 1 = yes, 0 = no
 snoscan_rrna= #rRNA file to have Snoscan find snoRNAs
 unmask=0 #also run ab-initio prediction programs on unmasked sequence, 1 = yes, 0 = no
@@ -55,15 +55,15 @@ max_dna_len=100000 #length for dividing up contigs into chunks (increases/decrea
 min_contig=1 #skip genome contigs below this length (under 10kb are often useless)
 
 pred_flank=200 #flank for extending evidence clusters sent to gene predictors
-pred_stats=1 #report AED and QI statistics for all predictions as well as models
+pred_stats=0 #report AED and QI statistics for all predictions as well as models
 AED_threshold=1 #Maximum Annotation Edit Distance allowed (bound by 0 and 1)
-min_protein=30 #require at least this many amino acids in predicted proteins
-alt_splice=1 #Take extra steps to try and find alternative splicing, 1 = yes, 0 = no
+min_protein=0 #require at least this many amino acids in predicted proteins
+alt_splice=0 #Take extra steps to try and find alternative splicing, 1 = yes, 0 = no
 always_complete=0 #extra steps to force start and stop codons, 1 = yes, 0 = no
 map_forward=0 #map names and attributes forward from old GFF3 genes, 1 = yes, 0 = no
 keep_preds=1 #Concordance threshold to add unsupported gene prediction (bound by 0 and 1)
 
-split_hit=4000 #length for the splitting of hits (expected max intron size for evidence alignments)
+split_hit=10000 #length for the splitting of hits (expected max intron size for evidence alignments)
 single_exon=1 #consider single exon EST evidence when generating annotations, 1 = yes, 0 = no
 single_length=250 #min length required for single exon ESTs if 'single_exon is enabled'
 correct_est_fusion=0 #limits use of ESTs in annotation to avoid fusion genes

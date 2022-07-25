@@ -53,9 +53,12 @@ scale_fill_manual(values = rev(cbPalette)) +
 my_gg_theme +
 theme(
     strip.background=element_rect(colour="black", fill=NA),
-#    strip.text.x = element_blank(),
+    strip.text.x = element_text(angle = 90, size = 30),
     axis.title.x = element_blank(),
-    axis.text.x = element_blank()
+    axis.text.x = element_blank(),
+    axis.title.y = element_text(size = 30),
+    axis.text.y = element_text(size = 25),
+
 )
 
 pdf("figures/Nf.LD_filtered.structure.K4.pdf", width = 48, height = 4)
