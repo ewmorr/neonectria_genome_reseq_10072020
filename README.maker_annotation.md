@@ -107,7 +107,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/busco_maker_eval
 
 ```
 
-### This first run was performed with Fusarium graminearum proteins only. Running a second time with Uniprot reviewed fungal proteins downloaded 07252022
+### The first run was performed with Fusarium graminearum proteins only. Running a second time with Uniprot reviewed fungal proteins downloaded 07252022
 ### Retraining SNAP with UniProt fungi reviewed proteins and rerunning maker with AUGUSTUS, GeneMark and new SNAP
 ```
 mkdir ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/

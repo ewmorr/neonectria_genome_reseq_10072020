@@ -313,7 +313,7 @@ sed 's/[a-z,_]*//g' out.filtered.LD_filtered_0.5_10Kb.map.original > out.filtere
 ```
 
 ### LFMM
-REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). First need to filter for biallelic SNPs. The resulting PED will need the first 6 columns removed. We also remove every other line because plink is stupid and doubles every SNP assuming diploid data
+REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::LFMM (or R::LEA, but that package (older v. of LFMM) seems to be broken). Note, this must be filtered for biallelic SNPs only. The resulting PED will need the first 6 columns removed. We also remove every other line because plink is stupid and doubles every SNP assuming diploid data
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.full_dat_LFMM.slurm
@@ -461,15 +461,7 @@ partial_mantel_IBD_dur_inf.r
 ## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites
 ### R package PopGenome looks like will work but trying
 ### Goal is to perform whole genome and sliding window analyses
-#### Should use whole genome but can start with LD filtered to test (smaller dataset)
-LD filtered
-```
-~/neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
-```
-Whole SNP set
-```
-~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf
-```
+####Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more datapoints
 #### See [here](https://wurmlab.com/genomicscourse/2016-SIB/practicals/population_genetics/popgen) for analyses using popgenome with haploid data. We first start by splitting the data into scaffolds (or chromosomes), which can be done with bcftools or bash
 
 Then IF doing locally need to activate conda env for bcftools -- OR just do all of this with bcftools on the server where it's installed. can use the first few lines to loop through scaffolds
@@ -478,39 +470,16 @@ Then IF doing locally need to activate conda env for bcftools -- OR just do all 
 #make dirs for processing VCF files to individual scaffolds
 
 mkdir ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds_split
-#mkdir ~/GARNAS_neonectria_genome_reseq_10072020/scaffolds_split
-#get scaffolds in LD filtered
-#grep "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf > headers.txt
-#grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/Nf.out.filtered.LD_filtered_0.5_10Kb.vcf | cut -f 1 | uniq \
-    > ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/scaffolds.txt
-#get scaffolds in full dataset
-#grep "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode.vcf > headers.txt
-
 grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | cut -f 1 | uniq \
     > GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.txt
     
 cut -f 1 ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map | uniq
 
-#
 conda activate bcftools
 
-# LD filtered
-#cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter
-
-#compress and index VCF file Ld filtered
-#bgzip Nf.out.filtered.LD_filtered_0.5_10Kb.vcf
-#tabix -p vcf Nf.out.filtered.LD_filtered_0.5_10Kb.vcf.gz
-
-#while read line
-#do(
-#    bcftools view Nf.out.filtered.LD_filtered_0.5_10Kb.vcf.gz $line > scaffolds_split/$line
-#)
-#done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/LD_filter/scaffolds.txt
-
-### NOT LD filtered
+#compress and index VCF file
 cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
 
-#compress and index VCF file 
 bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf
 tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz
 
@@ -522,12 +491,33 @@ done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.tx
 
 conda deactivate
 ```
+Need to set up separate dirs for each scaffold
+```
+cd GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
+
+#array of files (there are 20)
+scf_files=(scaffolds_split/*)
+#loop through by number and copy to dir
+for i in {0..19}
+do(
+    dir_name=$((i+1))
+    mkdir scf_$dir_name
+    cp ${scf_files[$i]} scf_$dir_name
+)
+done 
+
+
+```
+Genome scans for Pi theta TajD
+```
+F_stats.PopGenome.read_ind_scf.scan_Pi_theta.no_pops.r
+```
+
 
 ### Using R::PopGenome for diversity stats
-```
-Rscript F_stats.PopGenome.r
-```
-Issues with calculating diversity stats in sites with low sample number inclduing ME.N, MI, and NJ, etc. Have output of list of sample IDs associated with these sites and will filter out the samples.
+### For population level stats (e.g., Fst comps between sites) will need to filter low n sites
+
+Issues with calculating population level diversity stats in sites with low sample number inclduing ME.N, MI, and NJ, etc. Have output of list of sample IDs associated with these sites and will filter out the samples.
 ```
 list_low_samples_to_retain_n_ge4.r
 ```
@@ -553,6 +543,12 @@ done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.tx
 PopGenome/F_stats.PopGenome.rm_low_n_sites.r
 ```
 
+
+########
+########
+########
+########
+########
 Also running new gene mark annotations for LFMM
 
 ```
