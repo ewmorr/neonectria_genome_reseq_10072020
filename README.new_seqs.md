@@ -455,11 +455,8 @@ R_scripts/IBD.adegenet_metrics.multiple_subsamples.r
 partial_mantel_IBD_dur_inf.r
 ```
 
-# Left off here
-
-
-## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites
-### R package PopGenome looks like will work but trying
+## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites OR across dataset
+### R package PopGenome 
 ### Goal is to perform whole genome and sliding window analyses
 ####Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more datapoints
 #### See [here](https://wurmlab.com/genomicscourse/2016-SIB/practicals/population_genetics/popgen) for analyses using popgenome with haploid data. We first start by splitting the data into scaffolds (or chromosomes), which can be done with bcftools or bash
@@ -512,7 +509,11 @@ Genome scans for Pi theta TajD
 ```
 F_stats.PopGenome.read_ind_scf.scan_Pi_theta.no_pops.r
 ```
+NOTE that four of the total 24 contigs are left out of VCF because there were no SNPs called on these contigs. tig00007952_pilon tig00007948_pilon tig00007947_pilon tig00000405_pilon. These are all less than 100kb. Would be interesting to see what's on these contigs
 
+
+
+## Have not run pairwise site comparisons for now. May be interesting, but also hard to compare to significant SNP correlations because pariwise stats are run on a subset of the data
 
 ### Using R::PopGenome for diversity stats
 ### For population level stats (e.g., Fst comps between sites) will need to filter low n sites
@@ -602,5 +603,5 @@ Once the dailies are downloaded
 ```
 sbatch repo/neonectria_genome_reseq_10072020/premise/PRISM_dalies_site_extract.slurm
 ```
-Also process 30 yr normals locally using `sites_climate_dat.r`
+Also process 30 yr normals locally using `sites_climate_dat.r` and process the created .rds object from `PRISM_dalies_site_extract.slurm` locally
 

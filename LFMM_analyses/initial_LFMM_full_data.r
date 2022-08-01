@@ -14,35 +14,43 @@ source("~/ggplot_theme.txt")
 
 #The genotype data can simply be read in as a matrix (according the docs)
 #OR can try loading LEA and using readLfmm()
-Y = as.matrix(read.table("Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.lfmm", header = F))
+Y = as.matrix(read.table("Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.lfmm", header = F))
 
-SNP_pos = read.table("Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.map")
+SNP_pos = read.table("Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map")
 SNP_pos = SNP_pos[c(1,4)]
 colnames(SNP_pos) = c("scaffold", "position")
 
 #principal components analysis for K
 pc = prcomp(Y)
 plot(pc$sdev[1:20]^2, xlab = 'PC', ylab = "Variance explained")
-points(7,pc$sdev[7]^2, type = "h", lwd = 3, col = "blue")
+points(4,pc$sdev[7]^2, type = "h", lwd = 3, col = "blue")
 
 
 #read env data. Needs to be sorted by PED .sampleIDs info
-sampleIDs = read.table("Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.sampleIDs", header = F)
-colnames(sampleIDs) = "sample"
-sample_metadata = read.table("sample_metadata/sample_metadata.Nf.txt", header = T)
+source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
+#sampleIDs = read.table("Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.sampleIDs", header = F)
+#colnames(sampleIDs) = "sample"
+#sample_metadata = read.table("sample_metadata/sample_metadata.Nf.txt", header = T)
 
-sample_metadata.filtered = left_join(sampleIDs, sample_metadata)
-colnames(sample_metadata.filtered)[ncol(sample_metadata.filtered)] = "state"
+#sample_metadata.filtered = left_join(sampleIDs, sample_metadata)
+#colnames(sample_metadata.filtered)[ncol(sample_metadata.filtered)] = "state"
 
 #Join pops to site data
+#NEED TO ADD NH.SCG TO THESE
 site.info = read.csv("sample_metadata/site_info.csv")
 site.GDD = read.table("sample_metadata/site_climate.GDD.txt", header = T)
 site.climate = read.table("sample_metadata/sites_climate.txt", header = T)
 #site.coords = read.table("sample_metadata/site_coords.txt", header = T)
 
-sample_metadata.site_info = left_join(sample_metadata.filtered, site.info %>% select(Site, lat, lon, duration_infection), by = "Site") %>%
-    left_join(., site.GDD, by = "Site") %>%
-    left_join(., site.climate %>% select(Site, ppt, tmin, MAT, tmax), by = "Site")
+site_metadata = left_join(site.GDD, site.info, by = "Site") %>%
+    left_join(., site.climate, by = c("Site", "lat", "lon") )
+
+
+left_join(sample_metadata, site_metadata, by = "state.name")
+
+sample_metadata.site_info = left_join(sample_metadata, site.info %>% select(state.name, lat, lon, duration_infection), by = "state.name") %>%
+    left_join(., site.GDD, by = "state.name") %>%
+    left_join(., site.climate %>% select(Site, ppt, tmin, MAT, tmax), by = "state.name")
 
 #######################
 #NONGROWING SEASON HDD

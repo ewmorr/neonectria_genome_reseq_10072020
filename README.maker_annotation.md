@@ -12,6 +12,7 @@ augustus parameters are  written to `$HOME/augustus_config/config/species/BUSCO_
 
 ## GeneMark-ES
 ### genemark run (The genemark model generated below is used in the final run of maker)
+### NOTE The GeneMark-ES liscense must be refreshed every 400 days. See ~/repo/ONS_Nf/conda_envs.sh or search for genemark-es on the web for download
 ```
 cd
 sbatch repo/ONS_Nf/genemark.pilon_polished.slurm
@@ -117,9 +118,16 @@ rm ~/neonectria_genome_reseq_10072020/maker2_run_uniprot/*FUGR*
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker2_snap_train_Nf.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker2_final_run_Nf.slurm
-sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/busco_maker_eval.slurm
-
+cp ~/neonectria_genome_reseq_10072020/maker2_run/config.ini ~/neonectria_genome_reseq_10072020/maker2_run_uniprot
+sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/busco_maker_eval_all.slurm
 ```
-
+Count numbers of AED filter and total
+```
+grep ">" makerFINAL.all.maker.proteins.fasta | wc -l
+#14740
+grep ">" makerFINAL.transcripts.aed-1.0.fasta | wc -l
+#4002
+```
+#### Tuan D has said that AED filter doesn't make sense if there is no RNA evidence from Nf (we provided alt organism assembled mRNA, i.e., F. graminearum)
 
 

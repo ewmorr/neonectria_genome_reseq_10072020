@@ -43,7 +43,7 @@ scf.names.sites = bind_rows(scf_stats_list, .id = "scf")
 scf_list.no_pops.rm = scf_list
 scf_list.no_pops.rm[["scf_14"]] = NULL
 scf_dirs = scf_dirs[! scf_dirs == "scf_14"]
-scf_names = scf_names[-14,]
+scf.names.sites = scf.names.sites[-14,]
 
 scf_list.10K_sw = lapply(scf_list.no_pops.rm, sliding.window.transform, 10000, 10000, type = 2, whole.data = T)
 
@@ -137,195 +137,51 @@ colnames(tajD_sw.df) = c("tajD", "pos", "scf")
 
 stats_10K_sw.no_pop.df = left_join(theta_sw.df, pi_sw.df) %>% left_join(., tajD_sw.df)
 
-
-
 #################################
 #Add lengths to filter scf by len
 scf_lens = read.table("Nf_SPANDx_all_seqs/scaffold_lengths.csv", sep = ",", header = F)
 colnames(scf_lens) = c("region.names", "length")
-stats_sw.no_pop.df = left_join(scf.names.sites, scf_lens)
+stats_sw.no_pop.df = left_join(scf.names.sites, scf_lens) %>% left_join(., stats_10K_sw.no_pop.df)
+
 stats_sw.no_pop.df$scf %>% unique
 
-stats_sw.no_pop.df.gt100kb = stats_sw.no_pop.df %>% filter(length > 100000)
 #Outlier tests
 # identify the 95% percentile
 #theta
-my_threshold <- quantile(stats_sw.no_pop.df.gt100kb$theta, 0.95, na.rm = T)
+my_threshold <- quantile(stats_sw.no_pop.df$theta, 0.95, na.rm = T)
 # make an outlier column in the data.frame
-stats_sw.no_pop.df.gt100kb <- stats_sw.no_pop.df.gt100kb %>% mutate(outlier.theta = ifelse(theta > my_threshold, "outlier", "background"))
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.theta) %>% tally()
-
+stats_sw.no_pop.df <- stats_sw.no_pop.df %>% mutate(outlier.theta = ifelse(theta > my_threshold, "outlier", "background"))
 #Number of outliers
+stats_sw.no_pop.df %>% group_by(outlier.theta) %>% tally()
 
 #pi
-my_threshold <- quantile(stats_sw.no_pop.df.gt100kb$pi, 0.95, na.rm = T)
+my_threshold <- quantile(stats_sw.no_pop.df$pi, 0.95, na.rm = T)
 # make an outlier column in the data.frame
-stats_sw.no_pop.df.gt100kb <- stats_sw.no_pop.df.gt100kb %>% mutate(outlier.pi = ifelse(pi > my_threshold, "outlier", "background"))
+stats_sw.no_pop.df <- stats_sw.no_pop.df %>% mutate(outlier.pi = ifelse(pi > my_threshold, "outlier", "background"))
 #Number of outliers
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.pi) %>% tally()
+stats_sw.no_pop.df %>% group_by(outlier.pi) %>% tally()
 
 #tajD
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.tajD) %>% tally()
-my_threshold <- quantile(stats_sw.no_pop.df.gt100kb$tajD, c(0.025, 0.975), na.rm = T)
+stats_sw.no_pop.df %>% group_by(outlier.tajD) %>% tally()
+my_threshold <- quantile(stats_sw.no_pop.df$tajD, c(0.025, 0.975), na.rm = T)
 # make an outlier column in the data.frame
-stats_sw.no_pop.df.gt100kb <- stats_sw.no_pop.df.gt100kb %>% mutate(outlier.tajD = ifelse(tajD > my_threshold[2], "outlier", ifelse(tajD < my_threshold[1], "outlier", "background")))
-
+stats_sw.no_pop.df <- stats_sw.no_pop.df %>% mutate(outlier.tajD = ifelse(tajD > my_threshold[2], "outlier", ifelse(tajD < my_threshold[1], "outlier", "background")))
 #Number of outliers
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.tajD) %>% tally()
+stats_sw.no_pop.df %>% group_by(outlier.tajD) %>% tally()
 
-
-
-
-
-
-
-
-
-
-
-
-#############################################
-#############################################
-#trying sw transform at 10K bp sliding window#
-#10K
-scf_list.no_pops.rm = scf_list
-scf_list.no_pops.rm[["scf_14"]] = NULL
-scf_dirs.rm = scf_dirs[! scf_dirs == "scf_14"]
-scf_names.rm = scf_names[-14,]
-
-#Rerun stats
-scf_list.no_pops.sw = lapply(scf_list.no_pops.sw, F_ST.stats)
-scf_list.no_pops.sw = lapply(scf_list.no_pops.sw, neutrality.stats)
-scf_list.no_pops.sw = lapply(scf_list.no_pops.sw, linkage.stats)
-scf_list.no_pops.sw = lapply(scf_list.no_pops.sw, sweeps.stats)
-scf_list.no_pops.sw = lapply(scf_list.no_pops.sw, diversity.stats)
-
-scf_list.no_pops.sw$scf_1@region.names
-
-#mean position extract
-scf.pos <- sapply(scf_list.no_pops.sw$scf_1@region.names, function(x){
-    split <- strsplit(x," ")[[1]][c(1,3)]
-    val <- mean(as.numeric(split))
-    return(val)
-})
-
-#scf list of positions
-genome_pos.list = list()
-
-for(i in 1:length(scf_dirs.rm)){
-    genome_pos.list[[scf_dirs.rm[i]]] = sapply(
-    scf_list.no_pops.sw[[scf_dirs.rm[i]]]@region.names,
-    function(x){
-        split <- strsplit(x," ")[[1]][c(1,3)]
-        val <- mean(as.numeric(split))
-        return(val)
-    }
-    )
-}
-
-scf_list.no_pops.sw$scf_1@nucleotide.F_ST
-scf_list.no_pops.sw$scf_2@Tajima.D %>% head
-scf_list.no_pops.sw$scf_1@theta_Watterson %>% head
-scf_list.no_pops.sw$scf_1@Pi
-
-#Some dplyr BS to format tables
-
-#loop list
-######
-#Theta
-theta_sw_list = list()
-
-for(i in 1:length(scf_dirs.rm)){
-    
-    theta_sw_list[[ scf_dirs.rm[i] ]] = data.frame(
-    scf_list.no_pops.sw[[i]]@theta_Watterson,
-    stringsAsFactors = F
-    )
-    theta_sw_list[[ scf_dirs.rm[i] ]]$pos = unname(genome_pos.list[[i]])
-    theta_sw_list[[ scf_dirs.rm[i] ]]$scf = as.character(scf_names.rm[i,1])
-    #print(as.character(scf_names.rm[i,1]))
-}
-
-theta_sw.df = do.call(rbind.data.frame, theta_sw_list)
-
-#######
-#Pi
-pi_sw_list = list()
-
-for(i in 1:length(scf_dirs.rm)){
-    
-    pi_sw_list[[ scf_dirs.rm[i] ]] = data.frame(
-    scf_list.no_pops.sw[[i]]@nuc.diversity.within/10000,
-    stringsAsFactors = F
-    )
-    pi_sw_list[[ scf_dirs.rm[i] ]]$pos = unname(genome_pos.list[[i]])
-    pi_sw_list[[ scf_dirs.rm[i] ]]$scf = as.character(scf_names.rm[i,1])
-    #print(as.character(scf_names.rm[i,1]))
-}
-
-pi_sw.df = do.call(rbind.data.frame, pi_sw_list)
-
-#######
-#Tajima.D
-tajD_sw_list = list()
-
-for(i in 1:length(scf_dirs.rm)){
-    
-    tajD_sw_list[[ scf_dirs.rm[i] ]] = data.frame(
-    scf_list.no_pops.sw[[i]]@Tajima.D,
-    stringsAsFactors = F
-    )
-    tajD_sw_list[[ scf_dirs.rm[i] ]]$pos = unname(genome_pos.list[[i]])
-    tajD_sw_list[[ scf_dirs.rm[i] ]]$scf = as.character(scf_names.rm[i,1])
-    #print(as.character(scf_names.rm[i,1]))
-}
-
-tajD_sw.df = do.call(rbind.data.frame, tajD_sw_list)
-
-####
-#Combine allto list
-
-colnames(theta_sw.df) = c("theta", "pos", "scf")
-colnames(pi_sw.df) = c("pi", "pos", "scf")
-colnames(tajD_sw.df) = c("tajD", "pos", "scf")
-
-stats_sw.no_pop.df = left_join(theta_sw.df, pi_sw.df) %>% left_join(., tajD_sw.df)
-
-#Add lengths to filter scf by len
-scf_lens = read.table("Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
-colnames(scf_lens) = c("scf", "length")
-stats_sw.no_pop.df = left_join(stats_sw.no_pop.df, scf_lens)
-stats_sw.no_pop.df$scf %>% unique
+#then filter by scf len after calculating outliers
 
 stats_sw.no_pop.df.gt100kb = stats_sw.no_pop.df %>% filter(length > 100000)
-#Outlier tests
-# identify the 95% percentile
-#theta
-my_threshold <- quantile(stats_sw.no_pop.df.gt100kb$theta, 0.95, na.rm = T)
-# make an outlier column in the data.frame
-stats_sw.no_pop.df.gt100kb <- stats_sw.no_pop.df.gt100kb %>% mutate(outlier.theta = ifelse(theta > my_threshold, "outlier", "background"))
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.theta) %>% tally()
 
-#Number of outliers
 
-#pi
-my_threshold <- quantile(stats_sw.no_pop.df.gt100kb$pi, 0.95, na.rm = T)
-# make an outlier column in the data.frame
-stats_sw.no_pop.df.gt100kb <- stats_sw.no_pop.df.gt100kb %>% mutate(outlier.pi = ifelse(pi > my_threshold, "outlier", "background"))
-#Number of outliers
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.pi) %>% tally()
-
-#tajD
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.tajD) %>% tally()
-my_threshold <- quantile(stats_sw.no_pop.df.gt100kb$tajD, c(0.025, 0.975), na.rm = T)
-# make an outlier column in the data.frame
-stats_sw.no_pop.df.gt100kb <- stats_sw.no_pop.df.gt100kb %>% mutate(outlier.tajD = ifelse(tajD > my_threshold[2], "outlier", ifelse(tajD < my_threshold[1], "outlier", "background")))
-
-#Number of outliers
-stats_sw.no_pop.df.gt100kb %>% group_by(outlier.tajD) %>% tally()
+################
+################
+#PLOTS
+################
+################
 
 ggplot(stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta, color = outlier.theta)) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ scf, scales = "free_x", space="free_x") +
 geom_point(alpha = 0.5, size = 1) +
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 #geom_line(color = "black", alpha = 0.5) +
@@ -342,7 +198,7 @@ axis.text.y = element_text(size = 8)
 )
 
 ggplot(stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi, color = outlier.pi)) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ scf, scales = "free_x", space="free_x") + #grid by state2 bc state1 is all ME.S
 geom_point(alpha = 0.5, size = 1) +
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 #geom_line(color = "black", alpha = 0.5) +
@@ -376,6 +232,9 @@ axis.text.y = element_text(size = 8)
 #axis.title.x = element_blank()
 )
 
+#######################################
+#NEED TO RUN LFMM BEFORE THIS ANALYSIS#
+#######################################
 
 pv.hdd.with_pos = read.table("Nf_LFMM_tables/hdd4_lfmm.txt", header = T)
 pv.ft.with_pos = read.table("Nf_LFMM_tables/freezeThaw_lfmm.txt", header = T)
