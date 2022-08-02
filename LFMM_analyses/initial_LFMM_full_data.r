@@ -36,21 +36,17 @@ source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
 #colnames(sample_metadata.filtered)[ncol(sample_metadata.filtered)] = "state"
 
 #Join pops to site data
-#NEED TO ADD NH.SCG TO THESE
+
 site.info = read.csv("sample_metadata/site_info.csv")
 site.GDD = read.table("sample_metadata/site_climate.GDD.txt", header = T)
 site.climate = read.table("sample_metadata/sites_climate.txt", header = T)
-#site.coords = read.table("sample_metadata/site_coords.txt", header = T)
+site.GDD$freezeThaw.annual_mean = site.GDD$freezeThaw.mean_growing + site.GDD$freezeThaw.mean_nongrowing
 
-site_metadata = left_join(site.GDD, site.info, by = "Site") %>%
-    left_join(., site.climate, by = c("Site", "lat", "lon") )
+site_metadata = left_join(site.GDD, site.info %>% select(Site, lat, lon, duration_infection), by = "Site") %>%
+    left_join(., site.climate %>% select(Site, tmin, tmax, ppt, MAT, lat, lon, state.name), by = c("Site", "lat", "lon") )
 
 
-left_join(sample_metadata, site_metadata, by = "state.name")
-
-sample_metadata.site_info = left_join(sample_metadata, site.info %>% select(state.name, lat, lon, duration_infection), by = "state.name") %>%
-    left_join(., site.GDD, by = "state.name") %>%
-    left_join(., site.climate %>% select(Site, ppt, tmin, MAT, tmax), by = "state.name")
+sample_metadata.site_info = left_join(sample_metadata, site_metadata, by = "state.name")
 
 #######################
 #NONGROWING SEASON HDD
@@ -60,7 +56,7 @@ X = sample_metadata.site_info$HDD4.mean_nongrowing
 
 #LFMM ridge
 #mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 2)
-mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 7)
+mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 4) #using K = 4 based on PCA and pop structure analyses
 
 pv <- lfmm_test(Y = Y,
 X = X,
@@ -107,7 +103,7 @@ adj.p.values = pchisq(pv$score^2/0.95, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
-scf_lens = read.table("Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
+scf_lens = read.table("Nf_SPANDx_all_seqs/scaffold_lengths.csv", sep = ",", header = F)
 colnames(scf_lens) = c("scaffold", "length")
 
 #Join with actual positiion and chromosome
@@ -116,25 +112,27 @@ pv.with_pos = data.frame(calibrated.p = pv$calibrated.pvalue, effect_size = pv$B
 #############################
 #Outlier tests
 # identify the 95% percentile
-my_threshold <- quantile((pv.with_pos %>% filter(length > 100000))$calibrated.p, 0.025, na.rm = T)
+my_threshold <- quantile((pv.with_pos )$calibrated.p, 0.025, na.rm = T) #removed the filter by 100000, can do this later for plotting but it does not seem good to do before outlier ID; %>% filter(length > 100000)
 # make an outlier column in the data.frame
 pv.with_pos <- pv.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_threshold, "outlier", "background"))
 #Number of outliers
 pv.with_pos %>% group_by(outlier) %>% tally()
 
 #FDR correction
+#This is based on the auto calibartion
 pv.with_pos$FDR.p = p.adjust(pv.with_pos$calibrated.p, method = "fdr", n = length(pv.with_pos$calibrated.p))
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#278 of 113891 SNPs identified as significant after FDR correction
+#182 of 130957 SNPs identified as significant after FDR correction
 
 #FDR correction
+#This is based on the manual GIF adjustment
 pv.with_pos$FDR.p.man = p.adjust(pv.with_pos$man.adj.p, method = "fdr", n = length(pv.with_pos$man.adj.p))
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#623 of 113891 SNPs identified as significant after FDR correction
+#227 of 130957 SNPs identified as significant after FDR correction
 
 ####################
 #ggplots
@@ -190,6 +188,24 @@ axis.text.x = element_blank(),
 axis.title.x = element_blank()
 )
 
+p2 = ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+#facet_wrap(~scaffold) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "") +
+theme(
+strip.text.x = element_blank(),
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
+
 #FDR correction maunally adjusted P (GIF = 0.95)
 ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
@@ -209,17 +225,20 @@ axis.text.x = element_text(size = 8)
 
 pdf("figures/LFMM.nongrowing_season_GDD.pdf", width = 18, height = 4)
 p1
+p2
 dev.off()
 
 #######################
 #NONGROWING SEASON freeze-thaw
+#######
+#NOW SWITCHED TO MULTI ANNUAL MEAN OF TOTAL FREEZE THAW EVENTS
 
 #variable for test
-X = sample_metadata.site_info$freezeThaw.mean_nongrowing
+X = sample_metadata.site_info$freezeThaw.annual_mean
 
 #LFMM ridge
 #mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 2)
-mod.lfmm.ft = lfmm_ridge(Y = Y, X = X, K = 7)
+mod.lfmm.ft = lfmm_ridge(Y = Y, X = X, K = 4)
 
 pv.ft <- lfmm_test(Y = Y,
 X = X,
@@ -241,30 +260,30 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv.ft$score^2)/0.456
-lambda
+lambda #1.24
 adj.p.values = pchisq(pv.ft$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
 hist(pv.ft$calibrated.pvalue)
 
-#IN THIS CASE THE CALCULATED VALUES AREADY LOOK GOOD
+#IN THIS CASE THE CALCULATED VALUES AREADY LOOK GOOD #THIS IS NOT TRUE FOR ANNUAL MEAN FREEZE-THAW
 
 #Try higher value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv.ft$score^2/1.25, df = 1, lower = FALSE)
+adj.p.values = pchisq(pv.ft$score^2/1.35, df = 1, lower = FALSE)
+hist(adj.p.values)
+
+#Try lower value of GIF -- looking for flat distribution with peak near zero
+adj.p.values = pchisq(pv.ft$score^2/1.15, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
 adj.p.values = pchisq(pv.ft$score^2/0.95, df = 1, lower = FALSE)
-hist(adj.p.values)
-
-#Try lower value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv.ft$score^2/0.85, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS MORE CONSERVATIVE THAN LOWER VALUES OF LAMBDA
 #However, the lower values have a correct distribution under null model
-#Try at GIF = 0.95
-adj.p.values = pchisq(pv.ft$score^2/0.95, df = 1, lower = FALSE)
+#Try at GIF = 1.15
+adj.p.values = pchisq(pv.ft$score^2/1.15, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
@@ -277,28 +296,28 @@ pv.ft.with_pos = data.frame(calibrated.p = pv.ft$calibrated.pvalue, effect_size 
 #############################
 #Outlier tests
 # identify the 95% percentile
-my_threshold <- quantile((pv.ft.with_pos %>% filter(length > 100000))$calibrated.p, 0.025, na.rm = T)
+my_threshold <- quantile((pv.ft.with_pos)$calibrated.p, 0.025, na.rm = T)
 # make an outlier column in the data.frame
 pv.ft.with_pos <- pv.ft.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_threshold, "outlier", "background"))
 #Number of outliers
 pv.ft.with_pos %>% group_by(outlier) %>% tally()
 #Example plot
 
-#2846
+#3274
 
 #FDR correction
 pv.ft.with_pos$FDR.p = p.adjust(pv.ft.with_pos$calibrated.p, method = "fdr", n = length(pv.ft.with_pos$calibrated.p))
 pv.ft.with_pos <- pv.ft.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.ft.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#231
+#23
 
-#FDR correction manual adjustment (lambda = 0.95)
+#FDR correction manual adjustment (lambda = 1.15)
 pv.ft.with_pos$FDR.p.man = p.adjust(pv.ft.with_pos$man.adj.p, method = "fdr", n = length(pv.ft.with_pos$man.adj.p))
 pv.ft.with_pos <- pv.ft.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.ft.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#1018
+#23
 
 ####################
 #ggplots
@@ -337,7 +356,7 @@ axis.text.x = element_text(size = 8)
 )
 
 #FDR with auto corrected P (algorithm GIF)
-p2 = ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+p1 = ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -353,6 +372,24 @@ strip.text.x = element_blank(),
 axis.text.x = element_blank(),
 axis.title.x = element_blank()
 )
+
+p2 = ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+#facet_wrap(~scaffold) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "") +
+theme(
+strip.text.x = element_blank(),
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
 
 #FDR correction maunally adjusted P (GIF = 0.95)
 ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
@@ -372,6 +409,7 @@ axis.text.x = element_text(size = 8)
 )
 
 pdf("figures/LFMM.nongrowing_season_freeze_thaw.pdf", width = 18, height = 4)
+p1
 p2
 dev.off()
 
@@ -383,7 +421,7 @@ X = sample_metadata.site_info$ppt
 
 #LFMM ridge
 #mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 2)
-mod.lfmm.ppt = lfmm_ridge(Y = Y, X = X, K = 7)
+mod.lfmm.ppt = lfmm_ridge(Y = Y, X = X, K = 4)
 
 pv.ppt <- lfmm_test(Y = Y,
 X = X,
@@ -405,7 +443,7 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv.ppt$score^2)/0.456
-lambda
+lambda #0.94
 adj.p.values = pchisq(pv.ppt$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
@@ -414,7 +452,7 @@ hist(pv.ppt$calibrated.pvalue)
 #IN THIS CASE THE CALCULATED VALUES looks conservative
 
 #Try higher value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv.ppt$score^2/1.25, df = 1, lower = FALSE)
+adj.p.values = pchisq(pv.ppt$score^2/1.15, df = 1, lower = FALSE)
 hist(adj.p.values) #very conservative
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
@@ -423,12 +461,12 @@ hist(adj.p.values) #This looks good
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
 adj.p.values = pchisq(pv.ppt$score^2/0.85, df = 1, lower = FALSE)
-hist(adj.p.values)
+hist(adj.p.values) #This looks better
 
 #THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS MORE CONSERVATIVE THAN LOWER VALUES OF LAMBDA
 #However, the lower values have a correct distribution under null model
-#Try at GIF = 0.95
-adj.p.values = pchisq(pv.ppt$score^2/0.95, df = 1, lower = FALSE)
+#Try at GIF = 0.85
+adj.p.values = pchisq(pv.ppt$score^2/0.85, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
@@ -448,21 +486,21 @@ pv.ppt.with_pos <- pv.ppt.with_pos %>% mutate(outlier = ifelse(calibrated.p < my
 pv.ppt.with_pos %>% group_by(outlier) %>% tally()
 #Example plot
 
-#2844
+#3269
 
 #FDR correction
 pv.ppt.with_pos$FDR.p = p.adjust(pv.ppt.with_pos$calibrated.p, method = "fdr", n = length(pv.ppt.with_pos$calibrated.p))
 pv.ppt.with_pos <- pv.ppt.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.ppt.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#416
+#548
 
-#FDR correction manual adjustment (lambda = 0.95)
+#FDR correction manual adjustment (lambda = 0.85)
 pv.ppt.with_pos$FDR.p.man = p.adjust(pv.ppt.with_pos$man.adj.p, method = "fdr", n = length(pv.ppt.with_pos$man.adj.p))
 pv.ppt.with_pos <- pv.ppt.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.ppt.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#599
+#566
 
 ####################
 #ggplots
@@ -501,7 +539,7 @@ axis.text.x = element_text(size = 8)
 )
 
 #FDR with auto corrected P (algorithm GIF)
-p3 = ggplot(pv.ppt.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+p1 = ggplot(pv.ppt.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -516,6 +554,23 @@ strip.text.x = element_blank(),
 axis.text.x = element_text(size = 8)
 #axis.text.x = element_blank(),
 #axis.title.x = element_blank()
+)
+
+p2 = ggplot(pv.ppt.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+#facet_wrap(~scaffold) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "") +
+theme(
+strip.text.x = element_blank(),
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
 )
 
 #FDR correction maunally adjusted P (GIF = 0.95)
@@ -536,11 +591,9 @@ axis.text.x = element_text(size = 8)
 )
 
 pdf("figures/LFMM.ppt.pdf", width = 18, height = 4)
-p3
+p1
+p2
 dev.off()
-
-
-
 
 
 #######################
@@ -551,7 +604,7 @@ X = sample_metadata.site_info$duration_infection
 
 #LFMM ridge
 #mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 2)
-mod.lfmm.dur_inf = lfmm_ridge(Y = Y, X = X, K = 7)
+mod.lfmm.dur_inf = lfmm_ridge(Y = Y, X = X, K = 4)
 
 pv.dur_inf <- lfmm_test(Y = Y,
 X = X,
@@ -616,21 +669,21 @@ pv.dur_inf.with_pos <- pv.dur_inf.with_pos %>% mutate(outlier = ifelse(calibrate
 pv.dur_inf.with_pos %>% group_by(outlier) %>% tally()
 #Example plot
 
-#2844
+#3280
 
 #FDR correction
 pv.dur_inf.with_pos$FDR.p = p.adjust(pv.dur_inf.with_pos$calibrated.p, method = "fdr", n = length(pv.dur_inf.with_pos$calibrated.p))
 pv.dur_inf.with_pos <- pv.dur_inf.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.dur_inf.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#10
+#14
 
 #FDR correction manual adjustment (lambda = 0.95)
 pv.dur_inf.with_pos$FDR.p.man = p.adjust(pv.dur_inf.with_pos$man.adj.p, method = "fdr", n = length(pv.dur_inf.with_pos$man.adj.p))
 pv.dur_inf.with_pos <- pv.dur_inf.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.dur_inf.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#41
+#14
 
 ####################
 #ggplots
@@ -648,12 +701,10 @@ labs(x = "Position (Mbp)", y = "P value") +
 theme(
 strip.text.x = element_blank(),
 axis.text.x = element_text(size = 8)
-#axis.text.x = element_text(angle = 85, size = 10, hjust = 1)
 )
 
 #Colored by outliers
 ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = outlier)) +
-#facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
 #scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
@@ -665,12 +716,10 @@ labs(x = "Position (Mbp)", y = "P value") +
 theme(
 strip.text.x = element_blank(),
 axis.text.x = element_text(size = 8)
-#axis.text.x = element_text(angle = 85, size = 10, hjust = 1)
 )
 
 #FDR with auto corrected P (algorithm GIF)
-p4 = ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
-#facet_wrap(~scaffold) +
+p1 = ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
 #scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
@@ -686,8 +735,7 @@ axis.text.x = element_text(size = 8)
 #axis.title.x = element_blank()
 )
 
-#FDR correction maunally adjusted P (GIF = 0.95)
-ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+p2 = ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -696,15 +744,17 @@ scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
 scale_color_manual(values = c("grey", "black"), guide = "none") +
 my_gg_theme +
-labs(x = "Position (Mbp)", y = "P value") +
+labs(x = "Position (Mbp)", y = "") +
 theme(
 strip.text.x = element_blank(),
-axis.text.x = element_text(size = 8)
-#axis.text.x = element_text(angle = 85, size = 10, hjust = 1)
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
 )
 
 pdf("figures/LFMM.dur_inf.pdf", width = 18, height = 4)
-p4
+p1
+p2
 dev.off()
 
 
@@ -720,14 +770,148 @@ write.table(pv.dur_inf.with_pos, "Nf_LFMM_tables/dur_inf_lfmm.txt", quote = F, r
 
 
 
-
-
-
 #Nice aligned plot of all three
 require(gtable)
 require(gridExtra)
 require(grid)
 
+############################################
+##READ THE ABOVE TABLES BACK IN TO RUN BELOW
+
+p1 = ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "P value") +
+theme(
+strip.text.x = element_blank(),
+axis.text.x = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+p4 = ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+#facet_wrap(~scaffold) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "") +
+theme(
+strip.text.x = element_blank(),
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
+p2 = ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "P value") +
+theme(
+strip.text.x = element_blank(),
+axis.text.x = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+p5 = ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+#facet_wrap(~scaffold) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "") +
+theme(
+strip.text.x = element_blank(),
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
+p3 = ggplot(pv.ppt.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "P value") +
+theme(
+strip.text.x = element_blank(),
+axis.text.x = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+p6 = ggplot(pv.ppt.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+#facet_wrap(~scaffold) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "") +
+theme(
+strip.text.x = element_blank(),
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
+p4 = ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "P value") +
+theme(
+strip.text.x = element_blank(),
+axis.text.x = element_text(size = 8)
+#axis.text.x = element_blank(),
+#axis.title.x = element_blank()
+)
+
+p8 = ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+#facet_wrap(~scaffold) +
+facet_grid(. ~ scaffold, scales = "free_x", space='free') +
+geom_point(alpha = 0.5, size = 1) +
+#scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
+scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
+scale_y_continuous(trans = reverselog_trans(10), labels = trans_format('log10',math_format(10^.x))) +
+scale_color_manual(values = c("grey", "black"), guide = "none") +
+my_gg_theme +
+labs(x = "Position (Mbp)", y = "") +
+theme(
+strip.text.x = element_blank(),
+#axis.text.x = element_text(size = 8)
+axis.text.x = element_blank(),
+axis.title.x = element_blank()
+)
+
+########################
+#AUTOMATIC ACLIPBRATED P-VALUES
 plots = list(p1, p2, p3)
 
 grobs <- lapply(plots, ggplotGrob)
@@ -749,6 +933,36 @@ grid.newpage()
 grid.draw(g)
 dev.off()
 
+#################################
+#manual calibrated p-values
+#################################
+
+plots = list(p5, p6, p7)
+
+grobs <- lapply(plots, ggplotGrob)
+# for gridExtra < v2.3, use do.call(gridExtra::rbind.gtable, grobs)
+# for gridExtra >= v2.3 use:
+g <- do.call(gridExtra::gtable_rbind, grobs)
+
+#set relative panel heights
+panels <- g$layout$t[grep("panel", g$layout$name)]
+g$heights[panels] <- unit(c(1,1,1), "null")
+
+
+#grid.newpage()
+#grid.draw(g)
+
+
+pdf("figures/LFMM.nongrowing_GDD.nongrowing_freeze_thaw.ppt.MANUAL_CALIBRATION.pdf", width = 16, height = 6)
+grid.newpage()
+grid.draw(g)
+dev.off()
+
+
+
+##########################
+##########################
+##########################
 
 #Find high density peaks in scf3
 

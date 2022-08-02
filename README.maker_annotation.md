@@ -120,6 +120,8 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker2_snap_trai
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker2_final_run_Nf.slurm
 cp ~/neonectria_genome_reseq_10072020/maker2_run/config.ini ~/neonectria_genome_reseq_10072020/maker2_run_uniprot
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/busco_maker_eval_all.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/busco_maker_eval.slurm
+
 ```
 Count numbers of AED filter and total
 ```
@@ -130,4 +132,51 @@ grep ">" makerFINAL.transcripts.aed-1.0.fasta | wc -l
 ```
 #### Tuan D has said that AED filter doesn't make sense if there is no RNA evidence from Nf (we provided alt organism assembled mRNA, i.e., F. graminearum)
 
+BUSCO results of all genes
+```
+# BUSCO version is: 3.0.0 
+# The lineage dataset is: sordariomyceta_odb9 (Creation date: 2016-02-13, number of species: 30, number of BUSCOs: 3725)
+# To reproduce this run: python /mnt/lustre/software/linuxbrew/colsa/bin/busco -i makerFINAL.all.maker.transcripts.fasta -o busco_transcript_eval_all -l /mnt/home/garnas/ericm/augustus_config/lineage/sordariomyceta_odb9/ -m transcriptome -c 24
+#
+# Summarized benchmarking in BUSCO notation for file makerFINAL.all.maker.transcripts.fasta
+# BUSCO was run in mode: transcriptome
 
+        C:84.2%[S:83.8%,D:0.4%],F:12.4%,M:3.4%,n:3725
+
+        3136    Complete BUSCOs (C)
+        3121    Complete and single-copy BUSCOs (S)
+        15      Complete and duplicated BUSCOs (D)
+        463     Fragmented BUSCOs (F)
+        126     Missing BUSCOs (M)
+        3725    Total BUSCO groups searched
+```
+BUSCO results of AED<1.0
+```
+# BUSCO version is: 3.0.0 
+# The lineage dataset is: sordariomyceta_odb9 (Creation date: 2016-02-13, number of species: 30, number of BUSCOs: 3725)
+# To reproduce this run: python /mnt/lustre/software/linuxbrew/colsa/bin/busco -i makerFINAL.transcripts.aed-1.0.fasta -o busco_transcript_eval -l /mnt/home/garnas/ericm/augustus_config/lineage/sordariomyceta_odb9/ -m transcriptome -c 24
+#
+# Summarized benchmarking in BUSCO notation for file makerFINAL.transcripts.aed-1.0.fasta
+# BUSCO was run in mode: transcriptome
+
+        C:49.8%[S:49.6%,D:0.2%],F:3.2%,M:47.0%,n:3725
+
+        1854    Complete BUSCOs (C)
+        1848    Complete and single-copy BUSCOs (S)
+        6       Complete and duplicated BUSCOs (D)
+        118     Fragmented BUSCOs (F)
+        1753    Missing BUSCOs (M)
+        3725    Total BUSCO groups searched
+```
+
+
+## Annotate protein seqs against Uniprot
+
+Blast db of reviewed nonredundant fungal proteins dowlnloaded from Uniprot
+```
+module load linuxbrew/colsa
+cd ~/blast_dbs
+formatdb -i uniprot-fungi_reviewed_07252022.fasta -p T -o T 
+mkdir uniprot-fungi_reviewed_07252022
+mv uniprot-fungi_reviewed_07252022.fasta.* uniprot-fungi_reviewed_07252022
+```

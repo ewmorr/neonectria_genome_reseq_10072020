@@ -458,7 +458,7 @@ partial_mantel_IBD_dur_inf.r
 ## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites OR across dataset
 ### R package PopGenome 
 ### Goal is to perform whole genome and sliding window analyses
-####Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more datapoints
+####Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more data points
 #### See [here](https://wurmlab.com/genomicscourse/2016-SIB/practicals/population_genetics/popgen) for analyses using popgenome with haploid data. We first start by splitting the data into scaffolds (or chromosomes), which can be done with bcftools or bash
 
 Then IF doing locally need to activate conda env for bcftools -- OR just do all of this with bcftools on the server where it's installed. can use the first few lines to loop through scaffolds
@@ -604,4 +604,9 @@ Once the dailies are downloaded
 sbatch repo/neonectria_genome_reseq_10072020/premise/PRISM_dalies_site_extract.slurm
 ```
 Also process 30 yr normals locally using `sites_climate_dat.r` and process the created .rds object from `PRISM_dalies_site_extract.slurm` locally
-
+```
+#first download the .rds objects. Requires: sites_daily_tmin_tmax_ppt_20072018.df.rds
+cd GARNAS_neonectria_genome_reseq_10072020/
+Rscript ~/repo/neonectria_genome_reseq_10072020/PRISM_calcs/tmin_tmax_dailys_GDD_calcs.r
+Rscript ~/repo/neonectria_genome_reseq_10072020/PRISM_calcs/sites_climate_dat.r
+```
