@@ -15,7 +15,7 @@ srun blastp -task blastp \
     -outfmt 6 \
     -num_threads 24 \
     -evalue 1e-25 \
-    -num_descriptions = 10 \
+    -num_descriptions 10 \
     -query makerFINAL.all.maker.proteins.fasta \
     -db ~/blast_dbs/uniprot-fungi_reviewed_07252022/uniprot-fungi_reviewed_07252022.fasta \
     -out makerFINAL.all.maker.proteins.UNIPROT.blast

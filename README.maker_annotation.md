@@ -172,7 +172,7 @@ BUSCO results of AED<1.0
 
 ## Annotate protein seqs against Uniprot
 
-Blast db of reviewed nonredundant fungal proteins dowlnloaded from Uniprot
+Format blast db of reviewed nonredundant fungal proteins dowlnloaded from Uniprot
 ```
 module load linuxbrew/colsa
 cd ~/blast_dbs
@@ -180,3 +180,9 @@ formatdb -i uniprot-fungi_reviewed_07252022.fasta -p T -o T
 mkdir uniprot-fungi_reviewed_07252022
 mv uniprot-fungi_reviewed_07252022.fasta.* uniprot-fungi_reviewed_07252022
 ```
+run blast
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker_genes_blast_uniprot.slurm 
+```
+
