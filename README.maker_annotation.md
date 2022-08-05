@@ -185,4 +185,18 @@ run blast
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker_genes_blast_uniprot.slurm 
 ```
+## GO annotations
+#### for the current releases of Uniprot to GOA mappings go here https://www.ebi.ac.uk/GOA/downloads and download goa_uniprot_all.gaf.gz
+#### Note that the ftp links may need to be modified to http to access on Mac.
+#### The file is quite large so if needed can download to the server
+```
+curl http://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz --output goa_uniprot_all.gaf.gz
+```
 
+## KEGG annotation
+Can upload protein sequences here https://www.genome.jp/tools/kofamkoala/ OR https://www.kegg.jp/blastkoala/ but needs to be less than 10K or 5K sequences, respectively
+```
+#From local hd split to 5K per file
+cd GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/maker2_ann/
+awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%5000==0){file=sprintf("makerFINAL.all.maker.proteins%d.fasta",n_seq);} print >> file; n_seq++; next;} { print >> file; }' < makerFINAL.all.maker.proteins.fasta
+```

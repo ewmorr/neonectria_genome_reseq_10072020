@@ -242,13 +242,13 @@ pv.ppt.with_pos = read.table("Nf_LFMM_tables/ppt_lfmm.txt", header = T)
 pv.dur_inf.with_pos = read.table("Nf_LFMM_tables/dur_inf_lfmm.txt", header = T)
 
 #need same column names on facet
-colnames(pv.hdd.with_pos) = c("calibrated.p", "effect_size", "scf", "pos", "man.adj.p",
+colnames(pv.hdd.with_pos) = c("calibrated.p", "effect_size", "region.names", "pos", "man.adj.p",
 "length", "outlier", "FDR.p", "FDR.sig", "FDR.p.man", "FDR.sig.man")
-colnames(pv.ft.with_pos) = c("calibrated.p", "effect_size", "scf", "pos", "man.adj.p",
+colnames(pv.ft.with_pos) = c("calibrated.p", "effect_size", "region.names", "pos", "man.adj.p",
 "length", "outlier", "FDR.p", "FDR.sig", "FDR.p.man", "FDR.sig.man")
-colnames(pv.ppt.with_pos) = c("calibrated.p", "effect_size", "scf", "pos", "man.adj.p",
+colnames(pv.ppt.with_pos) = c("calibrated.p", "effect_size", "region.names", "pos", "man.adj.p",
 "length", "outlier", "FDR.p", "FDR.sig", "FDR.p.man", "FDR.sig.man")
-colnames(pv.dur_inf.with_pos) = c("calibrated.p", "effect_size", "scf", "pos", "man.adj.p",
+colnames(pv.dur_inf.with_pos) = c("calibrated.p", "effect_size", "region.names", "pos", "man.adj.p",
 "length", "outlier", "FDR.p", "FDR.sig", "FDR.p.man", "FDR.sig.man")
 
 pi_min_max = range(stats_sw.no_pop.df.gt100kb$pi, na.rm = T)
@@ -256,9 +256,15 @@ theta_min_max = range(stats_sw.no_pop.df.gt100kb$theta, na.rm = T)
 tajD_min_max = range(stats_sw.no_pop.df.gt100kb$tajD, na.rm = T)
 
 p1 = ggplot() +
+#geom_linerange(
+#    data = pv.hdd.with_pos %>% filter(FDR.sig == "sig" & length > 100000),
+#    aes(x = pos/10^6, ymin = pi_min_max[1], ymax = pi_min_max[2]),
+#    color = "blue",
+#    alpha = 0.5
+#) +
 geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi, color = outlier.pi), alpha = 0.5, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ region.names, scales = "free_x", space='free_x') + 
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -274,14 +280,14 @@ axis.title.x = element_blank()
 
 p2 = ggplot() +
 geom_linerange(
-data = pv.hdd.with_pos %>% filter(FDR.sig == "sig" & length > 100000),
-aes(x = pos/10^6, ymin = pi_min_max[1], ymax = pi_min_max[2]),
-color = "blue",
-alpha = 0.5
+    data = pv.hdd.with_pos %>% filter(FDR.sig == "sig" & length > 100000),
+    aes(x = pos/10^6, ymin = pi_min_max[1], ymax = pi_min_max[2]),
+    color = "blue",
+    alpha = 0.5
 ) +
 geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi, alpha = outlier.pi), color = "black", size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ region.names, scales = "free_x", space='free_x') +
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_alpha_manual(values = c(0, 0.5), guide = "none") +
 my_gg_theme +
@@ -298,7 +304,7 @@ axis.title.x = element_blank()
 p3 = ggplot() +
 geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta, color = outlier.theta), alpha = 0.5, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ region.names, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -321,7 +327,7 @@ geom_linerange(
 ) +
 geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta, alpha = outlier.theta), color = "black", size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ region.names, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_alpha_manual(values = c(0, 0.5), guide = "none") +
 my_gg_theme +
@@ -338,7 +344,7 @@ axis.title.x = element_blank()
 p5 = ggplot() +
 geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD, color = outlier.tajD), alpha = 0.5, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ region.names, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -361,7 +367,7 @@ alpha = 0.5
 ) +
 geom_point(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD, alpha = outlier.tajD), color = "black", size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD), color = "black", alpha = 0.5) +
-facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+facet_grid(. ~ region.names, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_alpha_manual(values = c(0, 0.5), guide = "none") +
 my_gg_theme +
@@ -403,9 +409,9 @@ dev.off()
 
 
 p7 = ggplot() +
-geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = pi, color = outlier.pi), alpha = 1, size = 1) +
+geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(region.names == "tig00000025_pilon"), aes(x = pos/10^6, y = pi, color = outlier.pi), alpha = 1, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = pi), color = "black", alpha = 0.5) +
-#facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+#facet_grid(. ~ region.names, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -420,9 +426,9 @@ axis.title.x = element_blank()
 )
 
 p8 = ggplot() +
-geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = theta, color = outlier.theta), alpha = 1, size = 1) +
+geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(region.names == "tig00000025_pilon"), aes(x = pos/10^6, y = theta, color = outlier.theta), alpha = 1, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = theta), color = "black", alpha = 0.5) +
-#facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+#facet_grid(. ~ region.names, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
@@ -438,9 +444,9 @@ axis.title.x = element_blank()
 
 
 p9 = ggplot() +
-geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(scf == "tig00000025_pilon"), aes(x = pos/10^6, y = tajD, color = outlier.tajD), alpha = 1, size = 1) +
+geom_point(data = stats_sw.no_pop.df.gt100kb %>% filter(region.names == "tig00000025_pilon"), aes(x = pos/10^6, y = tajD, color = outlier.tajD), alpha = 1, size = 1) +
 geom_line(data = stats_sw.no_pop.df.gt100kb, aes(x = pos/10^6, y = tajD), color = "black", alpha = 0.5) +
-#facet_grid(. ~ scf, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
+#facet_grid(. ~ region.names, scales = "free_x", space='free_x') + #grid by state2 bc state1 is all ME.S
 scale_x_continuous(breaks = c(0, seq(from = 1, to = 6, by = 1)) ) +
 scale_color_manual(values = c("white", "black"), guide = "none") +
 my_gg_theme +
