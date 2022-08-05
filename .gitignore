@@ -3,3 +3,4 @@ data/
 
 # Ignore the figures folder
 figures/
+.Rproj.user
