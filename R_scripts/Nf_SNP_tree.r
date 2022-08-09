@@ -10,7 +10,7 @@ require(ggtree)
 require(ggplot2)
 get.color.palette <- function(pal) brewer.pal(brewer.pal.info[pal, "maxcolors"], pal)
 
-metadata = read.table("~/GARNAS_neonectria_genome_reseq_10072020/sample_metadata/sample_metadata.txt", header = T)
+metadata = read.table("data/sample_metadata/sample_metadata.txt", header = T)
 colnames(metadata) = c("Site", "Tree", "Plug", "Peri", "label", "species", "State")
 
 

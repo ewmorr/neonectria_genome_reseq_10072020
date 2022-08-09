@@ -197,6 +197,6 @@ curl http://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz --
 Can upload protein sequences here https://www.genome.jp/tools/kofamkoala/ OR https://www.kegg.jp/blastkoala/ but needs to be less than 10K or 5K sequences, respectively
 ```
 #From local hd split to 5K per file
-cd GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/maker2_ann/
+cd repo/neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/maker2_ann/
 awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%5000==0){file=sprintf("makerFINAL.all.maker.proteins%d.fasta",n_seq);} print >> file; n_seq++; next;} { print >> file; }' < makerFINAL.all.maker.proteins.fasta
 ```

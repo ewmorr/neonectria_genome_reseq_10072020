@@ -337,7 +337,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.full_
 
 ### STRUCTURE format
 Download `out.filtered.LD_filtered_0.5_10Kb.fam` to make indfile for structure `make_structure_indfile.r`
-Downloaded .fam, .lfmm file to `GARNAS_neonectria_genome_reseq_10072020/Nf_post_SPANDx/`
+Downloaded .fam, .lfmm file to `repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/`
 
 upload `Nf_SPANDx_all_seqs/ind_file.structure`
 
@@ -378,7 +378,7 @@ PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structur
 
 For local pcadapt. sftp:
 ```
-lcd GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
+lcd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
 get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb*
 lcd ..
 get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode*
@@ -466,16 +466,16 @@ Then IF doing locally need to activate conda env for bcftools -- OR just do all 
 
 #make dirs for processing VCF files to individual scaffolds
 
-mkdir ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds_split
-grep -v "#" ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | cut -f 1 | uniq \
-    > GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.txt
+mkdir ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/scaffolds_split
+grep -v "#" ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | cut -f 1 | uniq \
+    > repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/scaffolds.txt
     
-cut -f 1 ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map | uniq
+cut -f 1 ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map | uniq
 
 conda activate bcftools
 
 #compress and index VCF file
-cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
 
 bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf
 tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz
@@ -484,13 +484,13 @@ while read line
 do(
 bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz $line > scaffolds_split/$line
 )
-done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.txt
+done < scaffolds.txt
 
 conda deactivate
 ```
 Need to set up separate dirs for each scaffold
 ```
-cd GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
 
 #array of files (there are 20)
 scf_files=(scaffolds_split/*)
@@ -525,7 +525,7 @@ list_low_samples_to_retain_n_ge4.r
 Then rerun scaffold split
 ```
 conda activate bcftools
-cd ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
 
 bcftools view --samples-file retain_samples.txt out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
 bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
@@ -537,7 +537,7 @@ while read line
 do(
 bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf.gz $line > scaffolds_split_rm_low_n/$line
 )
-done < ~/GARNAS_neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/scaffolds.txt
+done < scaffolds.txt
 ```
 ### Now running using popgenome with new script
 ```
@@ -606,7 +606,7 @@ sbatch repo/neonectria_genome_reseq_10072020/premise/PRISM_dalies_site_extract.s
 Also process 30 yr normals locally using `sites_climate_dat.r` and process the created .rds object from `PRISM_dalies_site_extract.slurm` locally
 ```
 #first download the .rds objects. Requires: sites_daily_tmin_tmax_ppt_20072018.df.rds
-cd GARNAS_neonectria_genome_reseq_10072020/
-Rscript ~/repo/neonectria_genome_reseq_10072020/PRISM_calcs/tmin_tmax_dailys_GDD_calcs.r
-Rscript ~/repo/neonectria_genome_reseq_10072020/PRISM_calcs/sites_climate_dat.r
+cd repo/neonectria_genome_reseq_10072020/
+Rscript PRISM_calcs/tmin_tmax_dailys_GDD_calcs.r
+Rscript PRISM_calcs/sites_climate_dat.r
 ```

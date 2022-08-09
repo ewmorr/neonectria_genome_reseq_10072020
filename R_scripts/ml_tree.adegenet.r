@@ -5,19 +5,23 @@ require(ggplot2)
 require(pegas)
 require(adegenet)
 require(ape)
-#require(dartR) #no longer needed bc not using gl2gi
-source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
+require(phangorn)
+source("R_scripts/ggplot_theme.txt")
 
 #metadata
-source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
-site_coords = read.table("sample_metadata/site_coords_for_map.txt", header = T)
-ind.metrics = left_join(data.frame(sample = fam_info[,1]), sample_metadata %>% select(sample,state.name) ) %>%
-left_join(., site_coords %>% select(state.name, lat, lon))
+source("R_scripts/make_site_metadata.r")
+site_coords = read.table("data/sample_metadata/site_coords_for_map.txt", header = T)
+ind.metrics = 
+    left_join(
+      data.frame(sample = fam_info[,1]), 
+      sample_metadata %>% select(sample,state.name) 
+    ) %>% 
+    left_join(., site_coords %>% select(state.name, lat, lon))
 #########
 
 
 #filtered VCF
-vcf <- read.vcfR("Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.vcf", verbose = FALSE)
+vcf <- read.vcfR("data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.vcf", verbose = FALSE)
 gl = vcfR2genlight(vcf)
 
 #Set metadata in genLight

@@ -2,7 +2,7 @@ require(PopGenome)
 require(dplyr)
 require(tidyr)
 require(ggplot2)
-source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
+source("R_scripts/ggplot_theme.txt")
 
 
 #Read scf into list
@@ -11,7 +11,7 @@ scf_dirs = paste("scf", seq(1,20,1), sep = "_")
 
 for(i in 1:length(scf_dirs)){
     scf_list[[scf_dirs[i]]] = readData(
-        paste("Nf_SPANDx_all_seqs/", scf_dirs[i], sep = ""),
+        paste("data/Nf_SPANDx_all_seqs/", scf_dirs[i], sep = ""),
         include.unknown = T,
         format = "VCF"
     )
