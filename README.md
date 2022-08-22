@@ -277,11 +277,11 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA
 ```
 102 individuals and 130957 sites remaining = 13357614
 1460689 NA
-1460689/13357614 = 1.1% NA
+1460689/13357614 = 10.9% NA
 
-#### Below numbers need to be updated for new dataset
-80224 sites recognized by R::PopGenome
-105457 sets recongized including poly allelic
+#
+83542 sites recognized by R::PopGenome
+120803 sites recongized including poly allelic
 
 
 ### Perform LD filtering before population structure analyses
@@ -455,10 +455,42 @@ R_scripts/IBD.adegenet_metrics.multiple_subsamples.r
 partial_mantel_IBD_dur_inf.r
 ```
 
+### Calculate phylogeny
+Convert GVCF to SNP matrix
+```
+cd neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/gvcf2table.slurm 
+```
+There are very few SNPs with no NA values so the .clean files are useless. Convert NA i.e., `./.` to gaps for tree calculation
+```
+sed 's:\./\.:-:g' out.filtered.LD_filtered_0.5_10Kb.table > out.filtered.LD_filtered_0.5_10Kb.table.na2gap
+sed 's:\./\.:-:g' out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap
+```
+Once NAs are converted convert to fasta multiple sequence alignment (run locally)
+```
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/snp_table2fasta.pl out.filtered.LD_filtered_0.5_10Kb.table.na2gap 5 > out.filtered.LD_filtered_0.5_10Kb.fasta
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/snp_table2fasta.pl out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap 5 > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.fasta
+```
+Calculate ML tree in R
+```
+ml_tree.adegenet.r
+ml_tree.adegenet.plot.r
+```
+
+
+
 ## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites OR across dataset
 ### R package PopGenome 
 ### Goal is to perform whole genome and sliding window analyses
-####Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more data points
+
+
+## Sliding window analysis and LFMM
+#### Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more data points
+First running LFMM to identify significant SNPs
+```
+LFMM_analyses/initial_LFMM_full_data.r
+```
+
 #### See [here](https://wurmlab.com/genomicscourse/2016-SIB/practicals/population_genetics/popgen) for analyses using popgenome with haploid data. We first start by splitting the data into scaffolds (or chromosomes), which can be done with bcftools or bash
 
 Then IF doing locally need to activate conda env for bcftools -- OR just do all of this with bcftools on the server where it's installed. can use the first few lines to loop through scaffolds
@@ -482,7 +514,7 @@ tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.r
 
 while read line
 do(
-bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz $line > scaffolds_split/$line
+    bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz $line > scaffolds_split/$line
 )
 done < scaffolds.txt
 
@@ -502,8 +534,6 @@ do(
     cp ${scf_files[$i]} scf_$dir_name
 )
 done 
-
-
 ```
 Genome scans for Pi theta TajD
 ```
@@ -513,8 +543,36 @@ NOTE that four of the total 24 contigs are left out of VCF because there were no
 
 
 
-## Have not run pairwise site comparisons for now. May be interesting, but also hard to compare to significant SNP correlations because pariwise stats are run on a subset of the data
 
+
+
+### Identify which genes SNPs occur on
+get gene IDS to pull from gff
+```
+cd neonectria_genome_reseq_10072020/maker2_run
+grep ">" makerFINAL.all.maker.transcripts.fasta > transcipt_IDs.txt
+```
+Download GFF and IDs
+```
+cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/maker2_ann
+sftp
+get neonectria_genome_reseq_10072020/maker2_run/makerFINAL.all.gff
+get neonectria_genome_reseq_10072020/maker2_run/transcipt_IDs.txt
+exit
+```
+pull relevant lines from GFF
+```
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_mRNA_IDs_from_GFF.pl makerFINAL.all.gff > makerFINAL.all.mRNA_ONLY.gff
+```
+count the number of SNPs on genes. files written to `data/Nf_LFMM_tables` dir
+```
+sig_SNPs_gene_count.hdd4.r
+sig_SNPs_gene_count.freezeThaw.r
+sig_SNPs_gene_count.ppt.r
+```
+#### Have not run pairwise site comparisons for now. May be interesting, but also hard to compare to significant SNP correlations because pariwise stats are run on a subset of the data
+
+## pop level diversity
 ### Using R::PopGenome for diversity stats
 ### For population level stats (e.g., Fst comps between sites) will need to filter low n sites
 

@@ -172,7 +172,7 @@ BUSCO results of AED<1.0
 
 ## Annotate protein seqs against Uniprot
 
-Format blast db of reviewed nonredundant fungal proteins dowlnloaded from Uniprot
+Format blast db of reviewed nonredundant fungal proteins downloaded from Uniprot
 ```
 module load linuxbrew/colsa
 cd ~/blast_dbs
@@ -185,6 +185,15 @@ run blast
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker_genes_blast_uniprot.slurm 
 ```
+Number of annotations
+```
+cut -f1 makerFINAL.all.maker.proteins.UNIPROT.blast | sort | uniq | wc -l
+```
+5688
+#### The Uniprot Uniref90 database (i.e., proteins clusted at 90% sim) is also on premise at `/mnt/oldhome/hcgs/shared/databases/uniref90/blast/uniref90.fasta` try a blast against this db (This is what is also used for Paladin)
+
+
+
 ## GO annotations
 #### for the current releases of Uniprot to GOA mappings go here https://www.ebi.ac.uk/GOA/downloads and download goa_uniprot_all.gaf.gz
 #### Note that the ftp links may need to be modified to http to access on Mac.
@@ -197,6 +206,33 @@ curl http://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz --
 Can upload protein sequences here https://www.genome.jp/tools/kofamkoala/ OR https://www.kegg.jp/blastkoala/ but needs to be less than 10K or 5K sequences, respectively
 ```
 #From local hd split to 5K per file
-cd repo/neonectria_genome_reseq_10072020/Nf_SPANDx_all_seqs/maker2_ann/
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/maker2_ann/
 awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%5000==0){file=sprintf("makerFINAL.all.maker.proteins%d.fasta",n_seq);} print >> file; n_seq++; next;} { print >> file; }' < makerFINAL.all.maker.proteins.fasta
+```
+Then combine the results files (these from HMM search)
+```
+grep -v "^#" makerFINAL.all.maker.proteins.SET2.KEGG.result.txt > makerFINAL.all.maker.proteins.SET2.KEGG.result.txt.no_head
+cat makerFINAL.all.maker.proteins.SET1.KEGG.result.txt makerFINAL.all.maker.proteins.SET2.KEGG.result.txt.no_head > makerFINAL.all.maker.proteins.HMM.KEGG.txt
+rm makerFINAL.all.maker.proteins.SET2.KEGG.result.txt.no_head
+```
+How many annotation
+```
+grep -v "^#" makerFINAL.all.maker.proteins.HMM.KEGG.txt | wc -l
+```
+4,603 annotation out of 14064 genes. (yikes)
+
+cut the KO ID line and append "KO:" to each entry
+```
+grep -v "^#" makerFINAL.all.maker.proteins.HMM.KEGG.txt | sed 's/^\*[[:space:]]//' | awk '{print $2}' | sort | uniq | sed 's/^/KO:/' > makerFINAL.all.maker.proteins.HMM.KEGG.uniq.txt
+```
+"Map up" the KO numbers based on the orthology map
+```
+cd ~/repo/neonectria_genome_reseq_10072020
+perl KEGG_map/summarize_KEGG.pl data/ko00001-2.keg data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.HMM.KEGG.uniq.txt > data/Nf_SPANDx_all_seqs/maker2_ann/KEGG_map.txt
+```
+Also need to cut the KO to gene ID mappings. appending "KO:" to make it easy
+```
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/maker2_ann/
+grep -v "^#" makerFINAL.all.maker.proteins.HMM.KEGG.txt | sed 's/^\*[[:space:]]//' | awk '{print $2, $1}' > gene_id.KO.map
+#sed -i '' -e 's/^/KO:/' gene_id.KO.map
 ```

@@ -1,36 +1,33 @@
-require(vcfR)
-require(tidyr)
-require(dplyr)
-require(ggplot2)
-require(pegas)
 require(adegenet)
 require(ape)
 require(phangorn)
-source("R_scripts/ggplot_theme.txt")
 
-#metadata
-source("R_scripts/make_site_metadata.r")
-site_coords = read.table("data/sample_metadata/site_coords_for_map.txt", header = T)
-ind.metrics = 
-    left_join(
-      data.frame(sample = fam_info[,1]), 
-      sample_metadata %>% select(sample,state.name) 
-    ) %>% 
-    left_join(., site_coords %>% select(state.name, lat, lon))
-#########
+# read SNP multi seq aligment fasta
+seqs = fasta2DNAbin(file = "data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.fasta")
 
+# https://adegenet.r-forge.r-project.org/files/PRstats/practical-introphylo.1.0.pdf
+# convert to phangorn format
+seqs.phyDat = as.phyDat(seqs)
 
-#filtered VCF
-vcf <- read.vcfR("data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.vcf", verbose = FALSE)
-gl = vcfR2genlight(vcf)
+#initialize tree with NJ (using original DNAbinobject, not phangorn format)
+#
+tre.ini = nj(dist.dna(seqs, pairwise.deletion = T)) #must use pairwise deletion because of high number of gaps
+plot(tre.ini)
 
-#Set metadata in genLight
-gl@other$ind.metrics = ind.metrics
-gl@other$latlong = ind.metrics[,3:4]
-gl@other$latlong
-gl@pop = as.factor(ind.metrics$state.name) #need to set pop for the ibd test to work
-gl@ploidy = rep(as.integer(1), nInd(gl))
-nPop(gl)
-pop(gl)
+#optimization
+fit.ini = pml(tre.ini, seqs.phyDat, k = 4)
 
-# https://adegenet.r-forge.r-project.org/files/tutorial-genomics.pdf p. 42
+fit = optim.pml(fit.ini, optNni=T, optBf = T, optQ = T, optGamma = T)
+
+# computed
+fit
+
+fit$tree
+plot(fit$tree)
+anova(fit.ini,fit)
+
+plot(tre)
+
+#write the ml tree before plotting so don't have to rerun
+
+saveRDS(fit, "data/intermediate_RDS/Nf_ML_tree.rds")
