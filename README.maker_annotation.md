@@ -171,8 +171,8 @@ BUSCO results of AED<1.0
 
 
 ## Annotate protein seqs against Uniprot
-
-Format blast db of reviewed nonredundant fungal proteins downloaded from Uniprot
+Uniporot taxonomic divisions https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/
+Format blast db of reviewed (i.e., UniprotKB-Swissprot) nonredundant fungal proteins downloaded from Uniprot
 ```
 module load linuxbrew/colsa
 cd ~/blast_dbs
@@ -189,9 +189,27 @@ Number of annotations
 ```
 cut -f1 makerFINAL.all.maker.proteins.UNIPROT.blast | sort | uniq | wc -l
 ```
-5688
-#### The Uniprot Uniref90 database (i.e., proteins clusted at 90% sim) is also on premise at `/mnt/oldhome/hcgs/shared/databases/uniref90/blast/uniref90.fasta` try a blast against this db (This is what is also used for Paladin)
+5688. Try with both Uniprot-SwissProt and UniprotKBTrEMBL (machine annotations)
+#### at https://www.uniprot.org/uniprotkb?query=(taxonomy_id:4751)
+```
+curl -H "Accept: text/plain; format=list" "https://rest.uniprot.org/uniprotkb/search?query=reviewed:false+AND+taxonomy_id:4751" > uniprotKB.swissprot.trembl.fungi.list.txt
+```
+The above is only returning 25 records due to pagination, and can not get the curl command to abide. Instead parsing the sequences from the .dat files provided at https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/
+```
+curl https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_trembl_fungi.dat.gz --output uniprot_trembl_fungi.dat.gz
+curl https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_fungi.dat.gz --output uniprot_sprot_fungi.dat.gz
+gunzip -c uniprot_sprot_fungi.dat.gz | grep "//" | wc -l
+#72137
+gunzip -c uniprot_trembl_fungi.dat.gz | grep "//" | wc -l
+cat uniprot_sprot_fungi.dat.gz uniprot_trembl_fungi.dat.gz > uniprot.sprot.tremble.fungi.dat.gz
+```
+Perl script to parse. entries are separated by `//` use the second entry in AC. Have local copy of the sprot file so testing locally
 
+#### The Uniprot Uniref90 database (i.e., proteins clusted at 90% sim) is also on premise at `/mnt/oldhome/hcgs/shared/databases/uniref90/blast/uniref90.fasta` try a blast against this db (This is what is also used for Paladin)
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker_genes_blast_uniprot_uniref90.slurm
+```
 
 
 ## GO annotations
@@ -199,7 +217,9 @@ cut -f1 makerFINAL.all.maker.proteins.UNIPROT.blast | sort | uniq | wc -l
 #### Note that the ftp links may need to be modified to http to access on Mac.
 #### The file is quite large so if needed can download to the server
 ```
+screen
 curl http://ftp.ebi.ac.uk/pub/databases/GO/goa/UNIPROT/goa_uniprot_all.gaf.gz --output goa_uniprot_all.gaf.gz
+#[detached from 31196.pts-2.login01]
 ```
 
 ## KEGG annotation

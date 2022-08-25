@@ -15,7 +15,7 @@ srun blastp -task blastp \
     -outfmt 6 \
     -num_threads 24 \
     -evalue 1e-25 \
-    -num_descriptions 10 \
+    -max_target_seqs 10 \
     -query makerFINAL.all.maker.proteins.fasta \
     -db /mnt/oldhome/hcgs/shared/databases/uniref90/blast/uniref90.fasta \
     -out makerFINAL.all.maker.proteins.UNIPROT.uniref90.blast
