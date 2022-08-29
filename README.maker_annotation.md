@@ -189,8 +189,15 @@ Number of annotations
 ```
 cut -f1 makerFINAL.all.maker.proteins.UNIPROT.blast | sort | uniq | wc -l
 ```
-5688. Try with both Uniprot-SwissProt and UniprotKBTrEMBL (machine annotations)
-#### at https://www.uniprot.org/uniprotkb?query=(taxonomy_id:4751)
+5688. e value of e-25 is pretty stringent. Try lowering to 0.001
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker_genes_blast_uniprot.slurm 
+cd maker2_run
+cut -f1 makerFINAL.all.maker.proteins.UNIPROT.e10-3.blast | sort | uniq | wc -l
+```
+8297
+#### Try with both Uniprot-SwissProt and UniprotKBTrEMBL (machine annotations) at https://www.uniprot.org/uniprotkb?query=(taxonomy_id:4751)
 ```
 curl -H "Accept: text/plain; format=list" "https://rest.uniprot.org/uniprotkb/search?query=reviewed:false+AND+taxonomy_id:4751" > uniprotKB.swissprot.trembl.fungi.list.txt
 ```
@@ -200,7 +207,7 @@ curl https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase
 curl https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_fungi.dat.gz --output uniprot_sprot_fungi.dat.gz
 gunzip -c uniprot_sprot_fungi.dat.gz | grep "//" | wc -l
 #72137
-gunzip -c uniprot_trembl_fungi.dat.gz | grep "//" | wc -l
+gunzip -c uniprot_trembl_fungi.dat.gz | grep "//" | wc -l #should be
 cat uniprot_sprot_fungi.dat.gz uniprot_trembl_fungi.dat.gz > uniprot.sprot.tremble.fungi.dat.gz
 ```
 Perl script to parse. entries are separated by `//` use the second entry in AC. Have local copy of the sprot file so testing locally
@@ -209,8 +216,10 @@ Perl script to parse. entries are separated by `//` use the second entry in AC. 
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker_genes_blast_uniprot_uniref90.slurm
+cd maker2_run
+cut -f1 makerFINAL.all.maker.proteins.UNIPROT.uniref90.blast | sort | uniq | wc -l
 ```
-
+12274
 
 ## GO annotations
 #### for the current releases of Uniprot to GOA mappings go here https://www.ebi.ac.uk/GOA/downloads and download goa_uniprot_all.gaf.gz

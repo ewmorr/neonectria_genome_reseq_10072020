@@ -384,6 +384,14 @@ lcd ..
 get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode*
 ```
 
+## LD decay
+Trying with plink 1.9 (.bim file)
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/plink1.9_LD_deacy.slurm
+```
+
+
 ## population structure analyses
 
 ### Running structure_threader
