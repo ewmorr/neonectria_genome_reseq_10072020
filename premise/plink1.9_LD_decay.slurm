@@ -18,3 +18,6 @@ srun plink --bfile out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA
     --ld-window-kb 6000 \ #set to greater than size of largest contig (5.5 Mb)
     --gz \
     --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay
+
+
+srun plink --bfile out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.bim --r2 --ld-window-r2 0 --ld-window-r2 999999 --ld-window-kb 6000 --gz --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay

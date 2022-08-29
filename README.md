@@ -388,7 +388,7 @@ get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25miss
 Trying with plink 1.9 (.bim file)
 ```
 cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/plink1.9_LD_deacy.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_LD_decay.slurm
 ```
 
 
