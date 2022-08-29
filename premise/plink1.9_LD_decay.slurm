@@ -21,4 +21,4 @@ cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 #    --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay
 
 
-srun plink --bfile out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.bim --r2 --ld-window-r2 0 --ld-window 999999 --ld-window-kb 6000 --gz --parallel 24 --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay
+srun plink --bfile out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.bim --r2 gz --ld-window-r2 0 --ld-window 999999 --ld-window-kb 6000 --parallel 24 --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay
