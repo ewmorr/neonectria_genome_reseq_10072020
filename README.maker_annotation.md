@@ -212,7 +212,7 @@ cat uniprot_sprot_fungi.dat.gz uniprot_trembl_fungi.dat.gz > uniprot.sprot.tremb
 ```
 Perl script to parse. entries are separated by `//` use the second entry in AC. Have local copy of the sprot file so testing locally
 
-#### The Uniprot Uniref90 database (i.e., proteins clusted at 90% sim) is also on premise at `/mnt/oldhome/hcgs/shared/databases/uniref90/blast/uniref90.fasta` try a blast against this db (This is what is also used for Paladin)
+#### The Uniprot Uniref90 database (i.e., proteins clustered at 90% sim) is also on premise at `/mnt/oldhome/hcgs/shared/databases/uniref90/blast/uniref90.fasta` try a blast against this db (This is what is also used for Paladin)
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/maker_annotation/maker_genes_blast_uniprot_uniref90.slurm
@@ -221,6 +221,12 @@ cut -f1 makerFINAL.all.maker.proteins.UNIPROT.uniref90.blast | sort | uniq | wc 
 ```
 12274
 
+#### Blast2GO (blast against all nr database with subsequent proprietary GO mapping)
+Ran by Tuan
+- 13039 blast hits (e-value default is 10^-6)
+- 9631 annotated with GO terms (after filtering for annotation quality)
+
+ 
 ## GO annotations
 #### for the current releases of Uniprot to GOA mappings go here https://www.ebi.ac.uk/GOA/downloads and download goa_uniprot_all.gaf.gz
 #### Note that the ftp links may need to be modified to http to access on Mac.

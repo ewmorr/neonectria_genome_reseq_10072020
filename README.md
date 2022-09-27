@@ -390,6 +390,15 @@ Trying with plink 1.9 (.bim file)
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_LD_decay.slurm
 ```
+File is 5.8 G. Header `CHR_A BP_A SNP_A CHR_B BP_B SNP_B R2 `. Checking to maker sure SNPs were not calculated across chromosomes
+```
+gunzip -c out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay.ld.gz | awk '$1 != $4' | wc -l
+# 1 (the header)
+```
+Test data
+```
+gunzip -c out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay.ld.gz | head -n 5000 > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay.ld.test
+```
 
 
 ## population structure analyses
