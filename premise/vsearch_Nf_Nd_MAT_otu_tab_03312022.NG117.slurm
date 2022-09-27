@@ -15,6 +15,6 @@ OUTDIR=reads/bbtrimmed/vsearch
 srun vsearch --usearch_global $OUTDIR/NG117.derep.fasta \
     --db ~/neonectria_genome_reseq_10072020/Neonectria_MAT1_and_MAT2.fasta \
     --sizein \
-    --id 1 \
+    --id 0.97 \
     --otutabout NG117.derep.Nf_Nd_MAT.otu_tab.txt \
     --threads 16
