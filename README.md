@@ -402,7 +402,7 @@ gunzip -c out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_d
 Run R plotting script with avgs across different distances (1Kb, 2.5Kb, 5Kb, 10Kb)
 ```
 cd neonectria_genome_reseq_10072020
-sbatch ~/repo/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/LD_decay_plots.R.slurm 
 
 ## population structure analyses
 

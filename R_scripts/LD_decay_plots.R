@@ -2,7 +2,7 @@ require(dplyr)
 require(ggplot2)
 require(stringr)
 
-source("R_scripts/ggplot_theme.txt")
+source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 r_tab = read.table("~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay.ld.gz", header = T)
 
