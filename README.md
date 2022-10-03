@@ -399,7 +399,10 @@ Test data
 ```
 gunzip -c out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay.ld.gz | head -n 5000 > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay.ld.test
 ```
-
+Run R plotting script with avgs across different distances (1Kb, 2.5Kb, 5Kb, 10Kb)
+```
+cd neonectria_genome_reseq_10072020
+sbatch ~/repo/neonectria_genome_reseq_10072020/
 
 ## population structure analyses
 
