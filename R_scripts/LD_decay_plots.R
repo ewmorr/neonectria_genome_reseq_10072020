@@ -12,11 +12,11 @@ r_tab$distance = r_tab$BP_B - r_tab$BP_A
 #plot distance by all points with smoothing
 #all points not summarized by dist
 
-p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) +
-  geom_point(alpha = 0.15) +
+#p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) +
+#  geom_point(alpha = 0.15) +
   #geom_smooth() +
-  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
-  my_gg_theme
+#  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
+#  my_gg_theme
 
 #all points not summarized by dist
 #colored by chromosome
@@ -28,12 +28,12 @@ p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) +
 #  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
 #  my_gg_theme
 
-pdf("LD_decay.all_points.pdf", width = 16, height = 6)
-p1
+#pdf("LD_decay.all_points.pdf", width = 16, height = 6)
+#p1
 #p2
-dev.off()
+#dev.off()
 
-rm(list = c(p1, p2))
+#rm(list = c(p1, p2))
 
 ###############
 #calculate means
