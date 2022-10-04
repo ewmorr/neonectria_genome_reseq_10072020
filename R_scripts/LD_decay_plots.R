@@ -11,7 +11,8 @@ r_tab$distance = r_tab$BP_B - r_tab$BP_A
 
 #plot distance by all points with smoothing
 #all points not summarized by dist
-p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) + 
+
+p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) +
   geom_point(alpha = 0.15) +
   geom_smooth() +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
@@ -19,16 +20,17 @@ p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) +
 
 #all points not summarized by dist
 #colored by chromosome
-p2 = ggplot(r_tab, aes(x = distance/10^3, y = R2, color = CHR_A)) +
-  geom_point(alpha = 0.15) +
-  geom_smooth() +
-  scale_color_manual(values = c25) +
-  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
-  my_gg_theme
+
+#p2 = ggplot(r_tab, aes(x = distance/10^3, y = R2, color = CHR_A)) +
+#  geom_point(alpha = 0.15) +
+#  geom_smooth() +
+#  scale_color_manual(values = c25) +
+#  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
+#  my_gg_theme
 
 pdf("LD_decay.all_points.pdf", width = 16, height = 6)
 p1
-p2
+#p2
 dev.off()
 
 ###############
@@ -39,6 +41,7 @@ dev.off()
 #############
 #1KB mean
 #############
+print("starting 1K means")
 summarize_dist = 1000
 r_tab$distc <- cut(
   r_tab$distance,
@@ -78,7 +81,7 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 1Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
   geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean) ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -88,6 +91,8 @@ p3
 p4
 p5
 dev.off()
+
+rm(r_tab_avg)
 
 #############
 #2.5KB mean
@@ -131,7 +136,7 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 2.5Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
   geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -141,6 +146,8 @@ p3
 p4
 p5
 dev.off()
+
+rm(r_tab_avg)
 
 #############
 #5KB mean
@@ -184,7 +191,7 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 7.5Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
   geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -194,6 +201,8 @@ p3
 p4
 p5
 dev.off()
+
+rm(r_tab_avg)
 
 #############
 #7.5KB mean
@@ -237,7 +246,7 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 7.5Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
   geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -247,6 +256,8 @@ p3
 p4
 p5
 dev.off()
+
+rm(r_tab_avg)
 
 #############
 #10KB mean
@@ -290,7 +301,7 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 10Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
   geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
