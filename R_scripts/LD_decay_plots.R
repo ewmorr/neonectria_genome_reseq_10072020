@@ -14,23 +14,23 @@ r_tab$distance = r_tab$BP_B - r_tab$BP_A
 
 p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) +
   geom_point(alpha = 0.15) +
-  geom_smooth() +
+  #geom_smooth() +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
 #all points not summarized by dist
 #colored by chromosome
 
-p2 = ggplot(r_tab, aes(x = distance/10^3, y = R2, color = CHR_A)) +
-  geom_point(alpha = 0.15) +
-  geom_smooth() +
-  scale_color_manual(values = c25) +
-  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
-  my_gg_theme
+#p2 = ggplot(r_tab, aes(x = distance/10^3, y = R2, color = CHR_A)) +
+#  geom_point(alpha = 0.15) +
+  #geom_smooth() +
+#  scale_color_manual(values = c25) +
+#  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
+#  my_gg_theme
 
 pdf("LD_decay.all_points.pdf", width = 16, height = 6)
 p1
-p2
+#p2
 dev.off()
 
 rm(list = c(p1, p2))
