@@ -44,7 +44,7 @@ r_tab_avg <- r_tab_avg %>% mutate(
 p1 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(0, 10^6)) +
+    scale_x_log10(limits = c(1, 10^6)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -58,7 +58,7 @@ p2 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
 p3 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(0, 500*10^3)) +
+    scale_x_log10(limits = c(1, 500*10^3)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -72,7 +72,7 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
 p5 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(0, 200*10^3)) +
+    scale_x_log10(limits = c(1, 200*10^3)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -86,7 +86,7 @@ p6 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
 p7 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(0, 100*10^3)) +
+    scale_x_log10(limits = c(1, 100*10^3)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -100,7 +100,7 @@ p8 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
 p9 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(0, 50*10^3)) +
+    scale_x_log10(limits = c(1, 50*10^3)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -117,7 +117,7 @@ p11 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
   geom_line() +
   #geom_smooth(method = "loess", se = F) +
   scale_color_manual(values = c25) +
-scale_x_log10(limits = c(0, 500*10^3)) +
+scale_x_log10(limits = c(1, 500*10^3)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
