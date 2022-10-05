@@ -3,7 +3,7 @@
 #SBATCH --job-name="LDplots"
 #SBATCH --output=LD_plots.out
 #SBATCH --partition=shared
-##SBATCH --mem=512G
+#SBATCH --mem=512G
 
 module purge
 module load anaconda/colsa
