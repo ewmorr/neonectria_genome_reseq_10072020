@@ -6,6 +6,8 @@ source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 r_tab = read.table("~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_decay.ld.gz", header = T)
 
+#remove uneeded cols to save mem
+r_tab = subset(r_tab, select = -c(SNP_A, CHR_B, SNP_B))
 #calculate SNP dist
 r_tab$distance = r_tab$BP_B - r_tab$BP_A
 
@@ -14,7 +16,7 @@ r_tab$distance = r_tab$BP_B - r_tab$BP_A
 
 #p1 = ggplot(r_tab, aes(x = distance/10^3, y = R2)) +
 #  geom_point(alpha = 0.15) +
-  #geom_smooth() +
+#  geom_smooth(method = "loess") +
 #  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
 #  my_gg_theme
 
@@ -23,7 +25,7 @@ r_tab$distance = r_tab$BP_B - r_tab$BP_A
 
 #p2 = ggplot(r_tab, aes(x = distance/10^3, y = R2, color = CHR_A)) +
 #  geom_point(alpha = 0.15) +
-  #geom_smooth() +
+#  geom_smooth(method = "loess") +
 #  scale_color_manual(values = c25) +
 #  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
 #  my_gg_theme
@@ -67,15 +69,15 @@ r_tab_avg <- r_tab_avg %>% mutate(
 #mean r^2 summarized of 1Kb distance windows
 p3 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "loess", se = F) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
 #mean r^2 summarized of 1Kb distance windows
 #colored by chromosome
 p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
-  geom_point() +
-  geom_smooth() +
+  geom_line() +
+  #geom_smooth(method = "loess", se = F) +
   scale_color_manual(values = c25) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -83,7 +85,7 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 1Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
   geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean) ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -99,6 +101,7 @@ rm(list = c(r_tab_avg, p1, p3, p5)
 #############
 #2.5KB mean
 #############
+print("starting 2.5K means")
 summarize_dist = 2500
 r_tab$distc <- cut(
   r_tab$distance,
@@ -122,15 +125,15 @@ r_tab_avg <- r_tab_avg %>% mutate(
 #mean r^2 summarized of 2.5Kb distance windows
 p3 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "loess", se = F) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
 #mean r^2 summarized of 2.5Kb distance windows
 #colored by chromosome
 p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
-  geom_point() +
-  geom_smooth() +
+  geom_line() +
+  #geom_smooth(method = "loess") +
   scale_color_manual(values = c25) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -138,8 +141,8 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 2.5Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
-  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "black" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -154,6 +157,7 @@ rm(list = c(r_tab_avg, p1, p3, p5)
 #############
 #5KB mean
 #############
+print("starting 5K means")
 summarize_dist = 5000
 r_tab$distc <- cut(
   r_tab$distance,
@@ -177,15 +181,15 @@ r_tab_avg <- r_tab_avg %>% mutate(
 #mean r^2 summarized of 5Kb distance windows
 p3 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "loess", se = F) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
 #mean r^2 summarized of 5Kb distance windows
 #colored by chromosome
 p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
-  geom_point() +
-  geom_smooth() +
+  geom_line() +
+  #geom_smooth(method = "loess") +
   scale_color_manual(values = c25) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -193,8 +197,8 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 7.5Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
-  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "black" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -209,6 +213,7 @@ rm(list = c(r_tab_avg, p1, p3, p5)
 #############
 #7.5KB mean
 #############
+print("starting 7.5K means")
 summarize_dist = 7500
 r_tab$distc <- cut(
   r_tab$distance,
@@ -232,15 +237,15 @@ r_tab_avg <- r_tab_avg %>% mutate(
 #mean r^2 summarized of 7.5Kb distance windows
 p3 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "loess", se = F) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
 #mean r^2 summarized of 7.5Kb distance windows
 #colored by chromosome
 p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
-  geom_point() +
-  geom_smooth() +
+  geom_line() +
+  #geom_smooth(method = "loess") +
   scale_color_manual(values = c25) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -248,8 +253,8 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 7.5Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
-  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "black" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
@@ -264,6 +269,7 @@ rm(list = c(r_tab_avg, p1, p3, p5)
 #############
 #10KB mean
 #############
+print("starting 10K means")
 summarize_dist = 10000
 r_tab$distc <- cut(
   r_tab$distance,
@@ -287,15 +293,15 @@ r_tab_avg <- r_tab_avg %>% mutate(
 #mean r^2 summarized of 10Kb distance windows
 p3 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "loess") +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
 #mean r^2 summarized of 10Kb distance windows
 #colored by chromosome
 p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
-  geom_point() +
-  geom_smooth() +
+  geom_line() +
+  #geom_smooth(method = "loess") +
   scale_color_manual(values = c25) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
@@ -303,8 +309,8 @@ p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
 #all points not summarized by dist
 #line of mean r^2 summarized of 10Kb distance windows
 p5 = ggplot() +
-  geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
-  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "blue" ) +
+  #geom_point(data = r_tab, aes(x = distance/10^3, y = R2)) +
+  geom_line(data = r_tab_avg, aes(x = mid/10^3, y = mean), color = "black" ) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
