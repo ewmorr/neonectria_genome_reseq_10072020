@@ -96,7 +96,7 @@ p4
 p5
 dev.off()
 
-rm(list = c(r_tab_avg, p1, p3, p5)
+rm(r_tab_avg)
 
 #############
 #2.5KB mean
@@ -152,7 +152,7 @@ p4
 p5
 dev.off()
 
-rm(list = c(r_tab_avg, p1, p3, p5)
+rm(r_tab_avg)
 
 #############
 #5KB mean
@@ -208,7 +208,7 @@ p4
 p5
 dev.off()
 
-rm(list = c(r_tab_avg, p1, p3, p5)
+rm(r_tab_avg)
 
 #############
 #7.5KB mean
@@ -264,7 +264,7 @@ p4
 p5
 dev.off()
 
-rm(list = c(r_tab_avg, p1, p3, p5)
+rm(r_tab_avg)
 
 #############
 #10KB mean
