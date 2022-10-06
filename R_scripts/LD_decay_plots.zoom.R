@@ -125,7 +125,7 @@ p12 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
   geom_line() +
   #geom_smooth(method = "loess", se = F) +
   scale_color_manual(values = c25) +
-scale_x_log10(limits = c(1, 100)) +
+scale_x_continuous(limits = c(1, 100)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
