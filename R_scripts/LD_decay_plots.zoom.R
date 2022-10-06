@@ -41,86 +41,93 @@ r_tab_avg <- r_tab_avg %>% mutate(
 
 #plots of mean dists
 #mean r^2 summarized of 1Kb distance windows
-p1 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p1 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(1, 10^6)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_log10(limits = c(1, 10^3)) + #all these limits are 10^3 ess bc units are Kbp
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p2 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p2 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_continuous(limits = c(0, 10^6)) +
-  labs(x = "Distance Kbp)", y = expression(paste("LD r"^2))) +
+    scale_x_continuous(limits = c(0, 10^3)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p3 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p3 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(1, 500*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_log10(limits = c(1, 500)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p4 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p4 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_continuous(limits = c(0, 500*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_continuous(limits = c(0, 500)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p5 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p5 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(1, 200*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_log10(limits = c(1, 200)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p6 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p6 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_continuous(limits = c(0, 200*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_continuous(limits = c(0, 200)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p7 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p7 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(1, 100*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_log10(limits = c(1, 100)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p8 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p8 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_continuous(limits = c(0, 100*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_continuous(limits = c(0, 100)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p9 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p9 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_log10(limits = c(1, 50*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_log10(limits = c(1, 50)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
-p10 = ggplot(r_tab_avg, aes(x = mid, y = mean)) +
+p10 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean)) +
   geom_point() +
   geom_smooth(method = "loess", se = F) +
-    scale_x_continuous(limits = c(0, 50*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+    scale_x_continuous(limits = c(0, 50)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
 #mean r^2 summarized of 1Kb distance windows
 #colored by chromosome
-p11 = ggplot(r_tab_avg, aes(x = mid, y = mean, color = CHR_A)) +
+p11 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
   geom_line() +
   #geom_smooth(method = "loess", se = F) +
   scale_color_manual(values = c25) +
-scale_x_log10(limits = c(1, 500*10^3)) +
-  labs(x = "Distance (bp)", y = expression(paste("LD r"^2))) +
+scale_x_log10(limits = c(1, 500)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
+p12 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
+  geom_line() +
+  #geom_smooth(method = "loess", se = F) +
+  scale_color_manual(values = c25) +
+scale_x_log10(limits = c(1, 100)) +
+  labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
+  my_gg_theme
 
 pdf("LD_decay.1Kb_mean.zoom.pdf", width = 16, height = 6)
 p1
@@ -134,4 +141,5 @@ p8
 p9
 p10
 p11
+p12
 dev.off()
