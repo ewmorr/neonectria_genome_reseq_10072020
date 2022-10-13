@@ -43,12 +43,12 @@ r_tab_avg <- r_tab_avg %>% mutate(
 #mean r^2 summarized of 1Kb distance windows
 
 
-p1 = ggplot(r_tab_avg, aes(x = mid/10^3, y = mean, color = CHR_A)) +
+p1 = ggplot(r_tab_avg %>% filter(mid <= 30000), aes(x = mid/10^3, y = mean, color = CHR_A)) +
   geom_line() +
-    facet_wrap(~CHR_A, scales = "free") +
+    facet_wrap(~CHR_A, scales = "free") + ##### MIGHT NEED TO FILTER TO < 30KB DISTANCE AS WELL AS FREE SCALES AND ALSO REMOVE X-AXIS LIMITS
   #geom_smooth(method = "loess", se = F) +
   scale_color_manual(values = c25) +
-    scale_x_continuous(limits = c(1, 30)) +
+    #scale_x_continuous(limits = c(1, 30)) +
   labs(x = "Distance (Kbp)", y = expression(paste("LD r"^2))) +
   my_gg_theme
 
