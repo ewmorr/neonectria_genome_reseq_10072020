@@ -11,4 +11,4 @@ module load anaconda/colsa
 conda activate PRISM
 
 cd ~/neonectria_genome_reseq_10072020
-srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/LD_decay_plots.zoom.facet.R
+srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/LD_decay_plots.zoom.facet.loess.R
