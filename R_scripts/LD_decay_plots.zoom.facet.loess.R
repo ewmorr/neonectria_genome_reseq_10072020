@@ -5,7 +5,7 @@ require(stringr)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 
-r_tab_avg <- read.table("~/neonectria_genome_reseq_10072020/LD.1KB_avg.txt", sep = "\t", col.names = T)
+r_tab_avg <- read.csv("~/neonectria_genome_reseq_10072020/LD.1KB_avg.txt", sep = "\t", col.names = T)
 
 #plots of mean dists
 #mean r^2 summarized of 1Kb distance windows
@@ -13,7 +13,7 @@ r_tab_avg <- read.table("~/neonectria_genome_reseq_10072020/LD.1KB_avg.txt", sep
 
 p1 = ggplot(r_tab_avg %>% filter(mid <= 50000), aes(x = mid/10^3, y = mean, color = CHR_A)) +
   geom_line() +
-    facet_wrap(~CHR_A, scales = "free") + 
+    facet_wrap(~CHR_A, scales = "free") +
   geom_smooth(method = "loess", se = F) +
   scale_color_manual(values = c25) +
     #scale_x_continuous(limits = c(1, 30)) +
