@@ -5,7 +5,7 @@ require(stringr)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 
-r_tab_avg <- read.csv("~/neonectria_genome_reseq_10072020/LD.1KB_avg.txt", sep = "\t", col.names = T)
+r_tab_avg <- read.table("~/neonectria_genome_reseq_10072020/LD.1KB_avg.txt", sep = "\t", header = T)
 
 #plots of mean dists
 #mean r^2 summarized of 1Kb distance windows
