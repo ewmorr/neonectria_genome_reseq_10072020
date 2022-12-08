@@ -385,7 +385,7 @@ get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25miss
 ```
 
 ## LD decay
-Trying with plink 1.9 (.bim file)
+Trying with plink 1.9 (.bim file) (https://www.biostars.org/p/300381/)
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_LD_decay.slurm
@@ -403,6 +403,13 @@ Run R plotting script with avgs across different distances (1Kb, 2.5Kb, 5Kb, 10K
 ```
 cd neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/LD_decay_plots.R.slurm 
+```
+
+## LD blocks 
+Gabriel et al. 2002 https://www.biostars.org/p/300381/
+https://www.cog-genomics.org/plink/1.9/ld#blocks
+Gabriel method is based partly on comparing to phenotypes, which we don't have of course.
+
 
 ## population structure analyses
 
