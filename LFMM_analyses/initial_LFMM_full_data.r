@@ -10,13 +10,13 @@ reverselog_trans <- function(base = exp(1)) {
     log_breaks(base = base),
     domain = c(1e-100, Inf))
 }
-source("~/ggplot_theme.txt")
+source("R_scripts/ggplot_theme.txt")
 
 #The genotype data can simply be read in as a matrix (according the docs)
 #OR can try loading LEA and using readLfmm()
-Y = as.matrix(read.table("Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.lfmm", header = F))
+Y = as.matrix(read.table("data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.lfmm", header = F))
 
-SNP_pos = read.table("Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map")
+SNP_pos = read.table("data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map")
 SNP_pos = SNP_pos[c(1,4)]
 colnames(SNP_pos) = c("scaffold", "position")
 
@@ -27,7 +27,7 @@ points(4,pc$sdev[7]^2, type = "h", lwd = 3, col = "blue")
 
 
 #read env data. Needs to be sorted by PED .sampleIDs info
-source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
+source("R_scripts/make_site_metadata.r")
 #sampleIDs = read.table("Nf_post_SPANDx/out.filtered.PASS.DP_filtered.lt25missing.mac2.rm_NA_ind_and_seqReps.recode01missing9.sampleIDs", header = F)
 #colnames(sampleIDs) = "sample"
 #sample_metadata = read.table("sample_metadata/sample_metadata.Nf.txt", header = T)
@@ -37,9 +37,9 @@ source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
 
 #Join pops to site data
 
-site.info = read.csv("sample_metadata/site_info.csv")
-site.GDD = read.table("sample_metadata/site_climate.GDD.txt", header = T)
-site.climate = read.table("sample_metadata/sites_climate.txt", header = T)
+site.info = read.csv("data/sample_metadata/site_info.csv")
+site.GDD = read.table("data/sample_metadata/site_climate.GDD.txt", header = T)
+site.climate = read.table("data/sample_metadata/sites_climate.txt", header = T)
 site.GDD$freezeThaw.annual_mean = site.GDD$freezeThaw.mean_growing + site.GDD$freezeThaw.mean_nongrowing
 
 site_metadata = left_join(site.GDD, site.info %>% select(Site, lat, lon, duration_infection), by = "Site") %>%
@@ -78,12 +78,12 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv$score^2)/0.456
-lambda
+lambda #1.079
 adj.p.values = pchisq(pv$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
-hist(pv$calibrated.pvalue)
-
+hist(pv$calibrated.pvalue) #this is quite conservative
+hist(pv$pvalue)
 #Try higher value of GIF -- looking for flat distribution with peak near zero
 adj.p.values = pchisq(pv$score^2/1.25, df = 1, lower = FALSE)
 hist(adj.p.values)
@@ -103,7 +103,7 @@ adj.p.values = pchisq(pv$score^2/0.95, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
-scf_lens = read.table("Nf_SPANDx_all_seqs/scaffold_lengths.csv", sep = ",", header = F)
+scf_lens = read.table("data/Nf_SPANDx_all_seqs/scaffold_lengths.csv", sep = ",", header = F)
 colnames(scf_lens) = c("scaffold", "length")
 
 #Join with actual positiion and chromosome
@@ -117,7 +117,7 @@ my_threshold <- quantile((pv.with_pos )$calibrated.p, 0.025, na.rm = T) #removed
 pv.with_pos <- pv.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_threshold, "outlier", "background"))
 #Number of outliers
 pv.with_pos %>% group_by(outlier) %>% tally()
-
+#3274
 #FDR correction
 #This is based on the auto calibartion
 pv.with_pos$FDR.p = p.adjust(pv.with_pos$calibrated.p, method = "fdr", n = length(pv.with_pos$calibrated.p))
@@ -131,14 +131,14 @@ pv.with_pos %>% group_by(FDR.sig) %>% tally()
 pv.with_pos$FDR.p.man = p.adjust(pv.with_pos$man.adj.p, method = "fdr", n = length(pv.with_pos$man.adj.p))
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig.man) %>% tally()
-
+pv.hdd4.with_pos = pv.with_pos
 #227 of 130957 SNPs identified as significant after FDR correction
 
 ####################
 #ggplots
 
 #Basic plot
-ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p)) +
+ggplot(pv.hdd4.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -154,7 +154,7 @@ theme(
 )
 
 #Colored by outliers
-ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = outlier)) +
+ggplot(pv.hdd4.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = outlier)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -171,7 +171,7 @@ axis.text.x = element_text(size = 8)
 )
 
 #FDR with auto corrected P (algorithm GIF)
-p1 = ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+p1 = ggplot(pv.hdd4.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -188,7 +188,7 @@ axis.text.x = element_blank(),
 axis.title.x = element_blank()
 )
 
-p2 = ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+p2 = ggplot(pv.hdd4.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -207,7 +207,7 @@ axis.title.x = element_blank()
 
 
 #FDR correction maunally adjusted P (GIF = 0.95)
-ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+ggplot(pv.hdd4.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -223,7 +223,7 @@ axis.text.x = element_text(size = 8)
 #axis.text.x = element_text(angle = 85, size = 10, hjust = 1)
 )
 
-pdf("figures/LFMM.nongrowing_season_GDD.pdf", width = 18, height = 4)
+pdf("figures/LFMM.nongrowing_season_GDD.01112023.pdf", width = 18, height = 4)
 p1
 p2
 dev.off()
@@ -265,7 +265,7 @@ adj.p.values = pchisq(pv.ft$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
 hist(pv.ft$calibrated.pvalue)
-
+hist(pv.ft$pvalue)
 #IN THIS CASE THE CALCULATED VALUES AREADY LOOK GOOD #THIS IS NOT TRUE FOR ANNUAL MEAN FREEZE-THAW
 
 #Try higher value of GIF -- looking for flat distribution with peak near zero
@@ -287,7 +287,7 @@ adj.p.values = pchisq(pv.ft$score^2/1.15, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
-scf_lens = read.table("Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
+scf_lens = read.table("data/Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
 colnames(scf_lens) = c("scaffold", "length")
 
 #Join with actual positiion and chromosome
@@ -301,7 +301,6 @@ my_threshold <- quantile((pv.ft.with_pos)$calibrated.p, 0.025, na.rm = T)
 pv.ft.with_pos <- pv.ft.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_threshold, "outlier", "background"))
 #Number of outliers
 pv.ft.with_pos %>% group_by(outlier) %>% tally()
-#Example plot
 
 #3274
 
@@ -391,7 +390,7 @@ axis.title.x = element_blank()
 )
 
 
-#FDR correction maunally adjusted P (GIF = 0.95)
+#FDR correction maunally adjusted P (GIF = 1.15)
 ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
@@ -408,7 +407,7 @@ axis.text.x = element_text(size = 8)
 #axis.text.x = element_text(angle = 85, size = 10, hjust = 1)
 )
 
-pdf("figures/LFMM.nongrowing_season_freeze_thaw.pdf", width = 18, height = 4)
+pdf("figures/LFMM.nongrowing_season_freeze_thaw.01112023.pdf", width = 18, height = 4)
 p1
 p2
 dev.off()
@@ -443,13 +442,13 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv.ppt$score^2)/0.456
-lambda #0.94
+lambda #0.95
 adj.p.values = pchisq(pv.ppt$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
 hist(pv.ppt$calibrated.pvalue)
-
-#IN THIS CASE THE CALCULATED VALUES looks conservative
+hist(pv.ppt$pvalue)
+#IN THIS CASE THE CALCULATED VALUES looks pretty good
 
 #Try higher value of GIF -- looking for flat distribution with peak near zero
 adj.p.values = pchisq(pv.ppt$score^2/1.15, df = 1, lower = FALSE)
@@ -461,7 +460,7 @@ hist(adj.p.values) #This looks good
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
 adj.p.values = pchisq(pv.ppt$score^2/0.85, df = 1, lower = FALSE)
-hist(adj.p.values) #This looks better
+hist(adj.p.values) #This looks good, but less conservative
 
 #THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS MORE CONSERVATIVE THAN LOWER VALUES OF LAMBDA
 #However, the lower values have a correct distribution under null model
@@ -470,7 +469,7 @@ adj.p.values = pchisq(pv.ppt$score^2/0.85, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
-scf_lens = read.table("Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
+scf_lens = read.table("data/Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
 colnames(scf_lens) = c("scaffold", "length")
 
 #Join with actual positiion and chromosome
@@ -484,7 +483,6 @@ my_threshold <- quantile((pv.ppt.with_pos %>% filter(length > 100000))$calibrate
 pv.ppt.with_pos <- pv.ppt.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_threshold, "outlier", "background"))
 #Number of outliers
 pv.ppt.with_pos %>% group_by(outlier) %>% tally()
-#Example plot
 
 #3269
 
@@ -573,7 +571,7 @@ axis.text.x = element_blank(),
 axis.title.x = element_blank()
 )
 
-#FDR correction maunally adjusted P (GIF = 0.95)
+#FDR correction maunally adjusted P (GIF = 0.85)
 ggplot(pv.ppt.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
@@ -626,7 +624,7 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv.dur_inf$score^2)/0.456
-lambda
+lambda #1.12
 adj.p.values = pchisq(pv.dur_inf$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
@@ -653,7 +651,7 @@ adj.p.values = pchisq(pv.dur_inf$score^2/0.95, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
-scf_lens = read.table("Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
+scf_lens = read.table("data/Nf_post_SPANDx/scaffold_lengths.csv", sep = ",", header = F)
 colnames(scf_lens) = c("scaffold", "length")
 
 #Join with actual positiion and chromosome
@@ -763,10 +761,10 @@ dev.off()
 #######################
 #write tables
 
-write.table(pv.with_pos, "Nf_LFMM_tables/hdd4_lfmm.txt", quote = F, row.names = F, sep = "\t")
-write.table(pv.ft.with_pos, "Nf_LFMM_tables/freezeThaw_lfmm.txt", quote = F, row.names = F, sep = "\t")
-write.table(pv.ppt.with_pos, "Nf_LFMM_tables/ppt_lfmm.txt", quote = F, row.names = F, sep = "\t")
-write.table(pv.dur_inf.with_pos, "Nf_LFMM_tables/dur_inf_lfmm.txt", quote = F, row.names = F, sep = "\t")
+write.table(pv.hdd4.with_pos, "data/Nf_LFMM_tables/hdd4_lfmm.txt", quote = F, row.names = F, sep = "\t")
+write.table(pv.ft.with_pos, "data/Nf_LFMM_tables/freezeThaw_lfmm.txt", quote = F, row.names = F, sep = "\t")
+write.table(pv.ppt.with_pos, "data/Nf_LFMM_tables/ppt_lfmm.txt", quote = F, row.names = F, sep = "\t")
+write.table(pv.dur_inf.with_pos, "data/Nf_LFMM_tables/dur_inf_lfmm.txt", quote = F, row.names = F, sep = "\t")
 
 
 
@@ -778,7 +776,7 @@ require(grid)
 ############################################
 ##READ THE ABOVE TABLES BACK IN TO RUN BELOW
 
-p1 = ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+p1 = ggplot(pv.hdd4.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
 #scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
@@ -793,8 +791,9 @@ axis.text.x = element_text(size = 8)
 #axis.text.x = element_blank(),
 #axis.title.x = element_blank()
 )
+p1
 
-p4 = ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
+p4 = ggplot(pv.hdd4.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
@@ -877,7 +876,7 @@ axis.text.x = element_blank(),
 axis.title.x = element_blank()
 )
 
-p4 = ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
+p7 = ggplot(pv.dur_inf.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = calibrated.p, color = FDR.sig)) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
 geom_point(alpha = 0.5, size = 1) +
 #scale_x_continuous(labels = fancy_scientific, breaks = c(1, seq(from = 10^6, to = 6*10^6, by = 10^6)) ) +
@@ -928,7 +927,7 @@ grid.newpage()
 grid.draw(g)
 
 
-pdf("figures/LFMM.nongrowing_GDD.nongrowing_freeze_thaw.ppt.pdf", width = 16, height = 6)
+pdf("figures/LFMM.nongrowing_GDD.freeze_thaw.ppt.AUTO_GIF.pdf", width = 16, height = 6)
 grid.newpage()
 grid.draw(g)
 dev.off()
@@ -937,7 +936,7 @@ dev.off()
 #manual calibrated p-values
 #################################
 
-plots = list(p5, p6, p7)
+plots = list(p4, p5, p6)
 
 grobs <- lapply(plots, ggplotGrob)
 # for gridExtra < v2.3, use do.call(gridExtra::rbind.gtable, grobs)
@@ -953,7 +952,7 @@ g$heights[panels] <- unit(c(1,1,1), "null")
 #grid.draw(g)
 
 
-pdf("figures/LFMM.nongrowing_GDD.nongrowing_freeze_thaw.ppt.MANUAL_CALIBRATION.pdf", width = 16, height = 6)
+pdf("figures/LFMM.nongrowing_GDD.freeze_thaw.ppt.MANUAL_CALIBRATION.pdf", width = 16, height = 6)
 grid.newpage()
 grid.draw(g)
 dev.off()

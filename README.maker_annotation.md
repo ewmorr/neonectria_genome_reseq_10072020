@@ -168,7 +168,7 @@ BUSCO results of AED<1.0
         1753    Missing BUSCOs (M)
         3725    Total BUSCO groups searched
 ```
-
+The run with only F. graminearum is significantly better based on BUSCO results
 
 ## Annotate protein seqs against Uniprot
 Uniporot taxonomic divisions https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/
@@ -225,6 +225,8 @@ cut -f1 makerFINAL.all.maker.proteins.UNIPROT.uniref90.blast | sort | uniq | wc 
 Ran by Tuan
 - 13039 blast hits (e-value default is 10^-6)
 - 9631 annotated with GO terms (after filtering for annotation quality)
+
+14064 total seqs = 92.7% hits, 68.5% GO annotation
 
  
 ## GO annotations

@@ -92,12 +92,11 @@ Copy the referece genomes into the SPANDx working dirs
 ```
 cp SPANDx_Nf/ref.fasta Nf_SPANDx_all_seqs/
 cp N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta Nd_SPANDx_all_seqs/ref.fasta
-
+```
 
 #### Make sure that nextflow.config is updated if necessary (https://github.com/dsarov/SPANDx#usage)
 The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM). Newer versions of the package also have `notrim` set to `true`. This should be `false` in that case. Also, note that we have cloned the git repo after installing via conda, and made some modificaations to the `main.nf` script (i.e., changing the `gatk HaplotypeCaller` comand at line 865 to include `--ploidy 1` flag) and to the `./bin/Master_vcf.sh` script (i.e., removing `-ploidy 1` from the `gatk GenotypeGVCFs` command). Also, note that `.bashrc` may need to be updated as described [here](./SPANDx_conda_install.sh). Finally, the reference genome assembly must be loacted in the SPANDx working directory (along with the reads), and can be indicated by path in the config file. Then, to run SPANDx (note that nextflow is pointed to the cloned git repo)
 
-```
 
 Running full sample set of Nf SPANDx
 ```
@@ -410,6 +409,49 @@ Gabriel et al. 2002 https://www.biostars.org/p/300381/
 https://www.cog-genomics.org/plink/1.9/ld#blocks
 Gabriel method is based partly on comparing to phenotypes, which we don't have of course.
 
+```
+cd neonectria_genome_reseq_10072020
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_LD_block.slurm 
+```
+run report
+```
+PLINK v1.90b6.21 64-bit (19 Oct 2020)          www.cog-genomics.org/plink/1.9/
+(C) 2005-2020 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_block.log.
+Options in effect:
+  --allow-extra-chr
+  --bfile out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode
+  --blocks no-pheno-req
+  --blocks-max-kb 200
+  --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_block
+  --threads 24
+
+128714 MB RAM detected; reserving 64357 MB for main workspace.
+130957 variants loaded from .bim file.
+102 people (0 males, 0 females, 102 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_block.nosex
+.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 102 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.890081.
+130957 variants and 102 people pass filters and QC.
+Note: No phenotypes present.
+--blocks: 99%^M--blocks: 5612 haploblocks written to
+out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_block.blocks
+.
+Extra block details written to
+out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.LD_block.blocks.det
+.
+Longest span: 49.861kb.
+```
+The .det file contains block position and block length (Kb) and n snps per block. Count number of SNPs categorized
+```
+LD_block_SNP_count.r
+``` 
+19914 of 130957 variants in blocks. Mean block len = 650 bp, median = 153 bp, not much help for mappping SNPs to genes
+
 
 ## population structure analyses
 
@@ -506,18 +548,11 @@ ml_tree.adegenet.plot.r
 
 
 
-## After pop structure analyses performing analyses of pairwise diversity (e.g. nucleotide diversity and Fst) between sites OR across dataset
+## After pop structure analyses performing analyses of diversity (e.g. nucleotide diversity and Fst) between sites OR across dataset
 ### R package PopGenome 
 ### Goal is to perform whole genome and sliding window analyses
 
-
-## Sliding window analysis and LFMM
-#### Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more data points
-First running LFMM to identify significant SNPs
-```
-LFMM_analyses/initial_LFMM_full_data.r
-```
-
+## Genome scans for diversity metrics
 #### See [here](https://wurmlab.com/genomicscourse/2016-SIB/practicals/population_genetics/popgen) for analyses using popgenome with haploid data. We first start by splitting the data into scaffolds (or chromosomes), which can be done with bcftools or bash
 
 Then IF doing locally need to activate conda env for bcftools -- OR just do all of this with bcftools on the server where it's installed. can use the first few lines to loop through scaffolds
@@ -566,13 +601,43 @@ Genome scans for Pi theta TajD
 ```
 F_stats.PopGenome.read_ind_scf.scan_Pi_theta.no_pops.r
 ```
-NOTE that four of the total 24 contigs are left out of VCF because there were no SNPs called on these contigs. tig00007952_pilon tig00007948_pilon tig00007947_pilon tig00000405_pilon. These are all less than 100kb. Would be interesting to see what's on these contigs
+NOTE that four of the total 24 contigs 4 are left out of VCF because there were no SNPs called on these contigs. tig00007952_pilon tig00007948_pilon tig00007947_pilon tig00000405_pilon. These are all less than 100kb. Would be interesting to see what's on these contigs
 
 
 
+## LFMM
+#### Whole SNP set. DO NOT filter to sites with >= 4 samples per site for analyses to be performed in conjuntion with LFMM tests of SNP-climate correlation/GWAS, because the minimum sample number is not necessary when not performing at the population(site) level and we will have more data points
+First running LFMM to identify significant SNPs. We will use the automatically calibrated p-values instead of manually adjusted according to Francois et al. 2016 "recalibrating is always subjective" (both auto and manually recalibrated are retained in the summary tables)
+```
+LFMM_analyses/initial_LFMM_full_data.r
+```
+We are not picking up many SNPs with freeze-thaw. It is possible the more important var is tmin. Running that as well for comparison
+```
+LFMM_analyses/LFMM_full_data.tmin.r
+```
+Also run growing season HDD4
+```
+LFMM_analyses/LFMM_full_data.growing_hdd4.r
+```
+#### Comparing SNP position to gene position (from gff) to identify nearest neighbors to significant SNPs of different variables
+run locally
+```
+LFMM_analyses/nearest_neighbor_genes.hdd4.r
+LFMM_analyses/nearest_neighbor_genes.freezeThaw.r
+LFMM_analyses/nearest_neighbor_genes.ppt.r
+LFMM_analyses/nearest_neighbor_genes.tmin.r
+LFMM_analyses/nearest_neighbor_genes.growing_hdd4.r
+```
+Venn diagrams of genes and SNPs shared between different climate metrics
+```
+LFMM_analyses/gene_SNP_venn.R
+```
+PCA of climate vars
+```
+LFMM_analyses/climate_vars_pca.r
+```
 
-
-
+### The following routine is no longer used in preference for the nearest neighbor method above
 ### Identify which genes SNPs occur on
 get gene IDS to pull from gff
 ```
@@ -597,8 +662,58 @@ sig_SNPs_gene_count.hdd4.r
 sig_SNPs_gene_count.freezeThaw.r
 sig_SNPs_gene_count.ppt.r
 ```
-#### Have not run pairwise site comparisons for now. May be interesting, but also hard to compare to significant SNP correlations because pariwise stats are run on a subset of the data
 
+## GO mapping and enrichment tests for LFMM partitions
+### GO mapping and GO slim mapping performed by Tuan D. using blast2GO. 
+
+### Convert the B2GO slim mapping to a gene association style format, with one row per gene-GO association instead of one row per gene with multiple GO terms listed comma-separated in a single column
+```
+cd repo/neonectria_genome_reseq_10072020/
+perl GO_slim_and_enrichment/B2GOslim2long.pl data/blast2GO/makerFINAL.all.maker.proteins-1_GOSlim_Yeast.txt | less
+perl GO_slim_and_enrichment/B2GOslim2long.pl data/blast2GO/makerFINAL.all.maker.proteins-1_GOSlim_Yeast.txt > data/blast2GO/makerFINAL.all.maker.proteins-1_GOSlim_Yeast.long.txt
+perl GO_slim_and_enrichment/B2GOslim2long.pl data/blast2GO/makerFINAL.all.maker.proteins-1_GOslim_generic.txt > data/blast2GO/makerFINAL.all.maker.proteins-1_GOslim_generic.long.txt
+```
+Note there are a few genes that hit the same slim term multiple times. Presumably these are hits from different child terms (i.e., the gene mapped to multiple children that then mapped to the same slim term), but we should make sure to only count these once
+
+```
+sort data/blast2GO/makerFINAL.all.maker.proteins-1_GOSlim_Yeast.long.txt | uniq > data/blast2GO/makerFINAL.all.maker.proteins-1_GOSlim_Yeast.long.uniq.txt
+sort data/blast2GO/makerFINAL.all.maker.proteins-1_GOslim_generic.long.txt | uniq > data/blast2GO/makerFINAL.all.maker.proteins-1_GOslim_generic.long.uniq.txt
+```
+
+
+
+### This routine no longer needed because switched to GO slim mapping of whole set and then performing enrichment tests using R instead of blast2GO
+Extract sequences of genes associated with different SNP sets for GO enrichment test sets (run locally)
+```
+cd repo/neonectria_genome_reseq_10072020/
+perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/hdd4.nearest_neighbors.faa
+
+perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/freezeThaw.nearest_neighbors.faa
+
+perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/ppt.nearest_neighbors.faa
+
+grep ">" data/Nf_LFMM_tables/hdd4.nearest_neighbors.faa | wc -l
+#49
+grep ">" data/Nf_LFMM_tables/freezeThaw.nearest_neighbors.faa | wc -l
+#5
+grep ">" data/Nf_LFMM_tables/ppt.nearest_neighbors.faa | wc -l
+#129
+
+wc -l data/Nf_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt
+#49
+wc -l data/Nf_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt
+#5
+wc -l data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt
+#129
+```
+
+
+
+
+
+
+
+#### Have not run pairwise site comparisons for now. May be interesting, but also hard to compare to significant SNP correlations because pariwise stats are run on a subset of the data
 ## pop level diversity
 ### Using R::PopGenome for diversity stats
 ### For population level stats (e.g., Fst comps between sites) will need to filter low n sites
