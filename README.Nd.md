@@ -132,8 +132,8 @@ Download plot
 ```
 cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 ```
-This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
-Download to Nd_SPANDx_all_seqs. 15 samples with >30% missing data
+
+Download to Nd_SPANDx_all_seqs. 2 samples with >30% missing data
 
 ```
 srun --pty bash -i
@@ -144,7 +144,7 @@ vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vc
 module purge
 awk '$5 > 0.3' out.imiss | cut -f1 > lowDP.indv
 ```
-15 samples flagged. 
+2 samples flagged. 
 ```
 module load linuxbrew/colsa
 vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf --remove lowDP.indv --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind
@@ -152,13 +152,13 @@ grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_in
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | wc -l
 
 ```
-102 individuals and 130957 sites remaining = 13357614
-1460689 NA
-1460689/13357614 = 10.9% NA
+17 individuals and 228931 sites remaining = 3891827
+309744 NA
+309744/13357614 = 7.959% NA
 
 #
-83542 sites recognized by R::PopGenome
-120803 sites recongized including poly allelic
+x sites recognized by R::PopGenome
+x sites recongized including poly allelic
 
 
 ### Perform LD filtering before population structure analyses
@@ -168,7 +168,7 @@ cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
 grep -v "^##" ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
-Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 45019 SNPs remaining at 10Kb filter
+ 45019 SNPs remaining at 10Kb filter
 
 ## Format conversions for downstream processes
 
