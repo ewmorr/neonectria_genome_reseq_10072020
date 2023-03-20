@@ -16,5 +16,5 @@ structure_threader run -K 8 -R 5 \
 -i ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.structure \
 -o ~/Nd_SPANDx_all_seqs_structure_th/ \
 --params ~/Nd_SPANDx_all_seqs_structure_th/mainparams \
--t 64 -st /mnt/home/garnas/ericm/.local/bin/structure
+-t 24 -st /mnt/home/garnas/ericm/.local/bin/structure
 
