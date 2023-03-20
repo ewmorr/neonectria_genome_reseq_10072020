@@ -4,7 +4,7 @@
 #SBATCH --output=vcfR_depth.out
 #SBATCH --partition=shared
 
-cd ~/SPANDx_Nf/Outputs/Master_vcf/
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 
 module purge
 module load anaconda/colsa

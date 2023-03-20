@@ -1,152 +1,23 @@
 # Repo for analysis of genome resequencing data of Neonectria faginata and Neonectria ditissima
+## This workflow picks up after SNP calling and is modified from the main README to be performed on the Nd SNP calls
+
 #### Workflows performed on UNH Premise or locally using R as appropriate
 
-## set up sequence files for SNP calling
-
-### Set up dirs for performing SPANDx SNP calling (premise)
-```
-mkdir Nf_SPANDx_all_seqs
-mkdir Nd_SPANDx_all_seqs
-```
-
-local. Find matching sequence files by sample to combine
-```
-Rscript sort_seq_files_for_SPANDx.r
-```
-
-### Cp seqs to new dirs using the lists of IDs created above. Some samples have two sets of sequences and those are concatenated
-```
-#Nf first set
-while IFS= read -r line 
-do(
-    cp neonectria_genome_reseq_10072020/reads/${line}_*R1*.fastq.gz Nf_SPANDx_all_seqs/${line}_1.fastq.gz
-    cp neonectria_genome_reseq_10072020/reads/${line}_*R2*.fastq.gz Nf_SPANDx_all_seqs/${line}_2.fastq.gz
-)
-done < sample_IDs.Nf.10072020.txt
-
-#Nf second set
-while IFS= read -r line 
-do(
-    cp neonectria_genome_reseq_03312022/reads/${line}_*R1*.fastq.gz Nf_SPANDx_all_seqs/${line}_1.fastq.gz
-    cp neonectria_genome_reseq_03312022/reads/${line}_*R2*.fastq.gz Nf_SPANDx_all_seqs/${line}_2.fastq.gz
-)
-done < sample_IDs.Nf.03312022.txt
-
-#Nf second set with additional reads
-while IFS= read -r line 
-do(
-    cat neonectria_genome_reseq_03312022/reads/${line}_*R1*.fastq.gz neonectria_genome_reseq_03312022_adtl_reads/reads/${line}_*R1*.fastq.gz > Nf_SPANDx_all_seqs/${line}_1.fastq.gz
-    cat neonectria_genome_reseq_03312022/reads/${line}_*R2*.fastq.gz neonectria_genome_reseq_03312022_adtl_reads/reads/${line}_*R2*.fastq.gz > Nf_SPANDx_all_seqs/${line}_2.fastq.gz
-)
-done < sample_IDs.Nf.03312022_adtl_reads.txt
-
-#Nd first set
-while IFS= read -r line 
-do(
-    cp neonectria_genome_reseq_10072020/reads/${line}_*R1*.fastq.gz Nd_SPANDx_all_seqs/${line}_1.fastq.gz
-    cp neonectria_genome_reseq_10072020/reads/${line}_*R2*.fastq.gz Nd_SPANDx_all_seqs/${line}_2.fastq.gz
-)
-done < sample_IDs.Nd.10072020.txt
-
-#Nd second set
-while IFS= read -r line 
-do(
-    cp neonectria_genome_reseq_03312022/reads/${line}_*R1*.fastq.gz Nd_SPANDx_all_seqs/${line}_1.fastq.gz
-    cp neonectria_genome_reseq_03312022/reads/${line}_*R2*.fastq.gz Nd_SPANDx_all_seqs/${line}_2.fastq.gz
-)
-done < sample_IDs.Nd.03312022.txt
-
-#Nd second set with additional reads
-while IFS= read -r line 
-do(
-    cat neonectria_genome_reseq_03312022/reads/${line}_*R1*.fastq.gz neonectria_genome_reseq_03312022_adtl_reads/reads/${line}_*R1*.fastq.gz > Nd_SPANDx_all_seqs/${line}_1.fastq.gz
-    cat neonectria_genome_reseq_03312022/reads/${line}_*R2*.fastq.gz neonectria_genome_reseq_03312022_adtl_reads/reads/${line}_*R2*.fastq.gz > Nd_SPANDx_all_seqs/${line}_2.fastq.gz
-)
-done < sample_IDs.Nd.03312022_adtl_reads.txt
-
-```
-Also cat the duplicates
-```
-cat neonectria_genome_reseq_10072020/reads/NG10_*R1*.fastq.gz neonectria_genome_reseq_10072020/reads/NG76_*R1*.fastq.gz > Nf_SPANDx_all_seqs/NG10_1.fastq.gz
-cat neonectria_genome_reseq_10072020/reads/NG10_*R2*.fastq.gz neonectria_genome_reseq_10072020/reads/NG76_*R2*.fastq.gz > Nf_SPANDx_all_seqs/NG10_2.fastq.gz
-
-cat neonectria_genome_reseq_03312022/reads/NG108_*R1*.fastq.gz neonectria_genome_reseq_03312022/reads/NG149_*R1*.fastq.gz > Nf_SPANDx_all_seqs/NG108_1.fastq.gz
-cat neonectria_genome_reseq_03312022/reads/NG108_*R2*.fastq.gz neonectria_genome_reseq_03312022/reads/NG149_*R2*.fastq.gz > Nf_SPANDx_all_seqs/NG108_2.fastq.gz
-
-cat neonectria_genome_reseq_10072020/reads/NG48_*R1*.fastq.gz neonectria_genome_reseq_10072020/reads/NG78_*R1*.fastq.gz > Nf_SPANDx_all_seqs/NG48_1.fastq.gz
-cat neonectria_genome_reseq_10072020/reads/NG48_*R2*.fastq.gz neonectria_genome_reseq_10072020/reads/NG78_*R2*.fastq.gz > Nf_SPANDx_all_seqs/NG48_2.fastq.gz
-
-cat neonectria_genome_reseq_10072020/reads/NG28_*R1*.fastq.gz neonectria_genome_reseq_10072020/reads/NG77_*R1*.fastq.gz > Nf_SPANDx_all_seqs/NG28_1.fastq.gz
-cat neonectria_genome_reseq_10072020/reads/NG28_*R2*.fastq.gz neonectria_genome_reseq_10072020/reads/NG77_*R2*.fastq.gz > Nf_SPANDx_all_seqs/NG28_2.fastq.gz
-
-cat neonectria_genome_reseq_10072020/reads/NG62_*R1*.fastq.gz neonectria_genome_reseq_10072020/reads/NG79_*R1*.fastq.gz > Nf_SPANDx_all_seqs/NG62_1.fastq.gz
-cat neonectria_genome_reseq_10072020/reads/NG62_*R2*.fastq.gz neonectria_genome_reseq_10072020/reads/NG79_*R2*.fastq.gz > Nf_SPANDx_all_seqs/NG62_2.fastq.gz
-
-cat neonectria_genome_reseq_03312022/reads/NG106_*R1*.fastq.gz neonectria_genome_reseq_03312022/reads/NG161_*R1*.fastq.gz > Nf_SPANDx_all_seqs/NG106_1.fastq.gz
-cat neonectria_genome_reseq_03312022/reads/NG106*R2*.fastq.gz neonectria_genome_reseq_03312022/reads/NG161_*R2*.fastq.gz > Nf_SPANDx_all_seqs/NG106_2.fastq.gz
-
-```
-
-## SPANDx SNP calling
-Copy the referece genomes into the SPANDx working dirs
-```
-cp SPANDx_Nf/ref.fasta Nf_SPANDx_all_seqs/
-cp N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta Nd_SPANDx_all_seqs/ref.fasta
-```
-
-#### Make sure that nextflow.config is updated if necessary (https://github.com/dsarov/SPANDx#usage)
-The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM). Newer versions of the package also have `notrim` set to `true`. This should be `false` in that case. Also, note that we have cloned the git repo after installing via conda, and made some modificaations to the `main.nf` script (i.e., changing the `gatk HaplotypeCaller` comand at line 865 to include `--ploidy 1` flag) and to the `./bin/Master_vcf.sh` script (i.e., removing `-ploidy 1` from the `gatk GenotypeGVCFs` command). Also, note that `.bashrc` may need to be updated as described [here](./SPANDx_conda_install.sh). Finally, the reference genome assembly must be loacted in the SPANDx working directory (along with the reads), and can be indicated by path in the config file. Then, to run SPANDx (note that nextflow is pointed to the cloned git repo)
-
-
-Running full sample set of Nf SPANDx
-```
-module purge
-module load anaconda/colsa
-
-cd ~/Nf_SPANDx_all_seqs
-conda activate spandx
-source ~/.bashrc
-
-nextflow config ~/SPANDx_git_clone/
-
-screen
-
-nextflow run ~/SPANDx_git_clone/
-
-Ctrl-a Ctrl-d
-screen -list
-```
-The first run on 05132022 is `30523.pts-47.login01`
-```
-screen -r 30523.pts-47.login01
-```
-Running Nd
-```
-cd ~/Nd_SPANDx_all_seqs/
-
-screen
-
-nextflow run ~/SPANDx_git_clone/
-
-Ctrl-a Ctrl-d
-screen -list
-```
-25526.pts-0.login01
 
 ## SNP and sample filtering
 
 ### Filter out SNPs that SPANDx FAIL filtering
 ```
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
 grep -v "##\|#" out.filtered.PASS.vcf | wc -l
 ```
-516,326 SNPs remaining x 117 samples = 60410142
+1,112,323 SNPs remaining x 19 samples = 21,134,137
 ```
 grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
 ```
-2719040 NA sites
-2719040/60410142 = 4.50%
+1182518 NA sites
+1182518/21134137 = 5.595%
 
 
 ### Post-SNP calling calculations and filtering
@@ -162,12 +33,12 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/sample_coverage.slurm
 
 concatenate coverage results
 ```
-cd ~/Nf_SPANDx_all_seqs/Outputs/bams
+cd ~/Nd_SPANDx_all_seqs/Outputs/bams
 for i in *.coverage_by_sequence.txt
 do
     cov="$(grep "genome" $i| cut -f 3)"
     sample=${i%.coverage_by_sequence.txt}
-    echo -e "$sample\t$cov" >> ~/Nf_SPANDx_all_seqs/Outputs/coverage_by_sample.dedup_bam.txt
+    echo -e "$sample\t$cov" >> ~/Nd_SPANDx_all_seqs/Outputs/coverage_by_sample.dedup_bam.txt
 done
 ```
 
@@ -177,7 +48,7 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/cov_vcfR.slurm
 ```
 
-Depth results and plots stored locally at the home dir `coverage/Nf_all_seqs/`
+Depth results and plots stored locally at the home dir `coverage/Nd_all_seqs/`
 
 
 
@@ -196,7 +67,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_m
 ```
 Count variants and NA vals
 ```
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 grep -v "##\|#" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 ```
@@ -215,7 +86,7 @@ The slurm script is giving an illegal instrution error (WHY?) This is a small en
 ```
 module purge
 module load linuxbrew/colsa
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
@@ -228,7 +99,7 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_polyalleles_rm.slurm 
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
 ```
@@ -255,7 +126,7 @@ Don't forget to `exit` interactive session!
 using mac 2
 
 ### need to look at proportion of missing data per individual. Useful to plot. This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
-Download to Nf_SPANDx_all_seqs. 15 samples with >30% missing data
+Download to Nd_SPANDx_all_seqs. 15 samples with >30% missing data
 
 ```
 srun --pty bash -i
@@ -288,7 +159,7 @@ Using BCFtools
 ```
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
-grep -v "^##" ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
+grep -v "^##" ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
 Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 45019 SNPs remaining at 10Kb filter
 
@@ -306,7 +177,7 @@ This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `
 
 
 ```
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf
 cp out.filtered.LD_filtered_0.5_10Kb.map out.filtered.LD_filtered_0.5_10Kb.map.original
 sed 's/[a-z,_]*//g' out.filtered.LD_filtered_0.5_10Kb.map.original > out.filtered.LD_filtered_0.5_10Kb.map
 ```
@@ -317,7 +188,7 @@ REcoding entire SNP set with `--recode01 --missing-genotype 9` for input to R::L
 cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.full_dat_LFMM.slurm
 
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf
 
 cut out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.ped -d " " -f 1-6 --complement | awk  '{for (i=1;i<=NF;i+=2) printf "%s ", $i; printf "\n" }' > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.lfmm
 
@@ -336,18 +207,18 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.full_
 
 ### STRUCTURE format
 Download `out.filtered.LD_filtered_0.5_10Kb.fam` to make indfile for structure `make_structure_indfile.r`
-Downloaded .fam, .lfmm file to `repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/`
+Downloaded .fam, .lfmm file to `repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs/`
 
-upload `Nf_SPANDx_all_seqs/ind_file.structure`
+upload `Nd_SPANDx_all_seqs/ind_file.structure`
 
 ```
 module purge
 module load linuxbrew/colsa
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 ```
 First run pgdspider with no -spid to generate template
 ```
-pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -outputfile Nf.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE 
+pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -outputfile Nd.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE 
 ```
 Edits
 - VCF_PARSER_PLOIDY_QUESTION=HAPLOID
@@ -366,21 +237,21 @@ PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structur
 
 ### LD filtered VCF, PED, and BED files are at
 ```
-~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.ped
-~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.bed
-~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf
+~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.ped
+~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.bed
+~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf
 ```
 ### Full SNP set (i.e., quality filtered but not LD filtered) is at
 ```
-~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf
+~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf
 ```
 
 For local pcadapt. sftp:
 ```
-lcd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
-get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb*
+lcd repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs
+get Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb*
 lcd ..
-get Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode*
+get Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode*
 ```
 
 ## LD decay
@@ -459,13 +330,13 @@ LD_block_SNP_count.r
 First generate the params files
 ```
 cd 
-mkdir Nf_SPANDx_all_seqs_structure_th
+mkdir Nd_SPANDx_all_seqs_structure_th
 module purge
 module load anaconda/colsa
 export PATH=~/.local/bin:$PATH
 
-cd Nf_SPANDx_all_seqs_structure_th
-structure_threader params -o ~/Nf_SPANDx_all_seqs_structure_th/
+cd Nd_SPANDx_all_seqs_structure_th
+structure_threader params -o ~/Nd_SPANDx_all_seqs_structure_th/
 
 ```
 Download the params file to edit and retain a local copy if desired. The default parameters generated by structure_threader in `extraparams` are satisfactory.
@@ -495,14 +366,14 @@ Rscript plot_evanno.r
 ### Running admixture CV
 ```
 cd 
-mkdir Nf_SPANDx_all_seqs_admixture
+mkdir Nd_SPANDx_all_seqs_admixture
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/admixture_CV.slurm
 ```
 Ran ADMIXTURE with --haploid flag set 
 ```
 grep "CV error" admixture.out
-less ~/Nf_SPANDx_all_seqs_admixture/CV_by_K.text 
+less ~/Nd_SPANDx_all_seqs_admixture/CV_by_K.text 
 ```
 Look for a dip in CV results. There is only a steady increase
 
@@ -560,16 +431,16 @@ Then IF doing locally need to activate conda env for bcftools -- OR just do all 
 
 #make dirs for processing VCF files to individual scaffolds
 
-mkdir ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/scaffolds_split
-grep -v "#" ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | cut -f 1 | uniq \
-    > repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/scaffolds.txt
+mkdir ~/repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs/scaffolds_split
+grep -v "#" ~/repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | cut -f 1 | uniq \
+    > repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs/scaffolds.txt
     
-cut -f 1 ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map | uniq
+cut -f 1 ~/repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map | uniq
 
 conda activate bcftools
 
 #compress and index VCF file
-cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs
 
 bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf
 tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz
@@ -584,7 +455,7 @@ conda deactivate
 ```
 Need to set up separate dirs for each scaffold
 ```
-cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs
 
 #array of files (there are 20)
 scf_files=(scaffolds_split/*)
@@ -646,7 +517,7 @@ grep ">" makerFINAL.all.maker.transcripts.fasta > transcipt_IDs.txt
 ```
 Download GFF and IDs
 ```
-cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/maker2_ann
+cd repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs/maker2_ann
 sftp
 get neonectria_genome_reseq_10072020/maker2_run/makerFINAL.all.gff
 get neonectria_genome_reseq_10072020/maker2_run/transcipt_IDs.txt
@@ -656,7 +527,7 @@ pull relevant lines from GFF
 ```
 perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_mRNA_IDs_from_GFF.pl makerFINAL.all.gff > makerFINAL.all.mRNA_ONLY.gff
 ```
-count the number of SNPs on genes. files written to `data/Nf_LFMM_tables` dir
+count the number of SNPs on genes. files written to `data/Nd_LFMM_tables` dir
 ```
 sig_SNPs_gene_count.hdd4.r
 sig_SNPs_gene_count.freezeThaw.r
@@ -726,24 +597,24 @@ In general F aspect has more genes mapped (about 2k) but lower number of categor
 Extract sequences of genes associated with different SNP sets for GO enrichment test sets (run locally)
 ```
 cd repo/neonectria_genome_reseq_10072020/
-perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/hdd4.nearest_neighbors.faa
+perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nd_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nd_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt > data/Nd_LFMM_tables/hdd4.nearest_neighbors.faa
 
-perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/freezeThaw.nearest_neighbors.faa
+perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nd_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nd_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt > data/Nd_LFMM_tables/freezeThaw.nearest_neighbors.faa
 
-perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/ppt.nearest_neighbors.faa
+perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nd_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nd_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt > data/Nd_LFMM_tables/ppt.nearest_neighbors.faa
 
-grep ">" data/Nf_LFMM_tables/hdd4.nearest_neighbors.faa | wc -l
+grep ">" data/Nd_LFMM_tables/hdd4.nearest_neighbors.faa | wc -l
 #49
-grep ">" data/Nf_LFMM_tables/freezeThaw.nearest_neighbors.faa | wc -l
+grep ">" data/Nd_LFMM_tables/freezeThaw.nearest_neighbors.faa | wc -l
 #5
-grep ">" data/Nf_LFMM_tables/ppt.nearest_neighbors.faa | wc -l
+grep ">" data/Nd_LFMM_tables/ppt.nearest_neighbors.faa | wc -l
 #129
 
-wc -l data/Nf_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt
+wc -l data/Nd_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt
 #49
-wc -l data/Nf_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt
+wc -l data/Nd_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt
 #5
-wc -l data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt
+wc -l data/Nd_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt
 #129
 ```
 
@@ -765,7 +636,7 @@ list_low_samples_to_retain_n_ge4.r
 Then rerun scaffold split
 ```
 conda activate bcftools
-cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs
 
 bcftools view --samples-file retain_samples.txt out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
 bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
@@ -784,69 +655,3 @@ done < scaffolds.txt
 PopGenome/F_stats.PopGenome.rm_low_n_sites.r
 ```
 
-
-########
-########
-########
-########
-########
-Also running new gene mark annotations for LFMM
-
-```
-cd neonectria_genome_reseq_10072020/
-sbatch ~/repo/ONS_Nf/genemark.pilon_polished.slurm
-
-```
-Get a couple of regions of high SNP correlation
-```
-perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_segments_by_pos_from_fasta.pl ~/neonectria_minion/MAT2_polish/pilon_.fasta tig00000025_pilon 2524273 2544922 > neonectria_genome_reseq_10072020/high_LFMM_snp_tig00000025_pilon_2524273-2544922.fasta
-
-perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_segments_by_pos_from_fasta.pl ~/neonectria_minion/MAT2_polish/pilon_.fasta tig00000025_pilon 3070669 3078240 > neonectria_genome_reseq_10072020/high_LFMM_snp_tig00000025_pilon_3070669-3078240.fasta
-
-cat high_LFMM_snp_tig00000025_pilon_2524273-2544922.fasta high_LFMM_snp_tig00000025_pilon_3070669-3078240.fasta > high_LFMM_SNP.fasta
-
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastx_swissprot_high_LFMM.slurm
-```
-Also blast maker proteins for comparison
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_maker1.slurm #This got overwritten
-```
-Also blast genemark proteins for comparison
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_genemark_LFMM.slurm
-```
-Top hits in order of 4085_g, 3399_g, 4236_g, 4236_g (note the last two don't have great hits based on e-value and this also blasts to a transposon region)
-```
-grep GIS2_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#Zinc finger protein GIS2; GO regulation of translation
-grep RHO3_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-grep RHO3_ASHGO ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#GTP-binding protein RHO3
-grep YEG5_SCHPO ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#Ankyrin and IPT/TIG repeat-containing protein C26H5.05; GO regulation of transcription
-grep TIP20_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#Protein transport protein TIP20
-```
-
-
-### Extract PRISM data for new sites
-On Premise
-```
-module purge
-module load anaconda/colsa
-conda activate PRISM
-screen
-srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/PRISM_dailies_ppt_download.r
-srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/PRISM_dailies_download.r
-```
-Once the dailies are downloaded
-```
-sbatch repo/neonectria_genome_reseq_10072020/premise/PRISM_dalies_site_extract.slurm
-```
-Also process 30 yr normals locally using `sites_climate_dat.r` and process the created .rds object from `PRISM_dalies_site_extract.slurm` locally
-```
-#first download the .rds objects. Requires: sites_daily_tmin_tmax_ppt_20072018.df.rds
-cd repo/neonectria_genome_reseq_10072020/
-Rscript PRISM_calcs/tmin_tmax_dailys_GDD_calcs.r
-Rscript PRISM_calcs/sites_climate_dat.r
-```

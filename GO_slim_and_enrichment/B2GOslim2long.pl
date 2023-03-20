@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # Eric Morrison
 # 01/25/2023
-# Usage: B2GOslim2long.pl [input Blast2GO slim]
+# Usage: B2GOslim2long.pl [input Blast2GO slim] [quality flag, either ANNOTATED or GO-SLIM]
 # This script takes a list of genes with slim terms computed by blast2GO and transforms it to "long" form, with each row representing a gene-slim term association instead of each row representing a gene with slim terms comma-separated in a single column.
 
 use strict;
@@ -14,24 +14,24 @@ sub convert_line_feeds{
 }
                        
 sub hash_GOs{
-    my $inRef = $_[0];
+    my($inRef, $flag) = @_;
     my @in = @$inRef;
     
     my %go;
     foreach my $gene (@in){
-        
         my @gene = split("\t", $gene);
+        
         #assign seqName and description
         my $seqName = $gene[2];
         my $descrip;
-        if($gene[3] eq "" || $gene[3] eq "---NA---"){#some genes do not have description
+        if($gene[1] =~ /NO-BLAST/){#some genes do not have description. This corresponds to $gene[1] =~ /NO-BLAST/ or $gene[3] eq "---NA---"
             $descrip = "NA";
         }else{
             $descrip = $gene[3];
         }
         
-        #For GO IDs and GO names need to check if defined
-        if($gene[9] eq ""){
+        #For GO IDs and GO names need to filter for high-quality mappings based on $flag
+        if($gene[1] !~ /$flag/){
             %{ $go{$seqName} } = (
                 "descrip" => $descrip,
                 "aspect" => [ "NA" ],#assign as length 1 array for consistency
@@ -51,7 +51,7 @@ sub hash_GOs{
         my @aspect;
         my @names;
         foreach my $goName (@goNames){
-            $goName =~ /(F|C|P):(\w.+)/;
+            $goName =~ /^(F|C|P):(.+)/;
             push(@aspect, $1);
             push(@names, $2);
         }
@@ -81,11 +81,12 @@ sub print_gos{
 #MAIN
 {
     my $in = $ARGV[0];
+    my $flag = $ARGV[1]; #should be either ANNOTATED or GO-SLIM to indicate high-quality mappings from granular B2GO or GOslim B2GO, respectively
     open(IN, "$in") || die "Can't open input\n";
     chomp(my @in = <IN>);
     shift(@in); #remove header row
     print "SeqName\tDescription\tGOaspect\tGOID\tGOname\n";
     
-    my $goRef = hash_GOs(\@in);
+    my $goRef = hash_GOs(\@in, $flag);
     print_gos($goRef);
 }
