@@ -185,7 +185,7 @@ Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--re
 ```
 cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf
 cp out.filtered.LD_filtered_0.5_10Kb.map out.filtered.LD_filtered_0.5_10Kb.map.original
-sed 's/[a-z,_, A-Z]*//g' out.filtered.LD_filtered_0.5_10Kb.map.original > out.filtered.LD_filtered_0.5_10Kb.map
+sed 's/[a-z,_,A-Z,\.]*//g' out.filtered.LD_filtered_0.5_10Kb.map.original > out.filtered.LD_filtered_0.5_10Kb.map
 ```
 
 ### LFMM
