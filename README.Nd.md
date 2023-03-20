@@ -48,11 +48,11 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/cov_vcfR.slurm
 ```
 
-Depth results and plots stored locally at the home dir `coverage/Nd_all_seqs/`
+Depth results and plots stored locally at `~/repo/neonectria_genome_reseq_10072020/data/coverage_Nd`
 
 
 
-### Next will need to perform coverage based filtering based on these results. 4 read minimum 48 read max (0.25 or 3x of mean 15.8 DP. Note that median DP is 6 and the mean of the first set of samples was 7.5 so setting DP min = 4 allows to capture more valid SNPs across entire sample set)
+### Next will need to perform coverage based filtering based on these results. 6 read minimum 79 read max (0.25 or 3x of mean 26.3 DP. Note that median DP is 16 )
 ### The VCF file `out.filtered.PASS.vcf` first needs to be modified to exclude commas within quotes (i.e., description fields) in the ##INFO rows as vcftools will not handle these. Write to `out.filtered.PASS.no_comma.vcf` the easiest/most acurate way seems to be to modify manually
 ```
 cp out.filtered.PASS.vcf out.filtered.PASS.no_comma.vcf
@@ -62,7 +62,7 @@ vim out.filtered.PASS.no_comma.vcf
 
 ```
 cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max48.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min6_max79.slurm
 
 ```
 Count variants and NA vals

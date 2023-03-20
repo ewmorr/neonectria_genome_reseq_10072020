@@ -134,6 +134,7 @@ screen -list
 25526.pts-0.login01
 
 ## SNP and sample filtering
+#### Note that file paths in scripts have subsequently been changed for Nd processing
 
 ### Filter out SNPs that SPANDx FAIL filtering
 ```
