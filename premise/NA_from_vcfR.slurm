@@ -11,4 +11,4 @@ module load anaconda/colsa
 
 conda activate vcfR
 
-srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/NA_from_VCF.r
+srun Rscript ~/repo/neonectria_genome_reseq_10072020/R_scripts/NA_from_vcf.r

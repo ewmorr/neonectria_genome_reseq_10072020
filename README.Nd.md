@@ -128,7 +128,10 @@ using mac 2
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/NA_from_vcfR.slurm 
 ```
-
+Download plot
+```
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
+```
 This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
 Download to Nd_SPANDx_all_seqs. 15 samples with >30% missing data
 

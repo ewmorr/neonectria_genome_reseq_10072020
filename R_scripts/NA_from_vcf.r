@@ -19,7 +19,7 @@ p1 = ggplot(gt.na.perc, aes(x=sample, y=missing)) +
         axis.text.x = element_text(angle = 90)
     )
 
-pdf("figures/missing_by_sample.pdf", width = 24, height = 6)
+pdf("missing_by_sample.pdf", width = 24, height = 6)
 p1
 dev.off()
 
