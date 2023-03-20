@@ -72,10 +72,10 @@ grep -v "##\|#" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 ```
 #### Note that `vcftools` recodes NA values "." as diploid NA "./."
-516326 variants # (first grep) x 117 samples
-60410142 total variants
-13,130,656 NA # second grep
-13130656/60410142 = 21.7%
+1112323 variants # (first grep) x 19 samples
+21134137 total variants
+3891541 NA # second grep
+3891541/21134137 = 18.4%
 
 #### Missing data filter, maximum 25%. (i.e., no more than 25% of samples are NA at the site)
 ```
