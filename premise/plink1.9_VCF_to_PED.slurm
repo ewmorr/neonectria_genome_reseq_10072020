@@ -9,7 +9,7 @@ module load anaconda/colsa
 
 conda activate plink1.9
 
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 
 srun plink --vcf out.filtered.LD_filtered_0.5_10Kb.vcf --recode12 --out out.filtered.LD_filtered_0.5_10Kb --allow-extra-chr
 

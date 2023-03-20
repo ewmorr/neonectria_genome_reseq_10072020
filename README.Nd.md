@@ -168,7 +168,7 @@ cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
 grep -v "^##" ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
- 45019 SNPs remaining at 10Kb filter
+11346 SNPs remaining at 10Kb filter
 
 ## Format conversions for downstream processes
 
@@ -179,9 +179,8 @@ cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_PED.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/plink1.9_VCF_to_BED.slurm
 ```
-This appears to work.... Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--recode`
+Note that for ADMIXTURE PED needs to be recoded using `--recode12` and not `--recode`
 - ADMIXTURE also requires that the `.map` file containes only numerics in "chromosome" (contig) names
-
 
 ```
 cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf
