@@ -82,18 +82,16 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
 ```
-The slurm script is giving an illegal instrution error (WHY?) This is a small enough job to run on the head node but need to figure this out
+The slurm script is giving an illegal instrution error if we end up on node 117 or 118.
+Add `#SBATCH --exclude=node[117-118]` to fix illegal instruction
 ```
-module purge
-module load linuxbrew/colsa
 cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
-bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -o out.filtered.PASS.DP_filtered.lt25missing.vcf
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 ```
-433071 remaining variants x 117 = 50669307
-8921908 NA
-8921908/50669307 = 17.6% NA
+915968 remaining variants x 19 = 17403392
+2074428 NA
+2074428/17403392 = 11.9% NA
 
 ### Remove polyallelic sites
 ```

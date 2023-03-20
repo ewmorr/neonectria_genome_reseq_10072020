@@ -7,7 +7,7 @@
 module purge
 module load linuxbrew/colsa
 
-cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 
 ####This *should* set individual genotypes to "." rather than filtering out whole variants. Can then filter based on % missing genotypes. Will need to check number of rows PASS remaining and number NA genotypes
 

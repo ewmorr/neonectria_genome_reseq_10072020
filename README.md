@@ -212,7 +212,7 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
 ```
-The slurm script is giving an illegal instrution error (WHY?) This is a small enough job to run on the head node but need to figure this out
+The slurm script is giving an illegal instrution error (WHY?) This is a small enough job to run on the head node but need to figure this out. Add `#SBATCH --exclude=node[117-118]` to fix illegal instruction
 ```
 module purge
 module load linuxbrew/colsa
