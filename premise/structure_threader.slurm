@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=64
+#SBATCH --cpus-per-task=24
 #SBATCH --job-name="str_th"
 #SBATCH --output=structure_threader.out
 #SBATCH --partition=shared

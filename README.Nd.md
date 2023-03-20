@@ -357,7 +357,7 @@ Download the params file to edit and retain a local copy if desired. The default
 - POPDATA 1
 - MAXPOPS 8 #although this is set by -K on the command line; use 8 bc there are only 17 samples, silly to have more than 2 samples per pop
 
-Run structure_threader (started at 5/27 2p)
+Run structure_threader (started at 3/20/23 3p)
 ```
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
