@@ -4,7 +4,7 @@ require(ggplot2)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 #filtered VCF
-vcf <- read.vcfR("Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf", verbose = FALSE)
+vcf <- read.vcfR("Nd_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf", verbose = FALSE)
 gt <- extract.gt(vcf, element='GT', as.numeric=TRUE)
 gt.na = is.na(gt)
 

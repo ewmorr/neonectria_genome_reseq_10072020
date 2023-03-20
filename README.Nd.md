@@ -101,9 +101,9 @@ cd ~/Nd_SPANDx_all_seqs/Outputs/Master_vcf/
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
 ```
-416688 remaining variants x 117 = 48752496
-8583122 NA
-8583122/48752496 = 17.6% NA
+871375 remaining variants x 19 = 16556125
+1976185 NA
+1976185/16556125 = 11.9% NA
 
 ### Filtering sites based on minor allele *count* `--mac` of 3 (at least 3 samples) and then filtering samples based on missing data
 Run in interactive session! First start a tmux session
@@ -119,11 +119,17 @@ grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.v
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3.recode.vcf | wc -l
 ```
 Don't forget to `exit` interactive session!
-130957 sites remaining at --mac 2
-94489 sites remaining at --mac 3
+228931 sites remaining at --mac 2
+150533 sites remaining at --mac 3
 using mac 2
 
-### need to look at proportion of missing data per individual. Useful to plot. This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
+### need to look at proportion of missing data per individual. Useful to plot. 
+```
+cd ~/neonectria_genome_reseq_10072020/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/NA_from_vcfR.slurm 
+```
+
+This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
 Download to Nd_SPANDx_all_seqs. 15 samples with >30% missing data
 
 ```
