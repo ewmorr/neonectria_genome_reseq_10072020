@@ -227,10 +227,10 @@ First run pgdspider with no -spid to generate template
 ```
 pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -outputfile Nd.out.filtered.LD_filtered_0.5_10Kb.structure -outputformat STRUCTURE 
 ```
-Edits
+Edits to template_VCF_STRUCTURE.spid
+- VCF_PARSER_POP_FILE_QUESTION=ind_file.structure
 - VCF_PARSER_PLOIDY_QUESTION=HAPLOID
 - VCF_PARSER_POP_QUESTION=true
-- VCF_PARSER_POP_FILE_QUESTION=ind_file.structure
 - VCF_PARSER_PL_QUESTION=false
 - STRUCTURE_WRITER_LOCI_DISTANCE_QUESTION=false
 - STRUCTURE_WRITER_DATA_TYPE_QUESTION=SNP
@@ -240,7 +240,7 @@ pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -out
 awk '{print NF}' out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
 ```
 
-PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structure run but will need to investigate. Set mainparams loci number to 40857,  LABEL to 1 and POPDATA to 1.
+PGSpider is leaving 9925 SNPs (above awk -2). Set mainparams loci number to 9925,  LABEL to 1 and POPDATA to 1.
 
 ### LD filtered VCF, PED, and BED files are at
 ```
@@ -257,9 +257,10 @@ For local pcadapt. sftp:
 ```
 lcd repo/neonectria_genome_reseq_10072020/data/Nd_SPANDx_all_seqs
 get Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb*
-lcd ..
 get Nd_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode*
 ```
+
+# left off here and moved to structure runs
 
 ## LD decay
 Trying with plink 1.9 (.bim file) (https://www.biostars.org/p/300381/)
@@ -354,7 +355,7 @@ Download the params file to edit and retain a local copy if desired. The default
 - MISSING -9
 - LABEL 1
 - POPDATA 1
-- MAXPOPS 15 #although this is set by -K on the command line
+- MAXPOPS 8 #although this is set by -K on the command line; use 8 bc there are only 17 samples, silly to have more than 2 samples per pop
 
 Run structure_threader (started at 5/27 2p)
 ```
