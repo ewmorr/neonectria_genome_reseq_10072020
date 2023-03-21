@@ -362,8 +362,7 @@ Run structure_threader (started at 3/20/23 3:45p)
 cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
 ```
-The  structure threader run started writing results at 11 days. After 14.75 days there are nine results written (K4 and K3). K8 started writing at 20d 14h (6/17 04:00), K1 has finished by 23d5h (06/19 20:00), K10 started writing at at 23d15h (06/20 0600) finished 24d14h (06/21 0400)
-#### Note that the run may be killed early due to Premise downtime starting 06/26. If that is the case can restart any jobs that didn't finish and/or use structureharvester outside of the structure threader wrapper to calculate evanno method
+The  structure threader run started writing results at 13 hours. 
 
 #### Plot evanno
 Run locally
