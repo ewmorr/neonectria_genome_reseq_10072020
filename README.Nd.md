@@ -382,7 +382,7 @@ Ran ADMIXTURE with --haploid flag set
 grep "CV error" admixture.out
 less ~/Nd_SPANDx_all_seqs_admixture/CV_by_K.text 
 ```
-Look for a dip in CV results. There is only a steady increase
+Look for a dip in CV results. There is a *peak* at K=6.
 
 
 ### Run PCADAPT locally `repo/pcadapt/pca_LD_filtered.r`
@@ -390,7 +390,7 @@ Look for a dip in CV results. There is only a steady increase
 #file
 out.filtered.LD_filtered_0.5_10Kb.bed
 #script
-pcadapt/pca_LD_filtered.r
+pcadapt/pca_LD_filtered.Nd.r
 ```
 
 ### Run IBD locally (popgen/adegenet methods)

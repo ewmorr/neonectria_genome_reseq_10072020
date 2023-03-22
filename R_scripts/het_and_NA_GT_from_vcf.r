@@ -1,13 +1,15 @@
-require(vcfR)
+library(vcfR)
 
-vcf <- read.vcfR("SPANDx_Nf/out.filtered.vcf", verbose = FALSE)
-test.vcf = read.vcfR("Nf_post_SPANDx/LD_filter/plink_conversion_test/test_dat.vcf", verbose = FALSE)
-gt <- extract.gt(test.vcf, element='GT', convertNA=TRUE, as.numeric = T)
+vcf <- read.vcfR("data/Nd_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.vcf", verbose = FALSE)
+#test.vcf = read.vcfR("Nf_post_SPANDx/LD_filter/plink_conversion_test/test_dat.vcf", verbose = FALSE)
+gt <- extract.gt(vcf, element='GT', convertNA=TRUE, as.numeric = T)
 
+head(gt)
 
+nrow(gt)
 
-
-
+colSums(is.na(gt) )/nrow(gt)
+sum(rowSums(is.na(gt) )/ncol(gt) > 0.5)
 
 
 

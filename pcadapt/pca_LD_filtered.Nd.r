@@ -1,20 +1,23 @@
-require(pcadapt)
-require(ggplot2)
-require(dplyr)
-source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
-require(RColorBrewer)
-require(gridExtra)
-source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
+library(pcadapt)
+library(ggplot2)
+library(dplyr)
+source("R_scripts/ggplot_theme.txt")
+library(RColorBrewer)
+library(gridExtra)
+source("R_scripts/make_site_metadata.r")
 
-makeBed <- "Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.bed"
+makeBed <- "data/Nd_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.bed"
+makeVcf = "data/Nd_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.vcf"
 makeBed.file <- read.pcadapt(makeBed, type = "bed")
 bed_mat.makeBed = pcadapt::bed2matrix(makeBed.file)
+
+sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F])
 
 sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 0)
 sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 1)
 sum(bed_mat.makeBed[is.na(bed_mat.makeBed) == F] == 2)
 
-x <- pcadapt(input = makeBed.file, K = 20, ploidy = 2) #K must be less than the number of species
+x <- pcadapt(input = makeBed.file, K = 15, ploidy = 2) #K must be less than the number of species
 #Ploidy is set to 2 because the function throws an error otherwise. This looks like because the conversion from BED is not recognizing haploid data. A look at `bed_mat.makeBed` shows SNPs encoded as 0 or 2 with no outcomes of 1 (i.e., het gentypes).
 
 
@@ -37,14 +40,15 @@ geom_line() +
 scale_x_continuous(breaks = c(1,10,20)) +
 labs(x = "PC axis", y = "Proportion variance explained") +
 my_gg_theme
+p1
 
-pdf("figures/Nf.LD_filtered.PCA_scree_plot.pdf", width = 6, height = 5)
+pdf("figures/Nd.LD_filtered.PCA_scree_plot.pdf", width = 6, height = 5)
 p1
 dev.off()
 
 #Plot PCA scores
 sample_metadata
-fam_info.Nf
+fam_info
 
 
 pc_scores.metadata = data.frame(
@@ -56,7 +60,7 @@ pc_scores.metadata = data.frame(
     PC6 = x$scores[,6],
     PC7 = x$scores[,7],
     PC8 = x$scores[,8],
-    sample = fam_info.Nf[,1]
+    sample = fam_info.Nd[,1]
 )
 
 pc_scores.metadata = left_join(pc_scores.metadata, sample_metadata, by = "sample")
@@ -98,6 +102,7 @@ labs(
     ),
 ) +
 my_gg_theme
+p1
 
 p1.guide = ggplot(pc_scores.metadata, aes(PC1, PC2, color = state.name)) +
 geom_point(size = 3) +
@@ -117,8 +122,9 @@ labs(
     ),
 ) +
 my_gg_theme
+p1.guide
 
-pdf("figures/Nf.LD_filtered.PCA_plot.P1-P2.pdf", width = 8, height = 5)
+pdf("figures/Nd.LD_filtered.PCA_plot.P1-P2.pdf", width = 8, height = 5)
 p1.guide
 dev.off()
 
@@ -141,6 +147,7 @@ labs(
     ),
 ) +
 my_gg_theme
+p2
 
 p3 = ggplot(pc_scores.metadata, aes(PC2, PC3, color = state.name)) +
 geom_point(size = 3) +
@@ -159,91 +166,12 @@ labs(
         "% variance)", sep = ""
     ),
 ) +
-my_gg_theme +
-theme(
-    legend.margin = margin(b = -300)
-)
-
-p4 = ggplot(pc_scores.metadata, aes(PC1, PC4, color = state.name)) +
-geom_point(size = 3) +
-scale_color_manual(values = c25) +
-guides(color = "none") +
-labs(
-    x =
-    paste(
-            paste("PC1 (",round(scree_dat[1,1]*100, 1), sep = ""
-            ),
-        "% variance)", sep = ""
-    ),
-    y =
-    paste(
-        paste("PC4 (",round(scree_dat[4,1]*100, 1), sep = ""
-        ),
-        "% variance)", sep = ""
-    ),
-) +
-my_gg_theme
-
-p5 = ggplot(pc_scores.metadata, aes(PC2, PC4, color = state.name)) +
-geom_point(size = 3) +
-scale_color_manual(values = c25) +
-guides(color = "none") +
-labs(
-    x =
-    paste(
-            paste("PC2 (",round(scree_dat[2,1]*100, 1), sep = ""
-            ),
-        "% variance)", sep = ""
-    ),
-    y =
-    paste(
-        paste("PC4 (",round(scree_dat[4,1]*100, 1), sep = ""
-        ),
-        "% variance)", sep = ""
-    ),
-) +
-my_gg_theme
-
-p6 = ggplot(pc_scores.metadata, aes(PC3, PC4, color = state.name)) +
-geom_point(size = 3, alpha = 0.7) +
-scale_color_manual(values = c25) +
-guides(color = "none") +
-labs(
-    x =
-    paste(
-            paste("PC3 (",round(scree_dat[3,1]*100, 1), sep = ""
-            ),
-        "% variance)", sep = ""
-    ),
-    y =
-    paste(
-        paste("PC4 (",round(scree_dat[4,1]*100, 1), sep = ""
-        ),
-        "% variance)", sep = ""
-    ),
-) +
-my_gg_theme
-
-require(gtable)
-
-gp1<-ggplotGrob(p1)
-gp2<-ggplotGrob(p2)
-gp3<-ggplotGrob(p3)
-gp4<-ggplotGrob(p4)
-gp5<-ggplotGrob(p5)
-gp6<-ggplotGrob(p6)
-gp6 = gtable_add_cols(gp6, unit(1,"cm"))
-gp6 = gtable_add_cols(gp6, unit(1,"cm"))
-ncol(gp6)
-ncol(gp3)
-
-gp14 = rbind(gp1,gp4)
-gp25 = rbind(gp2, gp5)
-gp36 = rbind(gp3, gp6)
+my_gg_theme 
+p3
 
 
-pdf("figures/Nf.LD_filtered.PCA_plot.pdf", width = 16, height = 16)
-grid.arrange(gp14,gp25,gp36, nrow = 2, widths = c(0.285, 0.285, 0.43))
+pdf("figures/Nd.LD_filtered.PCA_plot.pdf", width = 16, height = 4)
+grid.arrange(p1,p2,p3, nrow = 1, widths = c(0.3, 0.3, 0.4))
 #grid.arrange(p1,p2,p3,p4,p5,p6, nrow = 2, widths = c(0.3, 0.3, 0.4))
 dev.off()
 
