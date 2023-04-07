@@ -92,7 +92,7 @@ cat neonectria_genome_reseq_10072020/reads/NG62_*R2*.fastq.gz neonectria_genome_
 ## SPANDx SNP calling
 Copy the referece genomes into the SPANDx working dirs
 ```
-cp SPANDx_Nf/ref.fasta Nf_SPANDx_all_seqs/
+cp neonectria_minion/MAT1_polish_2/pilon_.fasta Nf_SPANDx_all_seqs/ref.fasta
 cp N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta Nd_SPANDx_all_seqs/ref.fasta
 ```
 

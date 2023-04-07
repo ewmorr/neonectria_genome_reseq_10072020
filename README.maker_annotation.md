@@ -1,5 +1,5 @@
 
-## AUGUSTS via BUSCO
+## AUGUSTUS via BUSCO
 ### Generate BUSCO gene models using `busco --long`
 Using the reference sequence at `SPANDx_Nf/ref.fasta`
 ```
@@ -17,13 +17,13 @@ augustus parameters are  written to `$HOME/augustus_config/config/species/BUSCO_
 cd
 sbatch repo/ONS_Nf/genemark.pilon_polished.slurm
 
-mkdir neonectria_genome_reseq_10072020/genemark_run
-mv prot_seq.faa neonectria_genome_reseq_10072020/genemark_run
-mv nuc_seq.fna neonectria_genome_reseq_10072020/genemark_run
-mv genemark.gtf neonectria_genome_reseq_10072020/genemark_run
-mv run/ neonectria_genome_reseq_10072020/genemark_run
-mv data/ neonectria_genome_reseq_10072020/genemark_run
-mv output/ neonectria_genome_reseq_10072020/genemark_run
+mkdir Nf_annotate/genemark_run
+mv prot_seq.faa Nf_annotate/genemark_run
+mv nuc_seq.fna Nf_annotate/genemark_run
+mv genemark.gtf Nf_annotate/genemark_run
+mv run/ Nf_annotate/genemark_run
+mv data/ Nf_annotate/genemark_run
+mv output/ Nf_annotate/genemark_run
 ```
 For MassMyco 2021 presentation: search for genes in areas of high SNP sig density (from LFMM below) which occur on contig tig00000025_pilon b\n positions 2524273-2544922 and 3070669-3078240
 ```
