@@ -363,6 +363,7 @@ cd ~/neonectria_genome_reseq_10072020/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/structure_threader.slurm
 ```
 The  structure threader run started writing results at 13 hours. 
+Started a new run with Klist 9 10 11 12 at 9:10a 3/22/23 because Evanno result from K 1-8 not clear (maybe peak at K=3)
 
 #### Plot evanno
 Run locally
