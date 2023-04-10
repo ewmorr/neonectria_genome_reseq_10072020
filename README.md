@@ -142,23 +142,23 @@ cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
 grep -v "##\|#" out.filtered.PASS.vcf | wc -l
 ```
-516,326 SNPs remaining x 117 samples = 60410142
+515,095 SNPs remaining x 117 samples = 60266115
 ```
 grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
 ```
-2719040 NA sites
-2719040/60410142 = 4.50%
+2712983 NA sites
+2712983/60266115 = 4.50%
 
 
 ### Post-SNP calling calculations and filtering
 
 #### Note that while the documentation/paper says that SPANDx performs depth filtering, it is not clear from the scripts that this is done (and there are many SNPs with DP == 1 in the filtered VCF)
 
-### Coverage calculations
-calculate raw coverage
+### Coverage calculations 
+calculate raw coverage (This has not been run for repolished ref seq)
 ```
-cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/sample_coverage.slurm
+#cd ~/neonectria_genome_reseq_10072020/
+#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/sample_coverage.slurm
 ```
 
 concatenate coverage results
