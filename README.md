@@ -142,12 +142,12 @@ cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
 grep -v "##\|#" out.filtered.PASS.vcf | wc -l
 ```
-515,095 SNPs remaining x 117 samples = 60266115
+516,531 SNPs remaining x 117 samples = 60434127
 ```
 grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
 ```
-2712983 NA sites
-2712983/60266115 = 4.50%
+2732246 NA sites
+2712983/60434127 = 4.52%
 
 
 ### Post-SNP calling calculations and filtering
@@ -182,7 +182,7 @@ Depth results and plots stored locally at the home dir `coverage/Nf_all_seqs/`
 
 
 
-### Next will need to perform coverage based filtering based on these results. 4 read minimum 45 read max (0.25 or 3x of mean 15.8 DP. Note that median DP is 6 and the mean of the first set of samples was 7.5 so setting DP min = 4 allows to capture more valid SNPs across entire sample set)
+### Next will need to perform coverage based filtering based on these results. 4 read minimum 45 read max (0.25 or 3x of mean 15.1 DP. Note that median DP is 6 and the mean of the first set of samples was 7.5 so setting DP min = 4 allows to capture more valid SNPs across entire sample set)
 ### The VCF file `out.filtered.PASS.vcf` first needs to be modified to exclude commas within quotes (i.e., description fields) in the ##INFO rows as vcftools will not handle these. Write to `out.filtered.PASS.no_comma.vcf` the easiest/most acurate way seems to be to modify manually
 ```
 cp out.filtered.PASS.vcf out.filtered.PASS.no_comma.vcf
@@ -192,8 +192,18 @@ vim out.filtered.PASS.no_comma.vcf
 
 ```
 cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max48.slurm
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_DP_filter_min4_max45.slurm
 
+```
+Or just start an interactive session and run all of the following filtering steps sequenctially
+```
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+module purge
+tmux new -s vcf_filter
+srun --pty bash -i
+
+module load linuxbrew/colsa
+vcftools --vcf out.filtered.PASS.no_comma.vcf --out out.filtered.PASS.DP_filtered --recode --minDP 4 --maxDP 45
 ```
 Count variants and NA vals
 ```
@@ -202,15 +212,15 @@ grep -v "##\|#" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.recode.vcf | wc -l
 ```
 #### Note that `vcftools` recodes NA values "." as diploid NA "./."
-516326 variants # (first grep) x 117 samples
-60410142 total variants
-13,130,656 NA # second grep
-13130656/60410142 = 21.7%
+516531 variants # (first grep) x 117 samples
+60434127 total variants
+13347910 NA # second grep
+13347910/60434127 = 22.1%
 
 #### Missing data filter, maximum 25%. (i.e., no more than 25% of samples are NA at the site)
 ```
-cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
+#cd ~/neonectria_genome_reseq_10072020/
+#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_missing_dat_filter_0.25.slurm
 ```
 The slurm script is giving an illegal instrution error. Add `#SBATCH --exclude=node[117-118]` to fix illegal instruction
 ```
@@ -221,21 +231,24 @@ bcftools view -i 'F_MISSING<0.25' out.filtered.PASS.DP_filtered.recode.vcf -Ov -
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.vcf | wc -l
 ```
-433071 remaining variants x 117 = 50669307
-8921908 NA
-8921908/50669307 = 17.6% NA
+429249 remaining variants x 117 = 50222133
+8982524 NA
+8982524/50222133 = 17.9% NA
 
 ### Remove polyallelic sites
 ```
-cd ~/neonectria_genome_reseq_10072020/
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_polyalleles_rm.slurm 
+#cd ~/neonectria_genome_reseq_10072020/
+#sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vcftools_polyalleles_rm.slurm 
+
 cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
+vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.vcf --out out.filtered.PASS.DP_filtered.lt25missing.biallele --recode --max-alleles 2
+
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.recode.vcf | wc -l
 ```
-416688 remaining variants x 117 = 48752496
-8583122 NA
-8583122/48752496 = 17.6% NA
+413506 remaining variants x 117 = 48380202
+8650170 NA
+8650170/48380202 = 17.9% NA
 
 ### Filtering sites based on minor allele *count* `--mac` of 3 (at least 3 samples) and then filtering samples based on missing data
 Run in interactive session! First start a tmux session
@@ -251,12 +264,14 @@ grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.v
 grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac3.recode.vcf | wc -l
 ```
 Don't forget to `exit` interactive session!
-130957 sites remaining at --mac 2
-94489 sites remaining at --mac 3
+128629 sites remaining at --mac 2
+92538 sites remaining at --mac 3
 using mac 2
 
-### need to look at proportion of missing data per individual. Useful to plot. This could be run on the server using vcfR conda env and `NA_from_VCF.r` but the server is currently not running conda due to hardware issues. Trying to run locally and have not set up a slurm script
-Download to Nf_SPANDx_all_seqs. 15 samples with >30% missing data
+15049593 sites
+
+### need to look at proportion of missing data per individual. Useful to plot. Running locally and have not set up a slurm script
+Download to Nf_SPANDx_all_seqs. 90th percentile is 38.59% missing and will use this as cutoff (12 samples). 16 samples with >30% missing data
 
 ```
 srun --pty bash -i
@@ -265,9 +280,9 @@ module load linuxbrew/colsa
 
 vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf --missing-indv
 module purge
-awk '$5 > 0.3' out.imiss | cut -f1 > lowDP.indv
+awk '$5 > 0.3839' out.imiss | cut -f1 > lowDP.indv
 ```
-15 samples flagged. 
+12 samples flagged. 
 ```
 module load linuxbrew/colsa
 vcftools --vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.recode.vcf --remove lowDP.indv --recode --out out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind
@@ -275,13 +290,13 @@ grep -v "##\|#" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_in
 grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf | wc -l
 
 ```
-102 individuals and 130957 sites remaining = 13357614
-1460689 NA
-1460689/13357614 = 10.9% NA
+105 individuals and 128629 sites remaining = 13506045
+1646296 NA
+1646296/13506045 = 12.2% NA
 
 #
-83542 sites recognized by R::PopGenome
-120803 sites recongized including poly allelic
+83542 sites recognized by R::PopGenome #need to update this
+120803 sites recongized including poly allelic #need to update this
 
 
 ### Perform LD filtering before population structure analyses
@@ -291,7 +306,7 @@ cd ~/neonectria_genome_reseq_10072020
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bcftools_LD_filter_0.5_10KB.slurm
 grep -v "^##" ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/out.filtered.LD_filtered_0.5_10Kb.vcf | wc -l
 ```
-Tried filter at 50Kb and 10Kb orignially, 50Kb seems excessive esp. for genome size. 45019 SNPs remaining at 10Kb filter
+ 43958 SNPs remaining at 10Kb filter
 
 ## Format conversions for downstream processes
 
@@ -363,7 +378,7 @@ pgdspider -inputfile out.filtered.LD_filtered_0.5_10Kb.vcf -inputformat VCF -out
 awk '{print NF}' out.filtered.LD_filtered_0.5_10Kb.structure | sort -nu | tail -n 1
 ```
 
-PGSpider is leaving 40857 SNPs (above awk -2)... will move forward with structure run but will need to investigate. Set mainparams loci number to 40857,  LABEL to 1 and POPDATA to 1.
+PGSpider is leaving 39849 SNPs (above awk -2)... will move forward with structure run but will need to investigate. Set mainparams loci number to 39849,  LABEL to 1 and POPDATA to 1.
 
 ### LD filtered VCF, PED, and BED files are at
 ```
@@ -472,8 +487,8 @@ structure_threader params -o ~/Nf_SPANDx_all_seqs_structure_th/
 Download the params file to edit and retain a local copy if desired. The default parameters generated by structure_threader in `extraparams` are satisfactory.
 #### Edits to `mainparams`
 - set PLOIDY to 1
-- NUMINDS 102 #after filtering out seuqncing reps and high missing data
-- NUMLOCI 40857 #SNPs remaining after pgspider
+- NUMINDS 105 #after filtering out seuqncing reps and high missing data
+- NUMLOCI 39849 #SNPs remaining after pgspider
 - MISSING -9
 - LABEL 1
 - POPDATA 1

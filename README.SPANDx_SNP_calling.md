@@ -115,6 +115,9 @@ screen
 
 nextflow run ~/SPANDx_git_clone/
 
+#If necessary can restart a run with 
+#nextflow run ~/SPANDx_git_clone/ -resume
+
 Ctrl-a Ctrl-d
 screen -list
 ```
