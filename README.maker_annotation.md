@@ -1,3 +1,5 @@
+# Refer to the README file in ONS_Nf repo
+### The ONS_Nf repo describes the full annotation process as described in genome report manuscript
 
 ## AUGUSTUS via BUSCO
 ### Generate BUSCO gene models using `busco --long`
