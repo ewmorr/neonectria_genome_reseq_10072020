@@ -295,8 +295,10 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA
 1646296/13506045 = 12.2% NA
 
 #
-83542 sites recognized by R::PopGenome #need to update this
-120803 sites recongized including poly allelic #need to update this
+80982 biallelic sites recognized by R::PopGenome 
+119207 sites recongized including poly allelic 
+vcfR pulls in the correct number of sites
+
 
 
 ### Perform LD filtering before population structure analyses
@@ -339,7 +341,7 @@ cut out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01mi
 
 cut out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.ped -d " " -f 1 > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.sampleIDs
 
-grep "##contig=<ID=" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf > scaffold_lengths.txt
+zgrep "##contig=<ID=" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf > scaffold_lengths.txt
 
 sed -e 's/##contig=<ID=//' -e 's/length=//' -e 's/>//' scaffold_lengths.txt > scaffold_lengths.csv
 ```
@@ -525,7 +527,23 @@ grep "CV error" admixture.out
 less ~/Nf_SPANDx_all_seqs_admixture/CV_by_K.text 
 ```
 Look for a dip in CV results. There is only a steady increase
-
+```
+CV error (K=10): 1.00554
+CV error (K=11): 1.09313
+CV error (K=12): 1.16395
+CV error (K=13): 1.19551
+CV error (K=14): 1.21995
+CV error (K=15): 1.31073
+CV error (K=1): 0.77573
+CV error (K=2): 0.78060
+CV error (K=3): 0.80289
+CV error (K=4): 0.83119
+CV error (K=5): 0.87117
+CV error (K=6): 0.90029
+CV error (K=7): 0.93328
+CV error (K=8): 0.96157
+CV error (K=9): 1.03546
+```
 
 ### Run PCADAPT locally `repo/pcadapt/pca_LD_filtered.r`
 ```
@@ -534,8 +552,10 @@ out.filtered.LD_filtered_0.5_10Kb.bed
 #script
 pcadapt/pca_LD_filtered.r
 ```
+Greatest variance is in 4 axes. No strong population differentiation/clustering
 
 ### Run IBD locally (popgen/adegenet methods)
+in sample size of 5 excludes NH.SCG, NH.CCM, ME.N, MI, and NJ. min sample size of 3 would include ME.N ad NJ
 ```
 #file
 out.filtered.LD_filtered_0.5_10Kb.bed
@@ -543,6 +563,8 @@ out.filtered.LD_filtered_0.5_10Kb.bed
 R_scripts/IBD.adegenet_metrics.multiple_subsamples.r
 partial_mantel_IBD_dur_inf.r
 ```
+No sig relationship until VA is excluded. without VA r = 0.4936303 , P = 0.018
+sig relationship between gen dist and age f infection distance, and between geo distance and age of infection distance
 
 ### Calculate phylogeny
 Convert GVCF to SNP matrix
@@ -552,25 +574,88 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/gvcf2table.slurm
 ```
 There are very few SNPs with no NA values so the .clean files are useless. Convert NA i.e., `./.` to gaps for tree calculation
 ```
+cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 sed 's:\./\.:-:g' out.filtered.LD_filtered_0.5_10Kb.table > out.filtered.LD_filtered_0.5_10Kb.table.na2gap
 sed 's:\./\.:-:g' out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap
 ```
-Once NAs are converted convert to fasta multiple sequence alignment (run locally)
+Once NAs are converted convert to fasta multiple sequence alignment (run locally). First conunt the number of indels
 ```
-perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/snp_table2fasta.pl out.filtered.LD_filtered_0.5_10Kb.table.na2gap 5 > out.filtered.LD_filtered_0.5_10Kb.fasta
-perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/snp_table2fasta.pl out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap 5 > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.fasta
+cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
+grep "INDEL" out.filtered.LD_filtered_0.5_10Kb.table.na2gap | wc -l
+grep "INDEL" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap | wc -l
+```
+There are 12076 in the full file and 4108 in the LD filtered. remove and then convert gaps to ambigous bases (this will be handled correctly in tree calculation)
+128629 total SNPs - 12076 = 116553 remaining (popgenome reads the number of SNPs correctly after conversion to fasta format as below. 116553 biallelic and no poly allelic SNPs)
+```
+grep -v "INDEL" out.filtered.LD_filtered_0.5_10Kb.table.na2gap > out.filtered.LD_filtered_0.5_10Kb.table.na2gap.noINDEL
+grep -v "INDEL" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap.noINDEL
+sed 's/-/N/g' out.filtered.LD_filtered_0.5_10Kb.table.na2gap.noINDEL > out.filtered.LD_filtered_0.5_10Kb.noINDEL.table
+sed 's/-/N/g' out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap.noINDEL > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.noIndel.table
+
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/snp_table2fasta.pl out.filtered.LD_filtered_0.5_10Kb.noINDEL.table 5 > out.filtered.LD_filtered_0.5_10Kb.noINDEL.fasta
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/snp_table2fasta.pl out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.noIndel.table 5 > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.noIndel.fasta
 ```
 Calculate ML tree in R
 ```
 ml_tree.adegenet.r
 ml_tree.adegenet.plot.r
 ```
+low div in VA and most related to WV then NC
 
 
 
 ## After pop structure analyses performing analyses of diversity (e.g. nucleotide diversity and Fst) between sites OR across dataset
 ### R package PopGenome 
 ### Goal is to perform whole genome and sliding window analyses
+
+#### Have not run pairwise site comparisons for now. May be interesting, but also hard to compare to significant SNP correlations because pariwise stats are run on a subset of the data
+## pop level diversity
+### Using R::PopGenome for diversity stats
+### For population level stats (e.g., Fst comps between sites) will need to filter low n sites
+
+Issues with calculating population level diversity stats in sites with low sample number inclduing ME.N, MI, and NJ, NH.SCG, NH.CCM. Have output of list of sample IDs associated with these sites and will filter out the samples.
+```
+list_low_samples_to_retain_n_ge4.r
+```
+Convert no indel tables to fasta files with *full* sequence for import to popgenome or adegenet
+```
+cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
+#mkdir noINDEL_fasta
+cd noINDEL_fasta
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/snp_table2fasta.full_ref_seq.sep_contigs.pl ../out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.noIndel.table ../../ref.fasta 5
+```
+Pull out well-replicated sites (sample >= 4)
+```
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/noINDEL_fasta
+#mkdir ../noINDEL_fasta_rm_low_n
+for i in *
+do(
+    perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_seqs_by_list_from_fasta.pl $i ../retain_samples.txt > ../noINDEL_fasta_rm_low_n/$i
+)
+done
+```
+
+Then rerun scaffold split (This no longer run bc using fasta files but retaining for now)
+```
+conda activate bcftools
+cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
+
+bcftools view --samples-file retain_samples.txt out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
+bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
+tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf.gz
+
+mkdir scaffolds_split_rm_low_n
+
+while read line
+do(
+bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf.gz $line > scaffolds_split_rm_low_n/$line
+)
+done < scaffolds.txt
+```
+### Now running using popgenome with new script
+```
+PopGenome/F_stats.PopGenome.rm_low_n_sites.r
+```
 
 ## Genome scans for diversity metrics
 #### See [here](https://wurmlab.com/genomicscourse/2016-SIB/practicals/population_genetics/popgen) for analyses using popgenome with haploid data. We first start by splitting the data into scaffolds (or chromosomes), which can be done with bcftools or bash
@@ -640,7 +725,12 @@ Also run growing season HDD4
 LFMM_analyses/LFMM_full_data.growing_hdd4.r
 ```
 #### Comparing SNP position to gene position (from gff) to identify nearest neighbors to significant SNPs of different variables
-run locally
+run locally. Need mRNA only GFF
+```
+cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
+perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_mRNA_IDs_from_GFF.pl makerFINAL.all.gff
+```
+Then
 ```
 LFMM_analyses/nearest_neighbor_genes.hdd4.r
 LFMM_analyses/nearest_neighbor_genes.freezeThaw.r
@@ -657,31 +747,6 @@ PCA of climate vars
 LFMM_analyses/climate_vars_pca.r
 ```
 
-### The following routine is no longer used in preference for the nearest neighbor method above
-### Identify which genes SNPs occur on
-get gene IDS to pull from gff
-```
-cd neonectria_genome_reseq_10072020/maker2_run
-grep ">" makerFINAL.all.maker.transcripts.fasta > transcipt_IDs.txt
-```
-Download GFF and IDs
-```
-cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs/maker2_ann
-sftp
-get neonectria_genome_reseq_10072020/maker2_run/makerFINAL.all.gff
-get neonectria_genome_reseq_10072020/maker2_run/transcipt_IDs.txt
-exit
-```
-pull relevant lines from GFF
-```
-perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_mRNA_IDs_from_GFF.pl makerFINAL.all.gff > makerFINAL.all.mRNA_ONLY.gff
-```
-count the number of SNPs on genes. files written to `data/Nf_LFMM_tables` dir
-```
-sig_SNPs_gene_count.hdd4.r
-sig_SNPs_gene_count.freezeThaw.r
-sig_SNPs_gene_count.ppt.r
-```
 
 ## GO mapping and enrichment tests for LFMM partitions
 ### GO mapping and GO slim mapping performed by Tuan D. using blast2GO. 
@@ -742,30 +807,8 @@ GO_slim_and_enrichment/slim_stats_and_plots.r
 In general F aspect has more genes mapped (about 2k) but lower number of categories (like half) than P for both yeast and generic slims
 
 
-### This routine no longer needed because switched to GO slim mapping of whole set and then performing enrichment tests using R instead of blast2GO
-Extract sequences of genes associated with different SNP sets for GO enrichment test sets (run locally)
-```
-cd repo/neonectria_genome_reseq_10072020/
-perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/hdd4.nearest_neighbors.faa
-
-perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/freezeThaw.nearest_neighbors.faa
-
-perl perl_scripts/get_seqs_by_list_from_fasta.pl data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.maker.proteins.faa data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt > data/Nf_LFMM_tables/ppt.nearest_neighbors.faa
-
-grep ">" data/Nf_LFMM_tables/hdd4.nearest_neighbors.faa | wc -l
-#49
-grep ">" data/Nf_LFMM_tables/freezeThaw.nearest_neighbors.faa | wc -l
-#5
-grep ">" data/Nf_LFMM_tables/ppt.nearest_neighbors.faa | wc -l
-#129
-
-wc -l data/Nf_LFMM_tables/hdd4.geneIDs.nearest_neighbors.txt
-#49
-wc -l data/Nf_LFMM_tables/freezeThaw.geneIDs.nearest_neighbors.txt
-#5
-wc -l data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt
-#129
-```
+## GO Enrichment tests for LFMM partitions
+#### Unique gene ID lists associated with dif limate variables produced in `gene_SNP_venn.R`
 
 
 
@@ -773,80 +816,8 @@ wc -l data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt
 
 
 
-#### Have not run pairwise site comparisons for now. May be interesting, but also hard to compare to significant SNP correlations because pariwise stats are run on a subset of the data
-## pop level diversity
-### Using R::PopGenome for diversity stats
-### For population level stats (e.g., Fst comps between sites) will need to filter low n sites
-
-Issues with calculating population level diversity stats in sites with low sample number inclduing ME.N, MI, and NJ, etc. Have output of list of sample IDs associated with these sites and will filter out the samples.
-```
-list_low_samples_to_retain_n_ge4.r
-```
-Then rerun scaffold split
-```
-conda activate bcftools
-cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
-
-bcftools view --samples-file retain_samples.txt out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
-bgzip out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf
-tabix -p vcf out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf.gz
-
-mkdir scaffolds_split_rm_low_n
-
-while read line
-do(
-bcftools view out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.rm_low_n_sites.vcf.gz $line > scaffolds_split_rm_low_n/$line
-)
-done < scaffolds.txt
-```
-### Now running using popgenome with new script
-```
-PopGenome/F_stats.PopGenome.rm_low_n_sites.r
-```
 
 
-########
-########
-########
-########
-########
-Also running new gene mark annotations for LFMM
-
-```
-cd neonectria_genome_reseq_10072020/
-sbatch ~/repo/ONS_Nf/genemark.pilon_polished.slurm
-
-```
-Get a couple of regions of high SNP correlation
-```
-perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_segments_by_pos_from_fasta.pl ~/neonectria_minion/MAT2_polish/pilon_.fasta tig00000025_pilon 2524273 2544922 > neonectria_genome_reseq_10072020/high_LFMM_snp_tig00000025_pilon_2524273-2544922.fasta
-
-perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_segments_by_pos_from_fasta.pl ~/neonectria_minion/MAT2_polish/pilon_.fasta tig00000025_pilon 3070669 3078240 > neonectria_genome_reseq_10072020/high_LFMM_snp_tig00000025_pilon_3070669-3078240.fasta
-
-cat high_LFMM_snp_tig00000025_pilon_2524273-2544922.fasta high_LFMM_snp_tig00000025_pilon_3070669-3078240.fasta > high_LFMM_SNP.fasta
-
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastx_swissprot_high_LFMM.slurm
-```
-Also blast maker proteins for comparison
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_maker1.slurm #This got overwritten
-```
-Also blast genemark proteins for comparison
-```
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/blastp_swissprot_genemark_LFMM.slurm
-```
-Top hits in order of 4085_g, 3399_g, 4236_g, 4236_g (note the last two don't have great hits based on e-value and this also blasts to a transposon region)
-```
-grep GIS2_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#Zinc finger protein GIS2; GO regulation of translation
-grep RHO3_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-grep RHO3_ASHGO ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#GTP-binding protein RHO3
-grep YEG5_SCHPO ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#Ankyrin and IPT/TIG repeat-containing protein C26H5.05; GO regulation of transcription
-grep TIP20_YEAST ~/blast_dbs/swiss-prot_fungi_reviewed.fasta
-#Protein transport protein TIP20
-```
 
 
 ### Extract PRISM data for new sites

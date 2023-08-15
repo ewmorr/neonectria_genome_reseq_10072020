@@ -1,12 +1,12 @@
-require(pcadapt)
-require(ggplot2)
-require(dplyr)
+library(pcadapt)
+library(ggplot2)
+library(dplyr)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
-require(RColorBrewer)
-require(gridExtra)
+library(RColorBrewer)
+library(gridExtra)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/make_site_metadata.r")
 
-makeBed <- "Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.bed"
+makeBed <- "data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.bed"
 makeBed.file <- read.pcadapt(makeBed, type = "bed")
 bed_mat.makeBed = pcadapt::bed2matrix(makeBed.file)
 
@@ -19,6 +19,7 @@ x <- pcadapt(input = makeBed.file, K = 20, ploidy = 2) #K must be less than the 
 
 
 plot(x, option = "screeplot")
+#4 axes primary; 11 total secondary...
 
 plot(x, option = "scores")
 plot(x, option = "manhattan") #This is useful for full dataset
@@ -224,7 +225,7 @@ labs(
 ) +
 my_gg_theme
 
-require(gtable)
+library(gtable)
 
 gp1<-ggplotGrob(p1)
 gp2<-ggplotGrob(p2)

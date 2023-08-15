@@ -18,8 +18,10 @@ sub hash_fasta{
     foreach my $seq (@fas){
         my @seq = split("&&&&&&&&&&&&", $seq);
         my $header = shift(@seq);
-        $header =~ /(.+?)\s/;
-        $header = $1;
+        if($header =~ /.*\s.*/){
+            $header =~ /(.+?)\s/;
+            $header = $1;
+        }
         #print $header, "\n";
         $fas{$header} = join("", @seq);
     }

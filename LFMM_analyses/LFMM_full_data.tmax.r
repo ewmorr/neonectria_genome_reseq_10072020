@@ -1,7 +1,7 @@
-require(lfmm)
-require(dplyr)
-require(ggplot2)
-require(scales)
+library(lfmm)
+library(dplyr)
+library(ggplot2)
+library(scales)
 #This function for plotting reversed log10 of p vals
 reverselog_trans <- function(base = exp(1)) {
     trans <- function(x) -log(x, base)
@@ -37,18 +37,18 @@ site.climate = read.table("data/sample_metadata/sites_climate.txt", header = T)
 site.GDD$freezeThaw.annual_mean = site.GDD$freezeThaw.mean_growing + site.GDD$freezeThaw.mean_nongrowing
 
 site_metadata = left_join(site.GDD, site.info %>% select(Site, lat, lon, duration_infection), by = "Site") %>%
-    left_join(., site.climate %>% select(Site, tmin, tmax, ppt, MAT, lat, lon, state.name), by = c("Site", "lat", "lon") )
+    left_join(., site.climate %>% select(Site, tmax, tmax, ppt, MAT, lat, lon, state.name), by = c("Site", "lat", "lon") )
 
 
 sample_metadata.site_info = left_join(sample_metadata, site_metadata, by = "state.name")
 sample_metadata.site_info = sample_metadata.site_info %>% filter(sample %in% fam_info.Nf[,1])
 nrow(sample_metadata.site_info)
-colnames(sample_metadata.site_info)
+
 #######################
-#NONGROWING SEASON HDD
+#tmax
 
 #variable for test
-X = sample_metadata.site_info$HDD4.mean_growing
+X = sample_metadata.site_info$tmax
 
 #LFMM ridge
 mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 4) #using K = 4 based on PCA and pop structure analyses
@@ -65,40 +65,38 @@ cex = .3,
 xlab = "Probe", ylab = "-Log P",
 col = "grey")
 
-hist(pv$pvalue)
-
 plot((pv$B),
 pch = 19,
 cex = .3,
 xlab = "Probe", ylab = "Effect size",
 col = "grey")
 
-#Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016 and https://cran.r-project.org/web/packages/lfmm/vignettes/lfmm.html and Caye et al 2019 https://academic.oup.com/mbe/article/36/4/852/5290100
+#Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv$score^2)/0.456
-lambda #1.11
+lambda #1.12
 adj.p.values = pchisq(pv$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
 hist(pv$calibrated.pvalue)
-#### AUTO looks pretty good
+#The auto P values look conservative, but not overly (basically flat distribution)
 
 #Try higher value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv$score^2/1.25, df = 1, lower = FALSE)
-hist(adj.p.values)
-
-#Try lower value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv$score^2/1.05, df = 1, lower = FALSE)
-hist(adj.p.values)
+adj.p.values = pchisq(pv$score^2/1.15, df = 1, lower = FALSE)
+hist(adj.p.values) #more consrevative
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
 adj.p.values = pchisq(pv$score^2/0.95, df = 1, lower = FALSE)
 hist(adj.p.values)
 
-#THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS MORE CONSERVATIVE THAN LOWER VALUES OF LAMBDA
-#The calibrated values have the correct distribution
+#Try lower value of GIF -- looking for flat distribution with peak near zero
+adj.p.values = pchisq(pv$score^2/1.05, df = 1, lower = FALSE)
+hist(adj.p.values)
+
+#THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS Good
+#However, the (slightly) lower values have a correct distribution under null model
 #Try at GIF = 1.05
 adj.p.values = pchisq(pv$score^2/1.05, df = 1, lower = FALSE)
-hist(adj.p.values) 
+hist(adj.p.values)
 
 #Read scaffold lengths
 scf_lens = read.table("data/Nf_SPANDx_all_seqs/scaffold_lengths.csv", sep = ",", header = F)
@@ -115,7 +113,7 @@ my_threshold <- quantile((pv.with_pos )$calibrated.p, 0.025, na.rm = T) #removed
 pv.with_pos <- pv.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_threshold, "outlier", "background"))
 #Number of outliers
 pv.with_pos %>% group_by(outlier) %>% tally()
-#3216 outliers
+#3216
 
 #FDR correction
 #This is based on the auto calibartion
@@ -123,7 +121,7 @@ pv.with_pos$FDR.p = p.adjust(pv.with_pos$calibrated.p, method = "fdr", n = lengt
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#1 of 128629 SNPs identified as significant after FDR correction
+#0 of 128629 SNPs identified as significant after FDR correction
 
 #FDR correction
 #This is based on the manual GIF adjustment
@@ -131,7 +129,7 @@ pv.with_pos$FDR.p.man = p.adjust(pv.with_pos$man.adj.p, method = "fdr", n = leng
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#1 of 128629 SNPs identified as significant after FDR correction
+#0 of 128629 SNPs identified as significant after FDR correction
 
 ########################
 #Rerun the FDR correction to have automatically calculated p-vals
@@ -142,9 +140,9 @@ pv.with_pos$FDR.p = p.adjust(pv.with_pos$calibrated.p, method = "fdr", n = lengt
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#1 of 130957 SNPs identified as significant after FDR correction
+#0 of 128629 SNPs identified as significant after FDR correction
 
-write.table(pv.with_pos, "data/Nf_LFMM_tables/growing_hdd4_lfmm.txt", quote = F, row.names = F, sep = "\t")
+write.table(pv.with_pos, "data/Nf_LFMM_tables/tmax_lfmm.txt", quote = F, row.names = F, sep = "\t")
 
 ####################
 #ggplots
@@ -219,7 +217,7 @@ axis.title.x = element_blank()
 )
 p2
 
-#FDR correction maunally adjusted P (GIF = 1.05)
+#FDR correction maunally adjusted P (GIF = 0.95)
 ggplot(pv.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
@@ -236,7 +234,7 @@ axis.text.x = element_text(size = 8)
 #axis.text.x = element_text(angle = 85, size = 10, hjust = 1)
 )
 
-pdf("figures/LFMM.growing_hdd4.pdf", width = 18, height = 4)
+pdf("figures/LFMM.tmax.pdf", width = 18, height = 4)
 p1
 p2
 dev.off()

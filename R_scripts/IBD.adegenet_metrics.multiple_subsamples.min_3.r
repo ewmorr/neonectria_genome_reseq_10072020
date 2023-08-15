@@ -1,11 +1,11 @@
-library(vcfR)
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-library(pegas)
-library(reshape2)
-library(adegenet)
-#library(dartR) #no longer needed bc not using gl2gi
+require(vcfR)
+require(tidyr)
+require(dplyr)
+require(ggplot2)
+require(pegas)
+require(reshape2)
+require(adegenet)
+#require(dartR) #no longer needed bc not using gl2gi
 source("R_scripts/ggplot_theme.txt")
 set.seed(12345)
 
@@ -16,8 +16,6 @@ ind.metrics = left_join(data.frame(sample = fam_info[,1]), sample_metadata %>% s
 left_join(., site_coords %>% select(state.name, lat, lon))
 #########
 
-#fasta filtered for indels and LD imported directly to genlight
-#gl = fasta2genlight("data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.noINDEL.fasta")
 
 #filtered VCF
 vcf <- read.vcfR("data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.vcf", verbose = FALSE)
@@ -35,8 +33,8 @@ nPop(gl)
 pop(gl)
 
 #SOME SITES HAVE SMALL SAMPLE SIZE
-#Set min sample size to 5
-low_n_states = ( (gl@other$ind.metrics %>% group_by(state.name) %>% summarize(n = n()) ) %>% filter(n < 5) )$state.name
+#Set min sample size to 3
+low_n_states = ( (gl@other$ind.metrics %>% group_by(state.name) %>% summarize(n = n()) ) %>% filter(n < 3) )$state.name
 keep.ind.list = data.frame(gl@ind.names, pop.gl = pop(gl)) %>% filter(!pop.gl %in% c(low_n_states))
 
 #loop through this routine twenty times (i.e., twenty random samples) and calculate dissimilarity matrices, THEN average matrices at the end.
@@ -44,7 +42,7 @@ keep.ind.list = data.frame(gl@ind.names, pop.gl = pop(gl)) %>% filter(!pop.gl %i
 
 distances.list = list()
 #based on the lowest number of samples to include sites
-min_samps = 5
+min_samps = 3
 
 for(u in 1:100){
     
@@ -66,36 +64,26 @@ for(u in 1:100){
     #INSTEAD OF DARTR METHOD TRY THE DATAFRAME CONVERSION AS RECOMMENDED BY ADEGENET AUTHORS (https://lists.r-forge.r-project.org/pipermail/adegenet-forum/2014-May/000840.html)
     #First convert to a data.frame whih will give a table of 0, 1, NA, and then add 1 to values to have correct conversion of NA (0 is default)
     y = as.data.frame(gl.subset)
-    y = y + 1
-    #y[is.na(y)] = 0
-    #colnames(y) = 1:ncol(y) #this is needed when using the fasta conversion instead of vcf input bc the colnames get funny
-    #colnames(y)
-    gi.subset = df2genind(y, ploidy=1)
+    gi.subset = df2genind(y + 1, ploidy=1)
     #reset pop
     gi.subset@pop = gl.subset@pop
 
     #Remove uninformative sites
     #retrieve the colnames of sites with only one allele
     to_remove = names(gi.subset@loc.n.all[gi.subset@loc.n.all == 1 ])
-    if(length(to_remove) > 0){
-        #get the col index
-        rm_indx = which(colnames(y) %in% to_remove)
-        gi.subset.rm = gi.subset[loc=-rm_indx]
+    #get the col index
+    rm_indx = which(colnames(y) %in% to_remove)
+    gi.subset.rm = gi.subset[loc=-rm_indx]
 
-        gp = genind2genpop(gi.subset.rm)
-    }else{
-        gp = genind2genpop(gi.subset)
-    }
+    gp = genind2genpop(gi.subset.rm)
 
     #There are several distance metrics available
     #Method 2 is "Angular distance or Edward's distance" D[CSE]
     Dgen.2 <- dist.genpop(gp,method=2)
     distances.list[[u]] = Dgen.2
 }
-
-saveRDS(distances.list, "data/intermediate_RDS/DSCE.five_samples_per_site.rds")
-distances.list = readRDS("data/intermediate_RDS/DSCE.five_samples_per_site.rds")
-
+saveRDS(distances.list, "data/intermediate_RDS/DSCE.three_samples_per_site.rds")
+distances.list = readRDS("data/intermediate_RDS/DSCE.three_samples_per_site.rds")
 #average gen dist matrix
 mean_Dgen = Reduce("+", distances.list) / length(distances.list)
 
@@ -109,10 +97,9 @@ site_coords.subset.order = site_coords.subset[match(site_order, site_coords.subs
 rownames(site_coords.subset.order) = site_coords.subset.order$state.name
 #calculate Mercator prjected distance
 Dgeo <- dist(dismo::Mercator(site_coords.subset.order[,c("lon", "lat")]))
-saveRDS(Dgeo, "data/intermediate_RDS/geo_distance.min_5_samples.rds")
 
-ibd.2 <- mantel.randtest(mean_Dgen,Dgeo) # r = 0.2191161  , P = 0.137
-ibd.2.log <- mantel.randtest(mean_Dgen,log(Dgeo)) # r = 0.2700557 , P = 0.099
+ibd.2 <- mantel.randtest(mean_Dgen,Dgeo) # r = -0.04825996  , P = 0.569
+ibd.2.log <- mantel.randtest(mean_Dgen,log(Dgeo)) # r = -0.006581043 , P = 0.463
 print(ibd.2)
 print(ibd.2.log)
 
@@ -138,7 +125,7 @@ labs(x = "Pairwise site geographic distance (km)", y = expression(paste("Pairwis
 scale_x_continuous(trans = "log", breaks = c(200, 500, 1000, 2000)) +
 my_gg_theme
 
-pdf("figures/IBD.Dcse_test.pdf", width = 9, height = 5)
+pdf("figures/IBD.Dcse_test.3_samples.pdf", width = 9, height = 5)
 p1
 p2
 dev.off()
@@ -148,47 +135,14 @@ dev.off()
 ######################################
 
 
-mean_Dgen.no_VA = as.matrix(mean_Dgen)[-11,-11] %>% as.dist()
-Dgeo.no_VA = as.matrix(Dgeo)[-11,-11] %>% as.dist()
+mean_Dgen.no_VA = as.matrix(mean_Dgen)[-13,-13] %>% as.dist()
+Dgeo.no_VA = as.matrix(Dgeo)[-13,-13] %>% as.dist()
 
 #test
-ibd.2 <- mantel.randtest(mean_Dgen.no_VA,Dgeo.no_VA) # r = 0.4338682  , P = 0.06
-ibd.2.log <- mantel.randtest(mean_Dgen.no_VA,log(Dgeo.no_VA)) # r = 0.4936303 , P = 0.012
+ibd.2 <- mantel.randtest(mean_Dgen.no_VA,Dgeo.no_VA) # r = -0.1270664   , P = 0.414
+ibd.2.log <- mantel.randtest(mean_Dgen.no_VA,log(Dgeo.no_VA)) # r = -0.1043556 , P = 0.697
 print(ibd.2)
 print(ibd.2.log)
 
 #note that the log is better justified based on distance decay and 2-D spread (refs)
 
-#stats from the previous run before repolishing the genome and including a few extra sample
-#no log
-# r =  0.0.4907064 , P = 0.027
-#log
-# r = 0.5511402  , P = 0.01
-
-#######################
-#Reformat for plotting#
-#for plotting
-#######################
-Dgeo.long = subset(reshape2::melt(Dgeo.no_VA %>% as.matrix), value != 0)
-Dgen.long = subset(reshape2::melt(mean_Dgen.no_VA %>% as.matrix), value != 0)
-
-Dgen.Dgeo = data.frame(gen = Dgen.long$value, geo = Dgeo.long$value)
-
-p1 = ggplot(Dgen.Dgeo, aes(x = geo/1000, y = gen)) +
-geom_point() +
-geom_smooth(method = "lm", color = "black", se = F, linetype = 2) +
-labs(x = "Pairwise site geographic distance (km)", y = expression(paste("Pairwise site genetic distance (D"["CSE"], ")"))) +
-my_gg_theme
-
-p2 = ggplot(Dgen.Dgeo, aes(x = geo/1000, y = gen)) +
-geom_point() +
-geom_smooth(method = "lm", color = "black", se = F, linetype = 2) +
-labs(x = "Pairwise site geographic distance (km)", y = expression(paste("Pairwise site genetic distance (D"["CSE"], ")"))) +
-scale_x_continuous(trans = "log", breaks = c(200, 500, 1000, 2000)) +
-my_gg_theme
-
-
-pdf("figures/IBD.Dcse_test.no_VA.pdf", width = 9, height = 5)
-p1
-p2
-dev.off()

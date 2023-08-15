@@ -1,7 +1,7 @@
-require(lfmm)
-require(dplyr)
-require(ggplot2)
-require(scales)
+library(lfmm)
+library(dplyr)
+library(ggplot2)
+library(scales)
 #This function for plotting reversed log10 of p vals
 reverselog_trans <- function(base = exp(1)) {
     trans <- function(x) -log(x, base)
@@ -47,6 +47,8 @@ site_metadata = left_join(site.GDD, site.info %>% select(Site, lat, lon, duratio
 
 
 sample_metadata.site_info = left_join(sample_metadata, site_metadata, by = "state.name")
+sample_metadata.site_info = sample_metadata.site_info %>% filter(sample %in% fam_info.Nf[,1])
+nrow(sample_metadata.site_info)
 
 #######################
 #NONGROWING SEASON HDD
@@ -55,7 +57,7 @@ sample_metadata.site_info = left_join(sample_metadata, site_metadata, by = "stat
 X = sample_metadata.site_info$HDD4.mean_nongrowing
 
 #LFMM ridge
-#mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 2)
+
 mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 4) #using K = 4 based on PCA and pop structure analyses
 
 pv <- lfmm_test(Y = Y,
@@ -78,7 +80,7 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv$score^2)/0.456
-lambda #1.079
+lambda #1.026
 adj.p.values = pchisq(pv$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
@@ -117,14 +119,14 @@ my_threshold <- quantile((pv.with_pos )$calibrated.p, 0.025, na.rm = T) #removed
 pv.with_pos <- pv.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_threshold, "outlier", "background"))
 #Number of outliers
 pv.with_pos %>% group_by(outlier) %>% tally()
-#3274
+#3216
 #FDR correction
 #This is based on the auto calibartion
 pv.with_pos$FDR.p = p.adjust(pv.with_pos$calibrated.p, method = "fdr", n = length(pv.with_pos$calibrated.p))
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#182 of 130957 SNPs identified as significant after FDR correction
+#178 of 128629 SNPs identified as significant after FDR correction
 
 #FDR correction
 #This is based on the manual GIF adjustment
@@ -132,7 +134,7 @@ pv.with_pos$FDR.p.man = p.adjust(pv.with_pos$man.adj.p, method = "fdr", n = leng
 pv.with_pos <- pv.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.with_pos %>% group_by(FDR.sig.man) %>% tally()
 pv.hdd4.with_pos = pv.with_pos
-#227 of 130957 SNPs identified as significant after FDR correction
+#173 of 128629 SNPs identified as significant after FDR correction
 
 ####################
 #ggplots
@@ -223,7 +225,7 @@ axis.text.x = element_text(size = 8)
 #axis.text.x = element_text(angle = 85, size = 10, hjust = 1)
 )
 
-pdf("figures/LFMM.nongrowing_season_GDD.01112023.pdf", width = 18, height = 4)
+pdf("figures/LFMM.nongrowing_season_GDD.05312023.pdf", width = 18, height = 4)
 p1
 p2
 dev.off()
@@ -260,30 +262,30 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv.ft$score^2)/0.456
-lambda #1.24
+lambda #1.36
 adj.p.values = pchisq(pv.ft$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
 hist(pv.ft$calibrated.pvalue)
 hist(pv.ft$pvalue)
-#IN THIS CASE THE CALCULATED VALUES AREADY LOOK GOOD #THIS IS NOT TRUE FOR ANNUAL MEAN FREEZE-THAW
+#IN THIS CASE THE CALCULATED VALUES AREADY LOOK GOOD 
 
 #Try higher value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv.ft$score^2/1.35, df = 1, lower = FALSE)
+adj.p.values = pchisq(pv.ft$score^2/1.45, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv.ft$score^2/1.15, df = 1, lower = FALSE)
+adj.p.values = pchisq(pv.ft$score^2/1.25, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv.ft$score^2/0.95, df = 1, lower = FALSE)
+adj.p.values = pchisq(pv.ft$score^2/0.15, df = 1, lower = FALSE)
 hist(adj.p.values)
 
-#THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS MORE CONSERVATIVE THAN LOWER VALUES OF LAMBDA
+#THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS Good
 #However, the lower values have a correct distribution under null model
-#Try at GIF = 1.15
-adj.p.values = pchisq(pv.ft$score^2/1.15, df = 1, lower = FALSE)
+#Try at GIF = 1.25
+adj.p.values = pchisq(pv.ft$score^2/1.35, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
@@ -302,21 +304,21 @@ pv.ft.with_pos <- pv.ft.with_pos %>% mutate(outlier = ifelse(calibrated.p < my_t
 #Number of outliers
 pv.ft.with_pos %>% group_by(outlier) %>% tally()
 
-#3274
+#3216
 
 #FDR correction
 pv.ft.with_pos$FDR.p = p.adjust(pv.ft.with_pos$calibrated.p, method = "fdr", n = length(pv.ft.with_pos$calibrated.p))
 pv.ft.with_pos <- pv.ft.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.ft.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#23
+#65
 
 #FDR correction manual adjustment (lambda = 1.15)
 pv.ft.with_pos$FDR.p.man = p.adjust(pv.ft.with_pos$man.adj.p, method = "fdr", n = length(pv.ft.with_pos$man.adj.p))
 pv.ft.with_pos <- pv.ft.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.ft.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#23
+#50
 
 ####################
 #ggplots
@@ -390,7 +392,7 @@ axis.title.x = element_blank()
 )
 
 
-#FDR correction maunally adjusted P (GIF = 1.15)
+#FDR correction maunally adjusted P (GIF = 1.35)
 ggplot(pv.ft.with_pos %>% filter(length > 100000), aes(x = position/10^6, y = man.adj.p, color = FDR.sig.man)) +
 #facet_wrap(~scaffold) +
 facet_grid(. ~ scaffold, scales = "free_x", space='free') +
@@ -484,21 +486,21 @@ pv.ppt.with_pos <- pv.ppt.with_pos %>% mutate(outlier = ifelse(calibrated.p < my
 #Number of outliers
 pv.ppt.with_pos %>% group_by(outlier) %>% tally()
 
-#3269
+#3214
 
 #FDR correction
 pv.ppt.with_pos$FDR.p = p.adjust(pv.ppt.with_pos$calibrated.p, method = "fdr", n = length(pv.ppt.with_pos$calibrated.p))
 pv.ppt.with_pos <- pv.ppt.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.ppt.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#548
+#474
 
 #FDR correction manual adjustment (lambda = 0.85)
 pv.ppt.with_pos$FDR.p.man = p.adjust(pv.ppt.with_pos$man.adj.p, method = "fdr", n = length(pv.ppt.with_pos$man.adj.p))
 pv.ppt.with_pos <- pv.ppt.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.ppt.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#566
+#506
 
 ####################
 #ggplots
@@ -624,7 +626,7 @@ col = "grey")
 
 #Computing genomic inflation factor (GIF) based on calibrated z-scores (http://membres-timc.imag.fr/Olivier.Francois/lfmm/files/LEA_1.html) and Francois et al. 2016
 lambda = median(pv.dur_inf$score^2)/0.456
-lambda #1.12
+lambda #1.09
 adj.p.values = pchisq(pv.dur_inf$score^2/lambda, df = 1, lower = FALSE)
 hist(adj.p.values)
 #Note that these calibrated scores are similar as pv$calibrated.pvalue
@@ -637,7 +639,7 @@ adj.p.values = pchisq(pv.dur_inf$score^2/1.25, df = 1, lower = FALSE)
 hist(adj.p.values) #very conservative
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
-adj.p.values = pchisq(pv.dur_inf$score^2/0.95, df = 1, lower = FALSE)
+adj.p.values = pchisq(pv.dur_inf$score^2/1, df = 1, lower = FALSE)
 hist(adj.p.values) #This looks good
 
 #Try lower value of GIF -- looking for flat distribution with peak near zero
@@ -646,8 +648,8 @@ hist(adj.p.values)
 
 #THIS IS SHOWING THAT THE GIF CALIBRATION IN THE ALGORITHM IS MORE CONSERVATIVE THAN LOWER VALUES OF LAMBDA
 #However, the lower values have a correct distribution under null model
-#Try at GIF = 0.95
-adj.p.values = pchisq(pv.dur_inf$score^2/0.95, df = 1, lower = FALSE)
+#Try at GIF = 0.1
+adj.p.values = pchisq(pv.dur_inf$score^2/1, df = 1, lower = FALSE)
 hist(adj.p.values)
 
 #Read scaffold lengths
@@ -667,21 +669,21 @@ pv.dur_inf.with_pos <- pv.dur_inf.with_pos %>% mutate(outlier = ifelse(calibrate
 pv.dur_inf.with_pos %>% group_by(outlier) %>% tally()
 #Example plot
 
-#3280
+#3223
 
 #FDR correction
 pv.dur_inf.with_pos$FDR.p = p.adjust(pv.dur_inf.with_pos$calibrated.p, method = "fdr", n = length(pv.dur_inf.with_pos$calibrated.p))
 pv.dur_inf.with_pos <- pv.dur_inf.with_pos %>% mutate(FDR.sig = ifelse(FDR.p < 0.1, "sig", "background"))
 pv.dur_inf.with_pos %>% group_by(FDR.sig) %>% tally()
 
-#14
+#23
 
-#FDR correction manual adjustment (lambda = 0.95)
+#FDR correction manual adjustment (lambda = 1)
 pv.dur_inf.with_pos$FDR.p.man = p.adjust(pv.dur_inf.with_pos$man.adj.p, method = "fdr", n = length(pv.dur_inf.with_pos$man.adj.p))
 pv.dur_inf.with_pos <- pv.dur_inf.with_pos %>% mutate(FDR.sig.man = ifelse(FDR.p.man < 0.05, "sig", "background"))
 pv.dur_inf.with_pos %>% group_by(FDR.sig.man) %>% tally()
 
-#14
+#23
 
 ####################
 #ggplots
@@ -769,9 +771,9 @@ write.table(pv.dur_inf.with_pos, "data/Nf_LFMM_tables/dur_inf_lfmm.txt", quote =
 
 
 #Nice aligned plot of all three
-require(gtable)
-require(gridExtra)
-require(grid)
+library(gtable)
+library(gridExtra)
+library(grid)
 
 ############################################
 ##READ THE ABOVE TABLES BACK IN TO RUN BELOW

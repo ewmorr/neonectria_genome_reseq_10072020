@@ -221,7 +221,7 @@ cut -f1 makerFINAL.all.maker.proteins.UNIPROT.uniref90.blast | sort | uniq | wc 
 ```
 12274
 
-#### Blast2GO (blast against all nr database with subsequent proprietary GO mapping)
+## Blast2GO (blast against all nr database with subsequent proprietary GO mapping)
 Ran by Tuan
 - 13039 blast hits (e-value default is 10^-6)
 - 9631 annotated with GO terms (after filtering for annotation quality)

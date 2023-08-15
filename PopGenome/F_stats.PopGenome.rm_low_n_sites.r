@@ -1,6 +1,6 @@
-require(PopGenome)
-require(dplyr)
-require(ggplot2)
+library(PopGenome)
+library(dplyr)
+library(ggplot2)
 source("R_scripts/ggplot_theme.txt")
 
 
@@ -9,21 +9,39 @@ source("R_scripts/make_site_metadata.r")
 
 #Concatenate chromosomes to perform calculations across whole genome
 
-snp.concat = readData("data/Nf_SPANDx_all_seqs/scaffolds_split_rm_low_n", format="VCF", include.unknown = T)
-
+#snp.concat = readData("data/Nf_SPANDx_all_seqs/scaffolds_split_rm_low_n", format="VCF", include.unknown = T)
+snp.concat = readData("data/Nf_SPANDx_all_seqs/noINDEL_fasta", format="FASTA", include.unknown = T, FAST = T, big.data = T)
 sum(snp.concat@n.biallelic.sites)
 sum(snp.concat@n.biallelic.sites) + sum(snp.concat@n.polyallelic.sites)
 
+rm(snp.concat)
+
+snp.concat = readData("data/Nf_SPANDx_all_seqs/noINDEL_fasta_rm_low_n", format="FASTA", include.unknown = T, FAST = T, big.data = T)
+#takes about 5 minutes. holding 6.2 G RAM
+
+sum(snp.concat@n.biallelic.sites)
+#114618
+sum(snp.concat@n.biallelic.sites) + sum(snp.concat@n.polyallelic.sites)
+#114618
+sum(snp.concat@n.sites)
+#42805617 (this a little short... total len by quast is 42948211 = 142594 dif)
+sum(snp.concat@n.gaps)
+#0
+sum(snp.concat@n.valid.sites)
+#NaN
+sum(snp.concat@n.unknowns)
+#0
+
 snp.concat = concatenate.regions(snp.concat)
-#concatenate.regions throws a warning but appears to have worked
 
 get.sum.data(snp.concat)
 show.slots(snp.concat)
 
 sum(snp.concat@n.biallelic.sites)
+#114618
 sum(snp.concat@n.biallelic.sites) + sum(snp.concat@n.polyallelic.sites)
+#114618
 
-#The concatenate.regions function throws a warning but seems to have worked
 
 #########
 #ADD POPULATION INFO to genome object
@@ -67,6 +85,9 @@ snp.concat <- sweeps.stats(snp.concat) # this does the calculations and #THIS DO
 #MAY NEED TO PROCEED WITH IND CHROMOSOME LEVEL OR LEAVE OUT LINKAGE AT whole genome level)
 #The other metrics run fine
 
+saveRDS(snp.concat, "data/intermediate_RDS/pops.GENOME.concat.rm_low_n.rds")
+snp.concat = readRDS("data/intermediate_RDS/pops.GENOME.concat.rm_low_n.rds")
+
 # Print FST
 get.F_ST(snp.concat) 
 snp.concat@nucleotide.F_ST
@@ -80,7 +101,7 @@ snp.concat@nuc.diversity.within
 show.slots(snp.concat)
 
 snp.concat@Pi
-snp@Pi
+#snp@Pi
 
 ##################
 #For each divestity metric it is now added to the genome object and can be accessed by SLOTS and is the calculated by pairwise pop comparisons by row
@@ -123,6 +144,7 @@ saveRDS(snp.concat, "data/intermediate_RDS/pops.GENOME.concat.rm_low_n.rds")
 
 plot(Pi ~ duration_infection, data = site_div)
 summary(lm(Pi ~ duration_infection, data = site_div))
+#no relationship Pi ~ dur_inf
 
 plot(Tajima.D ~ duration_infection, data = site_div )
 summary(lm(Tajima.D ~ duration_infection, data = site_div))
@@ -133,6 +155,7 @@ plot(Pi-theta ~ duration_infection, data = site_div )
 
 plot(Tajima.D ~ duration_infection, data = site_div %>% filter(state.name != "VA") )
 summary(lm(Tajima.D ~ duration_infection, data = site_div %>% filter(state.name != "VA") ))
+# est = -0.0196, R2 = 0.375, p = 0.0452
 
 plot(nuc_div_within ~ duration_infection, data = site_div) #accrding to manual "have to be divided by the slot @n.sites to obtain diversity per site
 summary(lm(nuc_div_within ~ duration_infection, data = site_div))
@@ -143,6 +166,7 @@ summary(lm(nuc_div_within/n_sites ~ duration_infection, data = site_div))
 plot(n_segregating_sites ~ duration_infection, data = site_div)
 summary(lm(n_segregating_sites ~ duration_infection, data = site_div))
 
+#segregating sites needs to be corrected for sample number
 plot(n_segregating_sites/site_sample_nums ~ duration_infection, data = site_div)
 summary(lm(n_segregating_sites/site_sample_nums ~ duration_infection, data = site_div))
 

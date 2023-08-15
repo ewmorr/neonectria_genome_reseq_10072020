@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #Eric Morrison
-#11032021
+#042023
 #Usage: snp_table2fasta.pl [snp table as produced by gatk VariantsToTable] [number of cols of VCF info] > [fasta]
 #Any NAs in the SNP table should be converted to a gap symbol (i.e., -) before running this script
 # sed 's:\./\.:-:g' SNPs.table > SNPs.table.na2gap
@@ -26,10 +26,10 @@ sub hash_gts{
 
         for(my $i = $gtIndex; $i < @gt_labels; $i++){
             if($snp[$i] !~ /^A$|^G$|^T$|^C$/){
-                $snp[$i] = "-";
+                $snp[$i] = "N";
             }
             if($snp[$i] =~ /\./){
-                $snp[$i] = "-";
+                $snp[$i] = "N";
             }
             push @{ $snps{$gt_labels[$i]} }, $snp[$i];
         }

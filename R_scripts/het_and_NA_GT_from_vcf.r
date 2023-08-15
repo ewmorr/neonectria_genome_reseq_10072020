@@ -1,6 +1,7 @@
 library(vcfR)
 
 vcf <- read.vcfR("data/Nd_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.vcf", verbose = FALSE)
+#vcf <- read.vcfR("data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.vcf.gz", verbose = FALSE)
 #test.vcf = read.vcfR("Nf_post_SPANDx/LD_filter/plink_conversion_test/test_dat.vcf", verbose = FALSE)
 gt <- extract.gt(vcf, element='GT', convertNA=TRUE, as.numeric = T)
 

@@ -2,10 +2,10 @@ require(vegan)
 require(dplyr)
 require(reshape2)
 require(ggplot2)
-source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
+source("R_scripts/ggplot_theme.txt")
 
 
-site_info = read.csv("sample_metadata/site_info.dur_inf.csv")
+site_info = read.csv("data/sample_metadata/site_info.dur_inf.csv")
 
 #subset and order
 sites = c("CT",
@@ -23,8 +23,14 @@ rownames(dur_inf.subset.order) = dur_inf.subset.order$state.name
 
 dur_inf.dist = dist(dur_inf.subset.order$duration_infection, method = "euclidean", diag = FALSE, upper = FALSE)
 
+#import gen and geo distance
+distances.list = readRDS("data/intermediate_RDS/DSCE.five_samples_per_site.rds")
+mean_Dgen = Reduce("+", distances.list) / length(distances.list)
 
-mean_Dgen = structure(c(0.327054284813512, 0.33019388260635, 0.311480420341884,
+Dgeo = readRDS("data/intermediate_RDS/geo_distance.min_5_samples.rds")
+
+
+#mean_Dgen = structure(c(0.327054284813512, 0.33019388260635, 0.311480420341884,
 0.320345373087978, 0.327170825312449, 0.318511606142414, 0.310771628900295,
 0.329864438413669, 0.321813865417881, 0.374568119282915, 0.340920031009168,
 0.32740606392453, 0.314750048967457, 0.321121989441771, 0.323546104641977,
@@ -44,7 +50,7 @@ mean_Dgen = structure(c(0.327054284813512, 0.33019388260635, 0.311480420341884,
 "ME.S", "NC", "NH.BART", "NH.CW", "NY.N", "NY.S", "NY.W", "PA",
 "PA.W", "VA", "WV"), Size = 12L, class = "dist", Diag = FALSE, Upper = FALSE, method = "Edwards")
 
-Dgeo = structure(c(647867.64331137, 1459093.77642383, 359233.889326968,
+#Dgeo = structure(c(647867.64331137, 1459093.77642383, 359233.889326968,
 278944.401616104, 393611.221841495, 227982.167564933, 398327.059881948,
 295694.785989413, 657332.64055266, 816245.79577908, 915018.076746268,
 2106955.61116748, 323712.25040289, 370719.975123838, 606761.406619077,
@@ -71,7 +77,7 @@ mantel(mean_Dgen, Dgeo)
 mantel(mean_Dgen, log(Dgeo))
 
 mantel(mean_Dgen, dur_inf.dist)
-#r = 0.475, P = 0.004
+#r = 0.4647, P = 0.002
 
 mantel(Dgeo, dur_inf.dist)
 #r = 0.7147, P = 0.001

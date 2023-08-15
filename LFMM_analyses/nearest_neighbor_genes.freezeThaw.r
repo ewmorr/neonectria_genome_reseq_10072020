@@ -1,5 +1,5 @@
-require(dplyr)
-require(data.table)
+library(dplyr)
+library(data.table)
 
 #############################
 #FUNS
@@ -49,7 +49,7 @@ nearest_gene = function(snpPos = NULL, gff = NULL){
 ##########################
 
 #import gff (gene positions) contig name, gene ID, start site, stop site
-gff = read.csv("data/Nf_SPANDx_all_seqs/maker2_ann/makerFINAL.all.mRNA_ONLY.gff", sep = "\t")
+gff = read.csv("data/Nf_SPANDx_all_seqs/makerFINAL.all.mRNA_ONLY.gff", sep = "\t")
 head(gff)
 
 #import LFMM results
@@ -139,19 +139,19 @@ for(i in 1:nrow(lfmm_results.sig)){
 }#end for loop
             
 lfmm_results.sig$match.type %>% unique
-lfmm_results.sig$distance %>% abs %>% mean #1903
-lfmm_results.sig$distance %>% abs %>% median #1828
-lfmm_results.sig %>% filter(abs(distance) > 0) %>% pull(distance) %>% abs %>% range #1270 to 1831
-lfmm_results.sig %>% filter(match.type == "in.gene") %>% nrow #1
-lfmm_results.sig %>% nrow #1 of 11 in gene
+lfmm_results.sig$distance %>% abs %>% mean #1967
+lfmm_results.sig$distance %>% abs %>% median #705
+lfmm_results.sig %>% filter(abs(distance) > 0) %>% pull(distance) %>% abs %>% range #19 to 16549
+lfmm_results.sig %>% filter(match.type == "in.gene") %>% nrow #13
+lfmm_results.sig %>% nrow #65 in gene
 
-gff.dt %>% filter(sig_SNP_count > 0) #5 genes match
-gff.dt %>% filter(sig_SNP_count > 1) #2 have >1 SNPs
+gff.dt %>% filter(sig_SNP_count > 0) #32 genes match
+gff.dt %>% filter(sig_SNP_count > 1) #13 have >1 SNPs
 
 #######################
 #plots of snp distance and SNP accumulation
 #######################
-require(ggplot2)
+library(ggplot2)
 p1 = ggplot(lfmm_results.sig, aes(x = distance)) +
     geom_histogram(breaks = seq(-5000, 5000, 250)) +
     #geom_histogram(breaks = c(-15000,-12500,-10000,-7500,-5000, -2500, -1000, -500,-250, -5, 5, 250, 500, 1000, 2500, 5000, 7500, 10000, 1250, 1500)) +

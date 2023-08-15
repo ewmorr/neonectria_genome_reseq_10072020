@@ -1,7 +1,7 @@
 
-require(ggVennDiagram)
-require(ggplot2)
-require(dplyr)
+library(ggVennDiagram)
+library(ggplot2)
+library(dplyr)
 
 #read gene IDs
 ppt_genes = read.table("data/Nf_LFMM_tables/ppt.geneIDs.nearest_neighbors.txt")
@@ -47,9 +47,26 @@ p1 = ggVennDiagram(gene_list) +
     scale_fill_gradient(low="blue",high = "red") +
     scale_color_manual(values = rep("grey", 5) )
 
-pdf("figures/LFMM_genes_venn.nongrowing_hdd4.tmin.freezeThaw.pdf")
+pdf("figures/LFMM_genes_venn.nongrowing_hdd4.tmin.freezeThaw.pdf", width = 4.5, height = 4.5)
 p1
 dev.off()
+
+#######################
+#Output lists of gene IDs shared between vars and unique to vars
+#Using the three var list
+#Tmin and growing season GDD4 have only 1-2 genes each
+#and both end up in the intersection of nongrowing GDD4 qnd MAP
+
+#conveniently all ft genes are unique
+write.table(freezeThaw_genes, "data/Nf_LFMM_tables/freezeThaw.geneIDs.unique.txt", col.names = F, row.names = F, quote = F)
+
+hdd4_ppt_shared = ppt_genes %>% filter(V1 %in% hdd4_genes$V1)
+ppt_unique = ppt_genes %>% filter(!V1 %in% hdd4_genes$V1)
+hdd4_unique = hdd4_genes %>% filter(!V1 %in% ppt_genes$V1)
+
+write.table(hdd4_ppt_shared, "data/Nf_LFMM_tables/hdd4_ppt_shared.geneIDs.shared.txt", col.names = F, row.names = F, quote = F)
+write.table(ppt_unique, "data/Nf_LFMM_tables/ppt.geneIDs.unique.txt", col.names = F, row.names = F, quote = F)
+write.table(hdd4_unique, "data/Nf_LFMM_tables/hdd4.geneIDs.unique.txt", col.names = F, row.names = F, quote = F)
 
 ################
 #temp vars
@@ -136,7 +153,7 @@ p1 = ggVennDiagram(snp_list) +
     scale_fill_gradient(low="blue",high = "red") +
     scale_color_manual(values = rep("grey", 5) )
 
-pdf("figures/LFMM_snps_venn.nongrowing_hdd4.tmin.freezeThaw.pdf")
+pdf("figures/LFMM_snps_venn.nongrowing_hdd4.tmin.freezeThaw.pdf", width = 4.5, height = 4.5)
 p1
 dev.off()
 

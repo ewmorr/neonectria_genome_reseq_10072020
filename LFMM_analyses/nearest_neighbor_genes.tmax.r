@@ -1,5 +1,5 @@
-require(dplyr)
-require(data.table)
+library(dplyr)
+library(data.table)
 
 #############################
 #FUNS
@@ -53,11 +53,9 @@ gff = read.csv("data/Nf_SPANDx_all_seqs/makerFINAL.all.mRNA_ONLY.gff", sep = "\t
 head(gff)
 
 #import LFMM results
-lfmm_results = read.table("data/Nf_LFMM_tables/growing_hdd4_lfmm.txt", header = T)
+lfmm_results = read.table("data/Nf_LFMM_tables/tmax_lfmm.txt", header = T)
 colnames(lfmm_results)
 #filter for SNPs with sig relationship to variable
-############
-#USE auto ADJUSTED P FOR HDD4
 lfmm_results.sig = lfmm_results %>% filter(FDR.sig == "sig") %>% select(scaffold, position)
 nrow(lfmm_results.sig)
 head(lfmm_results.sig)
@@ -128,9 +126,9 @@ for(i in 1:nrow(lfmm_results.sig)){
                 sig_SNP_count := sig_SNP_count + 1 #update count
             ]  
             
-            #lfmm_results.sig$match.type[i] = "nearest.multiple"
-            #lfmm_results.sig$geneID = temp2.match$geneID
-            #lfmm_results.sig$distance = temp2.match$dist
+            lfmm_results.sig$match.type[i] = "nearest.multiple"
+            lfmm_results.sig$geneID[i] = temp2.match$geneID
+            lfmm_results.sig$distance[i] = temp2.match$dist
         }else{
             lfmm_results.sig$match.type[i] = "no.match"
             lfmm_results.sig$geneID[i] = "no.match"
@@ -140,58 +138,31 @@ for(i in 1:nrow(lfmm_results.sig)){
 }#end for loop
             
 lfmm_results.sig$match.type %>% unique
-lfmm_results.sig$distance %>% abs %>% mean #2142
-lfmm_results.sig$distance %>% abs %>% median #2142
-lfmm_results.sig %>% filter(abs(distance) > 0) %>% pull(distance) %>% abs %>% range #2352 to 20412
+lfmm_results.sig$distance %>% abs %>% mean #2252
+lfmm_results.sig$distance %>% abs %>% median #2252
+lfmm_results.sig %>% filter(distance > 0 | distance < 0) %>% pull(distance) %>% abs %>% range #2142 to 2362
 lfmm_results.sig %>% filter(match.type == "in.gene") %>% nrow #0
-lfmm_results.sig %>% nrow #0 of 1 in gene
+lfmm_results.sig %>% nrow #0 of 2 in gene
 
-gff.dt %>% filter(sig_SNP_count > 0) #1 genes have SNPs
-gff.dt %>% filter(sig_SNP_count > 1) #0 have at least 2 SNPs
-nrow(gff.dt)
+gff.dt %>% filter(sig_SNP_count > 0) #2 associated with SNPs
+gff.dt %>% filter(sig_SNP_count > 1) #0 have >1 SNP
+
 #######################
-#plots of snp distance and SNP accumulation
+#plots of snp distance
 #######################
-require(ggplot2)
+library(ggplot2)
 p1 = ggplot(lfmm_results.sig, aes(x = distance)) +
-    geom_histogram(breaks = seq(-15000, 15000, 250)) +
-    #geom_histogram(breaks = c(-15000,-12500,-10000,-7500,-5000, -2500, -1000, -500,-250, -5, 5, 250, 500, 1000, 2500, 5000, 7500, 10000, 1250, 1500)) +
+    geom_histogram(breaks = seq(-25000, 25000, 250)) +
     theme_bw() +
     labs(x = "Gene distance from SNP (bp)", y = "Number SNPs (bin width 250 bp)")
 p1
-pdf("figures/SNP_distance.growing_HDD4.pdf")
+pdf("figures/SNP_distance.tmax.pdf")
 p1
 dev.off()
-
-#x = reorder(geneID, -sig_SNP_count), 
-
-p2 = ggplot(
-        gff.dt %>% filter(sig_SNP_count > 0), 
-        aes(x = sig_SNP_count)
-    ) +
-    geom_bar() +
-    labs(x = "SNPs per gene", y = "No. genes") +
-    theme_bw()
-
-p2
-pdf("figures/SNP_per_gene.growing_HDD4.pdf")
-p2
-dev.off()
-
-ggplot(
-    gff.dt %>% filter(sig_SNP_count > 0), 
-    aes(x = reorder(geneID, -sig_SNP_count), y = sig_SNP_count)
-) +
-    geom_point() +
-    labs(x = "Gene", y = "No. SNPs") +
-    theme_bw() +
-    theme(
-        axis.text.x = element_blank()
-    )
 
 ##############################
 #Write results tables
 ##############################
-write.table(gff.dt %>% filter(sig_SNP_count > 0), "data/Nf_LFMM_tables/growing_hdd4.gene_SNP_hits.txt", col.names = T, row.names = F, sep = "\t", quote = F)
-write.table(lfmm_results.sig, "data/Nf_LFMM_tables/growing_hdd4.SNPs.gene_found.nearest_neighbors.txt", col.names = T, row.names = F, sep = "\t", quote = F)
-write.table(gff.dt %>% filter(sig_SNP_count > 0) %>% select(geneID), "data/Nf_LFMM_tables/growing_hdd4.geneIDs.nearest_neighbors.txt", col.names = F, row.names = F, sep = "\t", quote = F)
+write.table(gff.dt %>% filter(sig_SNP_count > 0), "data/Nf_LFMM_tables/tmax.gene_SNP_hits.txt", col.names = T, row.names = F, sep = "\t", quote = F)
+write.table(lfmm_results.sig, "data/Nf_LFMM_tables/tmax.SNPs.gene_found.nearest_neighbors.txt", col.names = T, row.names = F, sep = "\t", quote = F)
+write.table(gff.dt %>% filter(sig_SNP_count > 0) %>% select(geneID), "data/Nf_LFMM_tables/tmax.geneIDs.nearest_neighbors.txt", col.names = F, row.names = F, sep = "\t", quote = F)

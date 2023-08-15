@@ -3,7 +3,7 @@ require(ape)
 require(phangorn)
 
 # read SNP multi seq aligment fasta
-seqs = fasta2DNAbin(file = "data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.fasta")
+seqs = fasta2DNAbin(file = "data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.noINDEL.fasta")
 
 # https://adegenet.r-forge.r-project.org/files/PRstats/practical-introphylo.1.0.pdf
 # convert to phangorn format
@@ -17,6 +17,7 @@ plot(tre.ini)
 #optimization
 fit.ini = pml(tre.ini, seqs.phyDat, k = 4)
 
+#this takes quite a while to run (like 30 minutes or more)
 fit = optim.pml(fit.ini, optNni=T, optBf = T, optQ = T, optGamma = T)
 
 # computed
