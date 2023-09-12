@@ -3,7 +3,7 @@
 #SBATCH --output=gatk.out
 #SBATCH --partition=shared
 #SBATCH --ntasks=1 --cpus-per-task=1
-##SBATCH --array=0-116%16
+#SBATCH --array=0-116%24
 
 module purge
 module load anaconda/colsa
@@ -17,8 +17,6 @@ reference=$ref_dir/ref.fasta
 
 #gatk CreateSequenceDictionary -R $reference
 #samtools faidx $reference
-
-mkdir $out_dir/indv_GVCFs
 
 array=($(find $ref_dir/Outputs/bams/ -name *.dedup.bam -printf "%f "))
 id_arr=("${array[@]%.dedup.bam}")
