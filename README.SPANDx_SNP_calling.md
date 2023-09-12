@@ -142,4 +142,7 @@ screen -list
 ```
 cd
 mkdir Nf_invariant_sites_GVCF
-sbatch invariant_sites_GVCF.slurm
+
+sbatch repo/neonectria_genome_reseq_10072020/premise/indv_GVCFs_array.slurm
+
+sbatch --share invariant_sites_GVCF.slurm
