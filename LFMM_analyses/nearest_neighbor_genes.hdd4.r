@@ -72,6 +72,7 @@ gff$sig_SNP_count = rep(0, nrow(gff))
 lfmm_results.sig$match.type = vector(mode = "character", length = nrow(lfmm_results.sig))
 lfmm_results.sig$geneID = vector(mode = "character", length = nrow(lfmm_results.sig))
 lfmm_results.sig$distance = vector(mode = "numeric", length = nrow(lfmm_results.sig))
+lfmm_results.sig$indel = vector(mode = "character", length = nrow(lfmm_results.sig))
 
 #set to data.table to using rolling count update
 gff.dt = as.data.table(gff)

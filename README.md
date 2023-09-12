@@ -295,8 +295,8 @@ grep -o "\s\./\.:" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA
 1646296/13506045 = 12.2% NA
 
 #
-80982 biallelic sites recognized by R::PopGenome 
-119207 sites recongized including poly allelic 
+80982 biallelic sites recognized by R::PopGenome # This is before importing the whole sequence as fasta
+119207 sites recongized including poly allelic  # This is before importing the whole sequence as fasta
 vcfR pulls in the correct number of sites
 
 
@@ -564,7 +564,7 @@ R_scripts/IBD.adegenet_metrics.multiple_subsamples.r
 partial_mantel_IBD_dur_inf.r
 ```
 No sig relationship until VA is excluded. without VA r = 0.4936303 , P = 0.018
-sig relationship between gen dist and age f infection distance, and between geo distance and age of infection distance
+sig relationship between gen dist and age of infection distance, and between geo distance and age of infection distance
 
 ### Calculate phylogeny
 Convert GVCF to SNP matrix
@@ -578,7 +578,7 @@ cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 sed 's:\./\.:-:g' out.filtered.LD_filtered_0.5_10Kb.table > out.filtered.LD_filtered_0.5_10Kb.table.na2gap
 sed 's:\./\.:-:g' out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table > out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap
 ```
-Once NAs are converted convert to fasta multiple sequence alignment (run locally). First conunt the number of indels
+Once NAs are converted convert to fasta multiple sequence alignment (run locally). First count the number of indels
 ```
 cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
 grep "INDEL" out.filtered.LD_filtered_0.5_10Kb.table.na2gap | wc -l
@@ -635,7 +635,7 @@ do(
 done
 ```
 
-Then rerun scaffold split (This no longer run bc using fasta files but retaining for now)
+Then rerun scaffold split (This no longer run bc using fasta files [which are already separate scaffolds per fasta] but retaining for now)
 ```
 conda activate bcftools
 cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
@@ -660,6 +660,7 @@ PopGenome/F_stats.PopGenome.rm_low_n_sites.r
 ## Genome scans for diversity metrics
 #### See [here](https://wurmlab.com/genomicscourse/2016-SIB/practicals/population_genetics/popgen) for analyses using popgenome with haploid data. We first start by splitting the data into scaffolds (or chromosomes), which can be done with bcftools or bash
 
+###### The following is old for importing VCF. Now using FASTA
 Then IF doing locally need to activate conda env for bcftools -- OR just do all of this with bcftools on the server where it's installed. can use the first few lines to loop through scaffolds
 ```
 
@@ -687,12 +688,14 @@ done < scaffolds.txt
 
 conda deactivate
 ```
+################ 
+
 Need to set up separate dirs for each scaffold
 ```
 cd ~/repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
 
 #array of files (there are 20)
-scf_files=(scaffolds_split/*)
+scf_files=(noINDEL_fasta/*)
 #loop through by number and copy to dir
 for i in {0..19}
 do(
@@ -707,6 +710,7 @@ Genome scans for Pi theta TajD
 F_stats.PopGenome.read_ind_scf.scan_Pi_theta.no_pops.r
 ```
 NOTE that four of the total 24 contigs 4 are left out of VCF because there were no SNPs called on these contigs. tig00007952_pilon tig00007948_pilon tig00007947_pilon tig00000405_pilon. These are all less than 100kb. Would be interesting to see what's on these contigs
+#tig00000405_pilon and tig00007947_pilon had hits to mt genome. 405 Is the obvious one with many hits and 63% coverage by mt
 
 
 
@@ -729,6 +733,10 @@ run locally. Need mRNA only GFF
 ```
 cd repo/neonectria_genome_reseq_10072020/data/Nf_SPANDx_all_seqs
 perl ~/repo/neonectria_genome_reseq_10072020/perl_scripts/get_mRNA_IDs_from_GFF.pl makerFINAL.all.gff
+```
+Get the locations of indels
+```
+grep "INDEL" out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode.table.na2gap | cut -f 1,2 > indel_pos.txt
 ```
 Then
 ```

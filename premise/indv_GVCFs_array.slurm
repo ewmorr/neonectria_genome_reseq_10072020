@@ -1,0 +1,30 @@
+#!/usr/bin/bash
+#SBATCH --job-name="gatk"
+#SBATCH --output=gatk.out
+#SBATCH --partition=shared
+#SBATCH --ntasks=1 --cpus-per-task=1
+##SBATCH --array=0-116%10
+
+module purge
+module load anaconda/colsa
+
+conda activate spandx
+
+ref_dir=/mnt/home/garnas/ericm/Nf_SPANDx_all_seqs
+out_dir=/mnt/home/garnas/ericm/Nf_invariant_sites_GVCF
+
+reference=$ref_dir/ref.fasta
+
+mkdir $out_dir/indv_GVCFs
+
+array=($(find $ref_dir/Outputs/bams/ -name *.dedup.bam -printf "%f "))
+id_arr=("${array[@]%.dedup.bam}")
+
+#indv GVCFs
+#gatk HaplotypeCaller -R ${reference} --ploidy 1 -ERC GVCF \
+#    --I $ref_dir/Outputs/bams/${id_arr[$SLURM_ARRAY_TASK_ID]}.dedup.bam \
+#    -O $out_dir/indv_GVCFs/${id_arr[$SLURM_ARRAY_TASK_ID]}.raw.gvcf
+
+gatk HaplotypeCaller -R ${reference} --ploidy 1 -ERC GVCF \
+    --I $ref_dir/Outputs/bams/${id_arr[1]}.dedup.bam \
+    -O $out_dir/indv_GVCFs/${id_arr[1]}.raw.gvcf

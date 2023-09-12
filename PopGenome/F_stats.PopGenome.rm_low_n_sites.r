@@ -13,6 +13,7 @@ source("R_scripts/make_site_metadata.r")
 snp.concat = readData("data/Nf_SPANDx_all_seqs/noINDEL_fasta", format="FASTA", include.unknown = T, FAST = T, big.data = T)
 sum(snp.concat@n.biallelic.sites)
 sum(snp.concat@n.biallelic.sites) + sum(snp.concat@n.polyallelic.sites)
+#116513 SNPs biallelic, no poly
 
 rm(snp.concat)
 
@@ -97,10 +98,12 @@ get.diversity(snp.concat)
 get.diversity(snp.concat)[[1]] # pop1 (B)
 get.diversity(snp.concat)[[2]] # pop2 (b)
 snp.concat@nuc.diversity.within
+#From te docs:
+#Note: the @nuc.divesrity.within have to be normalized/divided by the total number of nucleotides in a given window/region!
 
 show.slots(snp.concat)
 
-snp.concat@Pi
+snp.concat@Pi #according to the docs this is not valid with NA values
 #snp@Pi
 
 ##################
@@ -113,7 +116,7 @@ site_div = left_join(
     data.frame(
         state.name = pop.levels,
         pop.name = paste("pop", seq(1:12)),
-        Pi = snp.concat@Pi[1,],
+        Pi = snp.concat@nuc.diversity.within[1,]/snp.concat@n.sites,
         Tajima.D = snp.concat@Tajima.D[1,],
         nuc_div_within = snp.concat@nuc.diversity.within[1,],
         n_segregating_sites = snp.concat@n.segregating.sites[1,],

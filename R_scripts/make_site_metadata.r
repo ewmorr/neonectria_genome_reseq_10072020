@@ -1,4 +1,4 @@
-require(dplyr)
+library(dplyr)
 
 fam_info.Nf = read.table("data/Nf_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.fam", header = F)
 fam_info.Nd = read.table("data/Nd_SPANDx_all_seqs/out.filtered.LD_filtered_0.5_10Kb.fam", header = F)

@@ -138,3 +138,8 @@ screen -list
 ```
 25526.pts-0.login01
 
+## Create invariant sites GVCF
+```
+cd
+mkdir Nf_invariant_sites_GVCF
+sbatch invariant_sites_GVCF.slurm

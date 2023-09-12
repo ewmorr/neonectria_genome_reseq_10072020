@@ -4,6 +4,14 @@ require(tidyr)
 require(ggplot2)
 source("R_scripts/ggplot_theme.txt")
 
+#####################
+#NOTE
+#Pixy paper https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8044049/
+# we should probably switch to and invariants included GVCF
+# the issue of missing sites will downward bias nuc div overall, but over a whole genome it will be consisten
+# becomes an issue whe running sliding window analysis if there is a window that is biased towards having missing sites (e.g., repeats)
+# then this would bias downward nuc dive within the window
+
 
 #Read scf into list
 scf_list = list()
