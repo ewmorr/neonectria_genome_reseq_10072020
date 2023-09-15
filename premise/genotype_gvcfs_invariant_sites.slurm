@@ -27,7 +27,7 @@ reference=/mnt/home/garnas/ericm/Nf_SPANDx_all_seqs/ref.fasta
 #end
 
 array=($(find $in_dir/ -name *.gvcf -printf "%f "))
-array2=("${array[@]/#/-V }")
+array2=("${array[@]/#/-V $in_dir}")
 
 gatk CombineGVCFs -R $reference ${array2[*]} \
     -O $out_dir/master.invariant_sites.vcf
