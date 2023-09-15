@@ -72,28 +72,51 @@ exit 0
 
 
 #!/usr/bin/bash
-
+#SBATCH --job-name="gatk"
+#SBATCH --output=gatk.out
+#SBATCH --partition=shared
 #SBATCH --ntasks=1 --cpus-per-task=1
-#SBATCH --array=0-116%10
 
 module purge
 module load anaconda/colsa
 
 conda activate spandx
 
-ref_dir=/mnt/home/garnas/ericm/Nf_SPANDx_all_seqs
 out_dir=/mnt/home/garnas/ericm/Nf_invariant_sites_GVCF
+in_dir=/mnt/home/garnas/ericm/Nf_invariant_sites_GVCF/indv_GVCFs
 
-reference=$ref_dir/ref.fasta
+reference=/mnt/home/garnas/ericm/Nf_SPANDx_all_seqs/ref.fasta
 
-mkdir $out_dir/indv_GVCFs
+#SPANDx gatk configs
+    CLUSTER_SNP=3
+    CLUSTER_WINDOW_SNP=10
+    MLEAF_SNP=0.95
+    QD_SNP=10.0
+    MQ_SNP=30.0
+    FS_SNP=60.0
+    QUAL_SNP=30.0
+    LOW_DEPTH=2
+    HIGH_DEPTH=3
 
-array=($(find $ref_dir/Outputs/bams/ -name *.dedup.bam -printf "%f "))
-id_arr=("${array[@]%.dedup.bam}")
+  MLEAF_INDEL = 0.95
+  QD_INDEL = 10.0
+  MQ_INDEL = 30.0
+  FS_INDEL = 200.0
+  QUAL_INDEL = 30.0
+  LOW_DEPTH_INDEL = 2
+  HIGH_DEPTH_INDEL = 3
+#end
 
-#indv GVCFs
-gatk HaplotypeCaller -R ${reference} --ploidy 1 -ERC GVCF \
-    --I $ref_dir/Outputs/bams/${id_arr[$SLURM_ARRAY_TASK_ID]}.dedup.bam \
-    -O $out_dir/indv_GVCFs/${id_arr[$SLURM_ARRAY_TASK_ID]}.raw.gvcf
+array=($(find $in_dir/ -name *.gvcf -printf "%f "))
+array2=("${array[@]/#/-V }")
 
-$SLURM_ARRAY_TASK_ID
+gatk CombineGVCFs -R $reference ${array2[*]} -O $out_dir/master.invariant_sites.vcf
+gatk GenotypeGVCFs -R $reference -V $out_dir/master.vcf -all-sites -O $out_dir/out.invariant_sites.vcf
+
+gatk VariantFiltration -R ${reference} -O out.invariant_sites.filtered.vcf -V out.invariant_sites.vcf \
+    --cluster-size CLUSTER_SNP -window CLUSTER_WINDOW_SNP \
+    -filter "QD < QD_SNP" --filter-name "QDFilter" \
+    -filter "MQ < MQ_SNP" --filter-name "MQFilter" \
+    -filter "FS > FS_SNP" --filter-name "HaplotypeScoreFilter"
+
+
