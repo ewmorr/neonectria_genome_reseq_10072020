@@ -7,7 +7,7 @@
 module purge
 module load linuxbrew/colsa
 
-cd ~/neonectria_genome_reseq_10072020/
+cd ~/neonectria_genome_reseq_09182023/
 
 INDIR=reads/bbtrimmed
 OUTDIR=reads/bbtrimmed/vsearch

@@ -59,6 +59,10 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim.slurm
 cd neonectria_genome_reseq_03312022/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim_033122_reads.slurm
 
+#trim new reads
+cd neonectria_genome_reseq_09182023/
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim_091823_reads.slurm
+
 ```
 Trimmomatic adapter trimming and quality trimming
 ```
@@ -74,6 +78,11 @@ grep "Input Read Pairs" trimmomatic.out > trimmomatic.results
 cd ~/neonectria_genome_reseq_03312022/
 grep "Result" bbduk.out > bbduk_03312022.results
 cut -f 2 bbduk_03312022.results | cut -f 1 -d ' ' > bbduk_filtered_read_count_03312022.txt
+
+cd ~/neonectria_genome_reseq_09182023/
+grep "Result" bbduk.out > bbduk_09182023.results
+cut -f 2 bbduk_09182023.results | cut -f 1 -d ' ' > bbduk_filtered_read_count_09182023.txt
+
 ```
 Either filtering dropped similar numbers of read pairs -- less than a tenth of a percent in most cases. trimmomatic indicates 15-30 percent read-through (fwd only surviving)
 ```
@@ -84,6 +93,8 @@ Merge bbtrimmed reads and derep (`vsearch`) for search and then map to Nf/Nd ITS
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS.slurm
 #Also run 03312022 samples
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS_03312022.slurm
+#Also run 09182023 samples
+
 ```
 Eight of the genomes are Nd based on this analysis
 #### ALSO comparing to MAT1 and MAT2 seqs
