@@ -1,4 +1,4 @@
-require(dplyr)
+library(dplyr)
 
 #setwd("~/GARNAS_neonectria_genome_reseq_10072020")
 seq_files_dat = read.table("sample_metadata/sample_ID_mapping_all_samples_05052022.txt", header = T, sep = "\t")

@@ -94,7 +94,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS.slurm
 #Also run 03312022 samples
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS_03312022.slurm
 #Also run 09182023 samples
-
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS_09182023.slurm
 ```
 Eight of the genomes are Nd based on this analysis
 #### ALSO comparing to MAT1 and MAT2 seqs
