@@ -1,11 +1,12 @@
 library(dplyr)
 
 #setwd("~/GARNAS_neonectria_genome_reseq_10072020")
-seq_files_dat = read.table("sample_metadata/sample_ID_mapping_all_samples_05052022.txt", header = T, sep = "\t")
+seq_files_dat = read.table("data/sample_metadata/sample_ID_mapping_all_samples_05052022.txt", header = T, sep = "\t")
 
 seq_files_dat.Nf = seq_files_dat |> filter(Spp_based_on_ITS_map == "Nf")
 seq_files_dat.Nd = seq_files_dat |> filter(Spp_based_on_ITS_map == "Nd")
 
+Nf_samples_to_exclude = c("NG106", "NG108", "NG57", "NG111", "NG160") #NG106 and NG108 were sequenced on first run and had duplicates on the second; we retain the samples with higher output (second run). See README.SNP_calling.md for more info. Samples NG57, NG111, NG160 were resequenced on the third run and we will retain these samples due to poor SNP calling success on first rounds.
 n_of_samples.Nf = seq_files_dat.Nf |> group_by(sample) |> summarize(n = n())
 n_of_samples.Nd = seq_files_dat.Nd |> filter(Sequence_label != "NG20") |> group_by(sample) |> summarize(n = n()) #filtering out NG20 because it was resequenced on the second run
 

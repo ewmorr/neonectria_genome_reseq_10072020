@@ -15,8 +15,8 @@ out_dir=/mnt/home/garnas/ericm/Nf_invariant_sites_GVCF
 
 reference=$ref_dir/ref.fasta
 
-#gatk CreateSequenceDictionary -R $reference
-#samtools faidx $reference
+gatk CreateSequenceDictionary -R $reference
+samtools faidx $reference
 
 array=($(find $ref_dir/Outputs/bams/ -name *.dedup.bam -printf "%f "))
 id_arr=("${array[@]%.dedup.bam}")

@@ -3,7 +3,14 @@
 
 ## set up sequence files for SNP calling
 #### some samples from the second set (03312023) have two sets of reads bc sequencing output was low on the first run. We initially concatenated these, however, nearly all of the cat'd samples end up with high missing data after quality filtering SNPs. Sequence output was low ( < 1Gb in zipped file) for the first run of these samples so we will use the second set.
-#### There were also two samples included as duplicates which we initially cat'd (NG106-NG161 and NG108-NG149), but these both had high missing after cat as well. Instead of cat'ing we will use the sample with higher output (NG161 and NG149) in case there was an issue with sequence quality in the lower output samples.
+#### There were also two samples included as duplicates which we initially cat'd (NG106-NG161 and NG108-NG149), but these both had high missing after cat as well. Instead of cat'ing we will use the sample with higher output (NG161 and NG149) in case there was an issue with sequence quality in the lower output samples. For these samples we filter out the unwanted sample in the sort_seq_files_forSPANDx.r script
+#### We also resequenced NG57, NG111, and NG160 on the third sequence run because they had high missing data in the previous runs. these are now removed from the sample set. We modified the R script that writes the sampleIDs so these would be excluded on subsequent runs of the script, but we mannually removed the samples from Nf_SPANDx_all_seqs/ for the new SNP calling run with the third set of sequences
+```
+cd Nf_SPANDx_all_seqs
+rm NG57*
+rm NG111*
+rm NG160*
+```
 
 ### Set up dirs for performing SPANDx SNP calling (premise)
 ```
@@ -88,6 +95,62 @@ cat neonectria_genome_reseq_10072020/reads/NG62_*R2*.fastq.gz neonectria_genome_
 #cat neonectria_genome_reseq_03312022/reads/NG106*R2*.fastq.gz neonectria_genome_reseq_03312022/reads/NG161_*R2*.fastq.gz > Nf_SPANDx_all_seqs/NG106_2.fastq.gz
 
 ```
+## Moving third seq set to new sample ID to preserve the "NG" sample ID mapping nomenclature
+### following is the sample ID mapping from the original sequences to the new sequence labels
+```
+CAN-2021-043    NG170
+CAN-2021-044-2    NG171
+CAN-2021-060    NG172
+CAN-2021-079-2    NG173
+CAN-2021-081    NG174
+CAN-2021-090-1    NG175
+CAN-2021-092    NG176
+CAN-2021-093    NG177
+CAN-2021-102    NG178
+CAN-2021-106    NG179
+CAN-CFL-3014    NG180
+CAN-CFL-3017    NG181
+CAN-CFL-3018    NG182
+CAN-CFL-341    NG183
+CAN-CFL-789    NG184
+CAN-CFL-790    NG185
+CAN-CFL-816    NG186
+CAN-FUNDY-MM2    NG187
+CAN-ODELL-1    NG188
+LWF-1-1    NG189
+LWF-2-1    NG190
+LWF-3-1    NG191
+LWF-5-2    NG192
+LWF-6-2    NG193
+MEN2-3-2-2    NG194
+SCG1-2-1    NG195
+VAS1-5-2    NG196
+```
+Making separate files for Nf and Nd
+We copy from the containing dir to the SPANDx calling dir and rename on the fly
+```
+cd ~/neonectria_genome_reseq_09182023
+sed -e "s/\r//g" sample_IDs.09182023.RENAME.Nf.txt > sample_IDs.09182023.RENAME.Nf.noDos.txt
+sed -e "s/\r//g" sample_IDs.09182023.RENAME.Nd.txt > sample_IDs.09182023.RENAME.Nd.noDos.txt
+
+while IFS=$'\t' read -r -a idArray 
+do
+    echo ${idArray[0]}
+    echo ${idArray[1]}
+    cp reads/${idArray[0]}*R1*.fastq.gz ~/Nf_SPANDx_all_seqs/${idArray[1]}_1.fastq.gz
+    cp reads/${idArray[0]}*R2*.fastq.gz ~/Nf_SPANDx_all_seqs/${idArray[1]}_2.fastq.gz
+done < "sample_IDs.09182023.RENAME.Nf.noDos.txt"
+
+while IFS=$'\t' read -r -a idArray 
+do
+    echo ${idArray[0]}
+    echo ${idArray[1]}
+    cp reads/${idArray[0]}*R1*.fastq.gz ~/Nd_SPANDx_all_seqs/${idArray[1]}_1.fastq.gz
+    cp reads/${idArray[0]}*R2*.fastq.gz ~/Nd_SPANDx_all_seqs/${idArray[1]}_2.fastq.gz
+done < "sample_IDs.09182023.RENAME.Nd.noDos.txt"
+
+```
+
 
 ## SPANDx SNP calling
 Copy the referece genomes into the SPANDx working dirs
@@ -113,13 +176,22 @@ source ~/.bashrc
 
 nextflow config ~/SPANDx_git_clone/
 
-screen
+tmux new -s SPANDx_run
 
-nextflow run ~/SPANDx_git_clone/
+nextflow run ~/SPANDx_git_clone/ -resume
+
+#If necessary to kill nextflow. ctrl-c
 
 #If necessary can restart a run with 
 #nextflow run ~/SPANDx_git_clone/ -resume
+#The above command to restart should be used when adding new sequences. It will perform the file by file ops for the new files and then apply the globalGVCF commands
+#This worked one time to restart with new seqs, but failed on a retry. Trying rerunning from the top with the new third set of sequences. Moving the Outputs from the second sequence run to Nf_SPANDx_second_set
 
+#detach
+#tmux
+ctrl-b d
+
+#screen
 Ctrl-a Ctrl-d
 screen -list
 ```
