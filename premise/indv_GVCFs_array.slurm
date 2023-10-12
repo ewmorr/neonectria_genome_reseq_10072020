@@ -3,7 +3,7 @@
 #SBATCH --output=gatk.out
 #SBATCH --partition=shared
 #SBATCH --ntasks=1 --cpus-per-task=1
-#SBATCH --array=0-125%24
+#SBATCH --array=0-124%24
 
 module purge
 module load anaconda/colsa
