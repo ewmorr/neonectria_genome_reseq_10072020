@@ -3,15 +3,21 @@
 #SBATCH --output=gatk.out
 #SBATCH --partition=shared
 #SBATCH --ntasks=1 --cpus-per-task=1
-#SBATCH --array=0-124%24
+#SBATCH --array=0-32%24
 
 module purge
 module load anaconda/colsa
 
 conda activate spandx
 
-ref_dir=/mnt/home/garnas/ericm/Nf_SPANDx_all_seqs
-out_dir=/mnt/home/garnas/ericm/Nf_invariant_sites_GVCF
+#mkdir Nd_invariant_sites_GVCF
+#mkdir Nd_invariant_sites_GVCF/indv_GVCFs
+
+#change array number appropriately
+#find Nd_SPANDx_all_seqs/ -name *.gvcf | grep NG | wc -l
+
+ref_dir=/mnt/home/garnas/ericm/Nd_SPANDx_all_seqs
+out_dir=/mnt/home/garnas/ericm/Nd_invariant_sites_GVCF
 
 reference=$ref_dir/ref.fasta
 

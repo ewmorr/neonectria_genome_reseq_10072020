@@ -9,10 +9,12 @@ module load anaconda/colsa
 
 conda activate spandx
 
-out_dir=/mnt/home/garnas/ericm/Nf_invariant_sites_GVCF
-in_dir=/mnt/home/garnas/ericm/Nf_invariant_sites_GVCF/indv_GVCFs
+#First call indv_GVCFs_array.slurm for individual vcf files
 
-reference=/mnt/home/garnas/ericm/Nf_SPANDx_all_seqs/ref.fasta
+out_dir=/mnt/home/garnas/ericm/Nd_invariant_sites_GVCF
+in_dir=/mnt/home/garnas/ericm/Nd_invariant_sites_GVCF/indv_GVCFs
+
+reference=/mnt/home/garnas/ericm/Nd_SPANDx_all_seqs/ref.fasta
 
 #SPANDx gatk configs
     CLUSTER_SNP=3
