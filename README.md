@@ -9,15 +9,16 @@
 ### Filter out SNPs that SPANDx FAIL filtering
 ```
 cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf
+ls ../.. | grep fastq | wc -l #250/2 = 125
 grep "##\|#\|PASS" out.filtered.vcf > out.filtered.PASS.vcf
 grep -v "##\|#" out.filtered.PASS.vcf | wc -l
 ```
-516,531 SNPs remaining x 117 samples = 60434127
+530256 SNPs remaining x 125 samples = 66282000
 ```
 grep -o "\s\.:" out.filtered.PASS.vcf | wc -l
 ```
-2732246 NA sites
-2712983/60434127 = 4.52%
+2920386 NA sites
+2920386/66282000 = 4.41%
 
 
 ### Post-SNP calling calculations and filtering
@@ -31,16 +32,16 @@ calculate raw coverage (This has not been run for repolished ref seq)
 #sbatch ~/repo/neonectria_genome_reseq_10072020/premise/sample_coverage.slurm
 ```
 
-concatenate coverage results
-```
-cd ~/Nf_SPANDx_all_seqs/Outputs/bams
-for i in *.coverage_by_sequence.txt
-do
-    cov="$(grep "genome" $i| cut -f 3)"
-    sample=${i%.coverage_by_sequence.txt}
-    echo -e "$sample\t$cov" >> ~/Nf_SPANDx_all_seqs/Outputs/coverage_by_sample.dedup_bam.txt
-done
-```
+#concatenate coverage results
+#```
+#cd ~/Nf_SPANDx_all_seqs/Outputs/bams
+#for i in *.coverage_by_sequence.txt
+#do
+#    cov="$(grep "genome" $i| cut -f 3)"
+#    sample=${i%.coverage_by_sequence.txt}
+#    echo -e "$sample\t$cov" >> ~/Nf_SPANDx_all_seqs/Outputs/coverage_by_sample.dedup_bam.txt
+#done
+#```
 
 calculate coverage based on DP after spandx filtering. Note that the R script points to the file paths
 ```

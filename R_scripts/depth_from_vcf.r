@@ -1,6 +1,6 @@
-require(vcfR)
-require(tidyr)
-require(ggplot2)
+library(vcfR)
+library(tidyr)
+library(ggplot2)
 source("~/repo/neonectria_genome_reseq_10072020/R_scripts/ggplot_theme.txt")
 
 #filtered VCF
