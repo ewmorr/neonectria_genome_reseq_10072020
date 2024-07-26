@@ -126,7 +126,7 @@ gunzip -c out.invariant_sites.vcf.gz |
 
 ####################
 # Combined call set filtering
-The INFO fields for both variant and invariant can be filtered as normal because the scoring categories are unique to variant/invaraiant. However, due to the iterative missing data filters the locus and individual calls will both (presumably) be effected by including both variant and invariant sites. We perform variant filtering as above, and then note the individuals and loci that are exlcuded from the final table. We then apply name based filters as opposed to filtering based on calculated missingness.
+The INFO fields for both variant and invariant can be filtered as normal because the scoring categories are unique to variant/invaraiant. However, due to the iterative missing data filters the locus and individual calls will both (presumably) be affected by including both variant and invariant sites. We perform variant filtering as above, and then note the individuals and loci that are exlcuded from the final table. We then apply name based filters as opposed to filtering based on calculated missingness.
 
 
 ```
@@ -140,7 +140,7 @@ vcftools -vcf target.vcf --exclude NA.${lmiss}.sites --recode --out target.loc${
 
 vcftools -vcf target.site${missingnessCutoff}.vcf --missing-indv
 awk '$5 > $imiss' out.imiss | cut -f1 > NA.${imiss}.indv
-vcftools -vcf target.vcf --exclude NA.${imiss}.sites --recode --out target.loc-$lmiss.ind-${imiss}.vcf
+vcftools -vcf target.vcf --remove NA.${imiss}.sites --recode --out target.loc-$lmiss.ind-${imiss}.vcf
 
 ```
 The above run with repeated calls in the iterative filtering along with individual NA filtering, and then cat the `NA.*.sites` and `NA.*.indv` files and run and --exclude and a --remove on the combined variant/invariant file

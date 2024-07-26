@@ -8,7 +8,9 @@ module load anaconda/colsa
 #conda config --add channels conda-forge
 #conda config --add channels bioconda
 
-conda create --name spandx -c dsarov -c bioconda -c conda-forge spandx
+#mamba create --name spandx -c dsarov -c bioconda -c conda-forge spandx
+
+mamba create --name spandx -c dsarov -c bioconda -c conda-forge spandx "python>=3" "nextflow<=22.10.6-0"
 
 conda activate spandx
 

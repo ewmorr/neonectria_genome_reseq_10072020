@@ -3,6 +3,7 @@
 #SBATCH --job-name="vcR"
 #SBATCH --output=vcfR_depth.out
 #SBATCH --partition=shared
+#SBATCH --cpus
 
 cd ~/Nf_SPANDx_all_seqs/Outputs/Master_vcf/
 

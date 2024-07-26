@@ -73,6 +73,16 @@ do(
 )
 done < sample_IDs.Nd.03312022_adtl_reads.txt
 
+#Nc first set
+while IFS= read -r line 
+do(
+    cp neonectria_coccinea_genome_reseq_07182024/reads/${line}_*R1*.fastq.gz Nc_SPANDx_all_seqs/${line}_1.fastq.gz
+    cp neonectria_coccinea_genome_reseq_07182024/reads/${line}_*R2*.fastq.gz Nc_SPANDx_all_seqs/${line}_2.fastq.gz
+)
+done < sample_IDs.Nc.07182024.txt
+
+
+
 ```
 Also cat the duplicates
 ```
@@ -160,6 +170,8 @@ Copy the referece genomes into the SPANDx working dirs
 cp neonectria_minion/MAT1_polish_2/pilon_.fasta Nf_SPANDx_all_seqs/ref.fasta
 cp N_ditissima_ref_genome/LDPL01.1.fsa_nt.fasta Nd_SPANDx_all_seqs/ref.fasta
 ```
+### For Nc reference we use the Salgado-Salazar genome which is marked as the ref in NCBI. Stored locally in this repo `data/N_coccinea_ref_genome`
+
 
 #### Make sure that nextflow.config is updated if necessary (https://github.com/dsarov/SPANDx#usage)
 The config file is where CPUs etc are denoted as well as the resource manager (e.g., SLURM). Newer versions of the package also have `notrim` set to `true`. This should be `false` in that case. Also, note that we have cloned the git repo after installing via conda, and made some modificaations to the `main.nf` script (i.e., changing the `gatk HaplotypeCaller` comand at line 865 to include `--ploidy 1` flag) and to the `./bin/Master_vcf.sh` script (i.e., removing `-ploidy 1` from the `gatk GenotypeGVCFs` command). Also, note that `.bashrc` may need to be updated as described [here](./SPANDx_conda_install.sh). Finally, the reference genome assembly must be loacted in the SPANDx working directory (along with the reads), and can be indicated by path in the config file. Then, to run SPANDx (note that nextflow is pointed to the cloned git repo)
@@ -210,7 +222,17 @@ nextflow run ~/SPANDx_git_clone/
 Ctrl-a Ctrl-d
 screen -list
 ```
-25526.pts-0.login01
+`25526.pts-0.login01`
+
+Running Nc
+```
+cd ~/Nc_SPANDx_all_seqs/
+screen
+
+nextflow run ~/SPANDx_git_clone/
+
+110547.pts-120.login01]
+```
 
 ## Create invariant sites GVCF
 ```
