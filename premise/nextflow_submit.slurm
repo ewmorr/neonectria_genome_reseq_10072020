@@ -4,10 +4,11 @@
 #SBATCH --output=nextflow.out
 #SBATCH --partition=shared
 #SBATCH --cpus-per-task=24
-##SBATCH --exclude=node[101-112,117-125]
+#SBATCH --exclude=node\[101-112,117-125\]
 ##https://premise.sr.unh.edu/slurm.html#srun-excludenode117node118-hostname
 ##excluding a bunch bc they are often used by priority users and we don't
 ## need the special resources
+## Except the node range syntax isn't working so we will list it out
 
 cd ~/Nc_SPANDx_all_seqs/
 
