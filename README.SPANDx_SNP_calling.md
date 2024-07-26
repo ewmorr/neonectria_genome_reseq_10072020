@@ -237,7 +237,7 @@ nextflow run ~/SPANDx_git_clone/
 #### Reconfigured to launch nextflow with an sbatch script and run on a single node. Was having problems with priority jobs killing the nf jobs and it's not clear how to restrict nodes with nextflow config
 ```
 cd
-sbatch ~/repo/neonectria_genome_reseq_10072020/premise/nextflow_submit.slurm
+sbatch --exclude=node[101-112,117-125] ~/repo/neonectria_genome_reseq_10072020/premise/nextflow_submit.slurm
 ```
 
 ## Create invariant sites GVCF
