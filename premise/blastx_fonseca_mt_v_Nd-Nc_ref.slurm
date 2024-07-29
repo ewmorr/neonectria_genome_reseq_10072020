@@ -2,7 +2,8 @@
 #SBATCH --partition=shared
 #SBATCH -J blastn
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=24 
+#SBATCH --cpus-per-task=24
+#SBATCH --exclude=node117,node118
 #SBATCH --output mt_blastn.out
 
 module purge
