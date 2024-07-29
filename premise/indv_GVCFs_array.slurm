@@ -18,8 +18,8 @@ conda activate spandx
 #find Nd_SPANDx_all_seqs/ -name *.gvcf | grep NG | wc -l
 #find Nc_SPANDx_all_seqs/ -name *.gvcf | grep Neco | wc -l
 
-ref_dir=/mnt/home/garnas/ericm/Nc_SPANDx_all_seqs
-out_dir=/mnt/home/garnas/ericm/Nc_invariant_sites_GVCF
+ref_dir=/mnt/home/garnas/ewj4/Nc_SPANDx_all_seqs
+out_dir=/mnt/home/garnas/ewj4/Nc_invariant_sites_GVCF
 
 reference=$ref_dir/ref.fasta
 
