@@ -250,3 +250,21 @@ mkdir Nf_invariant_sites_GVCF/indv_GVCFs
 sbatch repo/neonectria_genome_reseq_10072020/premise/indv_GVCFs_array.slurm
 
 sbatch repo/neonectria_genome_reseq_10072020/premise/genotype_gvcfs_invariant_sites.slurm 
+
+cd
+mkdir Nd_invariant_sites_GVCF
+mkdir Nd_invariant_sites_GVCF/indv_GVCFs
+
+sbatch repo/neonectria_genome_reseq_10072020/premise/indv_GVCFs_array.slurm
+
+sbatch repo/neonectria_genome_reseq_10072020/premise/genotype_gvcfs_invariant_sites.slurm 
+
+cd
+mkdir Nc_invariant_sites_GVCF
+mkdir Nc_invariant_sites_GVCF/indv_GVCFs
+
+sbatch repo/neonectria_genome_reseq_10072020/premise/indv_GVCFs_array.slurm
+
+sbatch repo/neonectria_genome_reseq_10072020/premise/genotype_gvcfs_invariant_sites.slurm 
+
+```
