@@ -63,6 +63,10 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim_033122_reads.s
 cd neonectria_genome_reseq_09182023/
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim_091823_reads.slurm
 
+#trim new reads
+cd neonectria_coccinea_genome_reseq_07182024
+sbatch ~/repo/neonectria_genome_reseq_10072020/premise/bbduk_trim_07182024_reads.slurm
+
 ```
 Trimmomatic adapter trimming and quality trimming
 ```
