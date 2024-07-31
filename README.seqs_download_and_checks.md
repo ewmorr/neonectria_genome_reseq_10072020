@@ -87,6 +87,9 @@ cd ~/neonectria_genome_reseq_09182023/
 grep "Result" bbduk.out > bbduk_09182023.results
 cut -f 2 bbduk_09182023.results | cut -f 1 -d ' ' > bbduk_filtered_read_count_09182023.txt
 
+cd neonectria_coccinea_genome_reseq_07182024
+grep "Result" bbduk.out > bbduk_07182024.results
+cut -f 2 bbduk_07182024.results | cut -f 1 -d ' ' > bbduk_filtered_read_count_07182024.txt
 ```
 Either filtering dropped similar numbers of read pairs -- less than a tenth of a percent in most cases. trimmomatic indicates 15-30 percent read-through (fwd only surviving)
 ```
@@ -99,6 +102,7 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS.slurm
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS_03312022.slurm
 #Also run 09182023 samples
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS_09182023.slurm
+
 ```
 Eight of the genomes are Nd based on this analysis
 #### ALSO comparing to MAT1 and MAT2 seqs

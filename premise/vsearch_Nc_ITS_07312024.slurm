@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --job-name="vsearch"
-#SBATCH --output=vsearch_ITS_map.out
+#SBATCH --output=vsearch_ID_map.out
 #SBATCH --partition=shared
 
 module purge
 module load linuxbrew/colsa
 
-cd ~/Nc_SPANDx_all_seqs
+cd ~/neonectria_coccinea_genome_reseq_07182024
 
 INDIR=reads/bbtrimmed
 OUTDIR=reads/bbtrimmed/vsearch
@@ -39,8 +39,8 @@ done
 cat $OUTDIR/*.derep.fasta > $OUTDIR/all_seqs.derep.fasta
 
 srun vsearch --usearch_global $OUTDIR/all_seqs.derep.fasta \
-    --db ~/neonectria_genome_reseq_10072020/Nf_Nd_ITS2.fasta \
+    --db ~/neonectria_coccinea_genome_reseq_07182024/Nc_ID.fasta \
     --sizein \
     --id 0.97 \
-    --otutabout all_seqs.derep.Nf_Nd_ITS.otu_tab.txt \
+    --otutabout all_seqs.derep.Nc_ID.otu_tab.txt \
     --threads 16
