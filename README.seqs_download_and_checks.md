@@ -105,7 +105,9 @@ sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_ITS_0918202
 #Also run Nc samples
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nc_ITS_07312024.slurm
 ```
-Eight of the genomes are Nd based on this analysis
+Eight of the genomes are Nd based on this analysis.
+#### Nc 2-6 look like Nc based on mapping to RPB2 and EF1a. However of ITS most reads map to the full length N major, followed by Nf ITS2. N major only occurs on Alnus and all of these were isolated from European beech, but this could indicate Nd (same ITS as Nm(, or could indicate mapping to conserved sequence. Neco-1 has no mapping to any EF1a and RPB2, average mapping to full length Nm, and some mapping to Nd ITS2 ASV 834.
+#### Let's do a SPADEs assembly and blast the ref seqs to each assembly as a second confirmation. But for now we should be good to filter. Maybe we should rerun SPANDx without Neco-1 to see if we get more SNPs (~999K came through the first round)
 #### ALSO comparing to MAT1 and MAT2 seqs
 ```
 sbatch ~/repo/neonectria_genome_reseq_10072020/premise/vsearch_Nf_Nd_MAT_otu_tab.slurm
