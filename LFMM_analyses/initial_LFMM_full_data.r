@@ -14,9 +14,9 @@ source("R_scripts/ggplot_theme.txt")
 
 #The genotype data can simply be read in as a matrix (according the docs)
 #OR can try loading LEA and using readLfmm()
-Y = as.matrix(read.table("data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.lfmm", header = F))
-
-SNP_pos = read.table("data/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map")
+Y = as.matrix(read.table("data/old_SNP_sets/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.lfmm", header = F))
+ncol(Y)
+SNP_pos = read.table("data/old_SNP_sets/Nf_SPANDx_all_seqs/out.filtered.PASS.DP_filtered.lt25missing.biallele.mac2.rm_NA_ind.recode01missing9.map")
 SNP_pos = SNP_pos[c(1,4)]
 colnames(SNP_pos) = c("scaffold", "position")
 
@@ -50,20 +50,45 @@ sample_metadata.site_info = left_join(sample_metadata, site_metadata, by = "stat
 sample_metadata.site_info = sample_metadata.site_info %>% filter(sample %in% fam_info.Nf[,1])
 nrow(sample_metadata.site_info)
 
+######################
+######################
+colSums(Y == 0)
+colSums(Y == 1)
+colSums(Y == 9)
+sum(colSums(Y == 9)/nrow(Y) > 0.1)
+plot(colSums(Y == 9)/nrow(Y))
+plot(colSums(Y == 0))
+plot(colSums(Y == 1))
+
+ref_sum = colSums(Y == 0) + colSums(Y == 9)
+alt_sum = colSums(Y == 1) + colSums(Y == 9)
+which(ref_sum > 104)
+which(alt_sum > 104)
+#filter for MAC ge 3
+which(ref_sum > 105) # there are none
+which(alt_sum > 105)
+
+str(Y)
 #######################
 #NONGROWING SEASON HDD
 
 #variable for test
 X = sample_metadata.site_info$HDD4.mean_nongrowing
 
+class(X)
+class(Y)
+sd(X)
+mean(X)
 #LFMM ridge
 
 mod.lfmm = lfmm_ridge(Y = Y, X = X, K = 4) #using K = 4 based on PCA and pop structure analyses
+str(mod.lfmm)
 
 pv <- lfmm_test(Y = Y,
 X = X,
 lfmm = mod.lfmm,
 calibrate = "gif")
+str(pv)
 
 #Example plots
 plot(-log10(pv$calibrated.pvalue),

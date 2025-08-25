@@ -5,7 +5,7 @@ require(hutilscpp)
 require(prism)
 
 #read coordinates
-site_coords = read.table("/mnt/home/garnas/ericm/PRISM_analysis/site_coords.txt", header = T)
+site_coords = read.table("/mnt/home/garnas/ericm/PRISM_analysis/site_coords.USA.txt", header = T)
 sites_climate = site_coords
 
 
@@ -97,6 +97,6 @@ for(i in 1:num_files){
 #coerce list to df
 sites_climate_list.df = do.call(rbind.data.frame, sites_climate_list)
 
-saveRDS(sites_climate_list, "/mnt/home/garnas/ericm/PRISM_analysis/sites_daily_tmin_tmax_ppt_20072018.list.rds")
-saveRDS(sites_climate_list.df, "/mnt/home/garnas/ericm/PRISM_analysis/sites_daily_tmin_tmax_ppt_20072018.df.rds")
+saveRDS(sites_climate_list, "/mnt/home/garnas/ericm/PRISM_analysis/sites_daily_tmin_tmax_ppt_20072018.all_sites.list.rds")
+saveRDS(sites_climate_list.df, "/mnt/home/garnas/ericm/PRISM_analysis/sites_daily_tmin_tmax_ppt_20072018.all_sites.df.rds")
 
