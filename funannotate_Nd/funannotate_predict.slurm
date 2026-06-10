@@ -8,18 +8,17 @@
 
 module purge
 module load anaconda/colsa
-conda activate funannotate
+conda activate funannotate_new
 
-gunzip ~/Nf_maker_reference_genome/*fasta.gz
+#gunzip ~/Nf_maker_reference_genome/*fasta.gz
+
+cd ~/neonectria_pop_gen_analyses/Nd_annotate
 
 
-cd ~/Nf_annotate/funannotate_run/
-
-
-srun funannotate predict -i RepeatMasker/ref.fasta.masked.clean -s "Neonectria faginata" \
+srun funannotate predict -i RepeatMasker/ref.fasta.masked -s "Neonectria ditissima" \
     -o output_funann \
     --transcript_evidence $HOME/Nf_maker_reference_genome/Fusgr1_GeneCatalog_transcripts_20110524.nt.fasta \
     --protein_evidence $HOME/Nf_maker_reference_genome/Fusgr1_GeneCatalog_proteins_20110524.aa.fasta $FUNANNOTATE_DB/uniprot_sprot.fasta \
     --cpus 24
     
-gzip ~/Nf_maker_reference_genome/*fasta
+#gzip ~/Nf_maker_reference_genome/*fasta
