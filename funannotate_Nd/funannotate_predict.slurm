@@ -15,7 +15,7 @@ gunzip ~/Nf_maker_reference_genome/*fasta.gz
 cd ~/neonectria_pop_gen_analyses/Nd_annotate
 
 
-srun funannotate predict -i RepeatMasker/ref.fasta.masked -s "Neonectria ditissima" \
+srun funannotate predict -i RepeatMasker/ref.fasta.masked.clean -s "Neonectria ditissima" \
     -o output_funann \
     --transcript_evidence $HOME/Nf_maker_reference_genome/Fusgr1_GeneCatalog_transcripts_20110524.nt.fasta \
     --protein_evidence $HOME/Nf_maker_reference_genome/Fusgr1_GeneCatalog_proteins_20110524.aa.fasta $FUNANNOTATE_DB/uniprot_sprot.fasta \
