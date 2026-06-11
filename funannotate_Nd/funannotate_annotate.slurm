@@ -10,27 +10,25 @@ module purge
 module load anaconda/colsa
 conda activate funannotate_new
 
-cd ~/Nf_annotate/funannotate_run/
+cd ~/neonectria_pop_gen_analyses/Nd_annotate
 
-funannDir=/mnt/home/garnas/ewj4/Nf_annotate/funannotate_run/output_funann
+funannDir=$HOME/neonectria_pop_gen_analyses/Nd_annotate/output_funann
 
-eggnogPath=$HOME/Nf_annotate/funannotate_run/output_eggnog_prot/Nf_.emapper.annotations
-iprscanPath=$HOME/Nf_annotate/funannotate_run/output_iprscan_prot/ipr_out.xml
-antismashPath=$HOME/Nf_annotate/funannotate_run/output_antismash/Neonectria_faginata.gbk
-phobiusPath=$HOME/Nf_annotate/funannotate_run/phobius_prediction.txt
-signalpPath=$HOME/Nf_annotate/funannotate_run/signalP.all.txt
+eggnogPath=$HOME/neonectria_pop_gen_analyses/Nd_annotate/output_eggnog_prot/Nf_.emapper.annotations
+iprscanPath=$HOME/neonectria_pop_gen_analyses/Nd_annotate/output_iprscan_prot/ipr_out.xml
+# antismash is gbk format from web server
+antismashPath=$HOME/neonectria_pop_gen_analyses/Nd_annotate/ /output_antismash/Neonectria_ditissima.gbk
+# phobius is short format from web server
+phobiusPath=$HOME/neonectria_pop_gen_analyses/Nd_annotate/phobius_prediction.txt
+# Signal P is eukarya short format from web server
+signalpPath=$HOME/neonectria_pop_gen_analyses/Nd_annotate/signalP.all.txt
 
 srun funannotate annotate -i $funannDir \
     -o $funannDir \
-    --rename Q2T73 \
+    --rename RS324p \
     --cpus 24 \
     --eggnog $eggnogPath \
     --iprscan $iprscanPath \
     --antismash $antismashPath \
     --phobius $phobiusPath \
-    --signalp $signalpPath \
-    --sbt template.sbt
-    
-    
-    
-
+    --signalp $signalpPath
