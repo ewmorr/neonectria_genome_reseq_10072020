@@ -3,7 +3,7 @@
 #SBATCH -J antismash
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=24
-#SBATCH --output interproscan.out
+#SBATCH --output antismash.out
 #SBATCH --exclude=node117,node118
 
 
