@@ -9,12 +9,12 @@
 module purge
 module load anaconda/colsa
 
-conda activate interproscan
+conda activate interproscan-5.69.101
 
-cd ~/Nf_annotate/funannotate_run/
+cd ~/neonectria_pop_gen_analyses/Nd_annotate
 mkdir output_iprscan_prot
 
-srun interproscan -i output_funann/predict_results/Neonectria_faginata.proteins.fa \
+srun interproscan.sh -i output_funann/predict_results/Neonectria_ditissima.proteins.fa \
     --cpu 24 \
     -f XML \
     -o output_iprscan_prot/ipr_out.xml

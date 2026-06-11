@@ -11,13 +11,14 @@ module load anaconda/colsa
 
 conda activate eggnog-mapper-2.1.12
 
+# the database path is now setup and stored in $EGGNOG_DATA_DIR
 #dbEggnog=/mnt/lz01/hcgs/shared/databases/eggnog-mapper
 
-cd ~/Nf_annotate/funannotate_run/
+cd ~/neonectria_pop_gen_analyses/Nd_annotate
 mkdir output_eggnog_prot
 
-srun emapper.py -i output_funann/predict_results/Neonectria_faginata.proteins.fa \
+srun emapper.py -i output_funann/predict_results/Neonectria_ditissima.proteins.fa \
     --output_dir output_eggnog_prot \
-    -o Nf_ \
+    -o Nd_ \
     --cpu 24 \
     -m diamond
