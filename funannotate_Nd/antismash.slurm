@@ -23,5 +23,6 @@ mkdir output_antismash
 gbkFile=$HOME/neonectria_pop_gen_analyses/Nd_annotate/output_funann/predict_results/Neonectria_ditissima.gbk
 
 srun antismash --taxon fungi \
-    --outputfolder output_antismash \
+    --output-dir output_antismash \
+    -c 24 \
     $gbkFile
