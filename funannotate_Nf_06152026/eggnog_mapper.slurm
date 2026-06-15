@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --partition=shared
+#SBATCH -J eggnog
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=24
+#SBATCH --output eggnog.out
+#SBATCH --exclude=node117,node118
+
+module purge
+module load anaconda/colsa
+
+conda activate eggnog-mapper-2.1.12
+
+# the database path is now setup and stored in $EGGNOG_DATA_DIR
+#dbEggnog=/mnt/lz01/hcgs/shared/databases/eggnog-mapper
+
+cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_06152026
+mkdir output_eggnog_prot
+
+srun emapper.py -i output_funann/predict_results/Neonectria_faginata.proteins.fa \
+    --output_dir output_eggnog_prot \
+    -o Nf_ \
+    --cpu 24 \
+    -m diamond
