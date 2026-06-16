@@ -25,7 +25,7 @@ signalpPath=$HOME/neonectria_faginata_draft_genome/Nf_annotate/funannotate_06152
 
 srun funannotate annotate -i $funannDir \
     -o $funannDir \
-    --rename RS324p \
+    --rename Q2T73 \
     --cpus 24 \
     --eggnog $eggnogPath \
     --iprscan $iprscanPath \
