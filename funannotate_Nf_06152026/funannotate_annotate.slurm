@@ -31,4 +31,5 @@ srun funannotate annotate -i $funannDir \
     --iprscan $iprscanPath \
     --antismash $antismashPath \
     --phobius $phobiusPath \
-    --signalp $signalpPath
+    --signalp $signalpPath ]
+    --sbt $HOME/neonectria_faginata_draft_genome/Nf_annotate/funannotate_06152026/template.sbt
