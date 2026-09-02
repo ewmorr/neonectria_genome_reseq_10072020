@@ -106,12 +106,12 @@ MAX_MEM_GB=250                                     # keep a little headroom belo
 # wise at a time, and mixing them can shadow each other's dependencies.
 module purge
 module load linuxbrew/colsa
-module load anaconda/colsa
+#module load anaconda/colsa
 
 
 # Conda's `activate`/`deactivate` shell functions sometimes reference unset
 # variables, which trips `set -u` above -- temporarily relax it around calls
-# to them. 
+# to them.
 conda_activate()   { set +u; conda activate "$1";   set -u; }
 conda_deactivate() { set +u; conda deactivate;      set -u; }
 
@@ -188,6 +188,8 @@ fastqc --threads "${NUM_CPUS}" --outdir "${RAW_QC_DIR}" "${LEFT_ARR[@]}" "${RIGH
 TRIMMED_LEFT_ARR=()
 TRIMMED_RIGHT_ARR=()
 
+module purge
+module load anaconda/colsa
 conda_activate fastp-1.0.1
 echo "fastp version:     $(fastp --version 2>&1 | head -n1)"
 
@@ -216,6 +218,8 @@ for i in "${!SAMPLE_ARR[@]}"; do
 done
 
 conda_deactivate
+module purge
+module load linuxbrew/colsa
 
 # Optional: screen out rRNA reads here with SortMeRNA before assembly, e.g.
 #   sortmerna --ref <rRNA_db.fasta> --reads "${left_out}" --reads "${right_out}" \
@@ -237,12 +241,15 @@ fastqc --threads "${NUM_CPUS}" --outdir "${TRIMMED_QC_DIR}" "${TRIMMED_LEFT_ARR[
 # STEP 4: MULTIQC SUMMARY
 #############################################################################
 echo "[$(date)] Aggregating QC reports with MultiQC..."
+module purge
+module load anaconda/colsa
 conda_activate multiqc-1.10.1
 echo "MultiQC version:   $(multiqc --version 2>&1 | head -n1)"
 multiqc "${RAW_QC_DIR}" "${TRIMMED_QC_DIR}" "${FASTP_REPORT_DIR}" \
     --outdir "${SCRATCH_DIR}/multiqc" --filename multiqc_report.html || true
 conda_deactivate
-
+module purge
+module load linuxbrew/colsa
 #############################################################################
 # RUN TRINITY (on trimmed reads)
 #############################################################################
