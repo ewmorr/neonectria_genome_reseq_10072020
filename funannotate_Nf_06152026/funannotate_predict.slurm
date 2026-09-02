@@ -12,7 +12,7 @@ conda activate funannotate_new
 
 gunzip ~/Nf_maker_reference_genome/*fasta.gz
 
-cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_06152026
+cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_09022026
 
 
 srun funannotate predict -i RepeatMasker/ref.fasta.masked.clean -s "Neonectria faginata" \
