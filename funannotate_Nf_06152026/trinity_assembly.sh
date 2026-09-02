@@ -139,11 +139,22 @@ FASTP_REPORT_DIR="${SCRATCH_DIR}/fastp_reports"
 mkdir -p "${SCRATCH_DIR}" "${FINAL_OUTDIR}" "${QC_OUTDIR}" \
          "${RAW_QC_DIR}" "${TRIMMED_DIR}" "${TRIMMED_QC_DIR}" "${FASTP_REPORT_DIR}"
 
-# Clean up scratch space on exit, whether the job succeeds, fails, or is
-# cancelled -- avoids leaving large temp directories behind on the node.
+# Clean up scratch space on exit -- but ONLY if every copy back to
+# persistent storage actually succeeded (see copy_ok below). If a copy
+# failed, deleting scratch would destroy the only copy of the results, so
+# we deliberately leave it in place and say so loudly instead.
+copy_ok=true
+
 cleanup() {
-    echo "[$(date)] Cleaning up scratch directory: ${SCRATCH_DIR}"
-    rm -rf "${SCRATCH_DIR}"
+    if [ "${copy_ok}" = true ]; then
+        echo "[$(date)] Cleaning up scratch directory: ${SCRATCH_DIR}"
+        rm -rf "${SCRATCH_DIR}"
+    else
+        echo "[$(date)] One or more copies to persistent storage FAILED." >&2
+        echo "[$(date)] Leaving scratch directory in place for manual recovery: ${SCRATCH_DIR}" >&2
+        echo "[$(date)] NOTE: this is node-local storage and may be cleared once the node is reassigned -- copy it out promptly, e.g.:" >&2
+        echo "[$(date)]   rsync -avh ${SCRATCH_DIR}/ <somewhere on persistent storage>/" >&2
+    fi
 }
 trap cleanup EXIT
 
@@ -290,20 +301,31 @@ ASSEMBLY_FASTA="${SCRATCH_DIR}/trinity_out.Trinity.fasta"
 if [ -f "${ASSEMBLY_FASTA}" ]; then
     echo "[$(date)] Generating assembly stats..."
     # TrinityStats.pl ships alongside Trinity's util/ scripts. It's usually
-    # on PATH once the Trinity module is loaded, but linuxbrew-style
-    # installs sometimes symlink only the main `Trinity` binary -- fall back
-    # to locating it relative to that binary if the plain command isn't found.
+    # on PATH once the Trinity module is loaded, but linuxbrew-style Cellar
+    # installs often symlink only the main `Trinity` binary into bin/, with
+    # the util/ scripts living under a sibling libexec/ directory instead --
+    # so check PATH first, then try several plausible layouts relative to
+    # the Trinity binary before giving up.
+    STATS_CMD=""
     if command -v TrinityStats.pl &>/dev/null; then
         STATS_CMD="TrinityStats.pl"
     else
-        TRINITY_HOME="$(dirname "$(readlink -f "$(command -v Trinity)")")"
-        STATS_CMD="${TRINITY_HOME}/util/TrinityStats.pl"
+        TRINITY_BIN_DIR="$(dirname "$(readlink -f "$(command -v Trinity)")")"
+        for candidate in \
+            "${TRINITY_BIN_DIR}/util/TrinityStats.pl" \
+            "${TRINITY_BIN_DIR}/../libexec/util/TrinityStats.pl" \
+            "${TRINITY_BIN_DIR}/../util/TrinityStats.pl"; do
+            if [ -f "${candidate}" ]; then
+                STATS_CMD="${candidate}"
+                break
+            fi
+        done
     fi
 
-    if [ -x "${STATS_CMD}" ] || command -v "${STATS_CMD}" &>/dev/null; then
+    if [ -n "${STATS_CMD}" ]; then
         "${STATS_CMD}" "${ASSEMBLY_FASTA}" > "${SCRATCH_DIR}/trinity_out.Trinity.fasta.stats.txt" 2>&1 || true
     else
-        echo "WARNING: could not locate TrinityStats.pl (tried PATH and ${TRINITY_HOME}/util/) -- skipping stats." >&2
+        echo "WARNING: could not locate TrinityStats.pl (tried PATH and several paths relative to the Trinity binary) -- skipping stats." >&2
     fi
 else
     echo "WARNING: expected assembly file not found at ${ASSEMBLY_FASTA}" >&2
@@ -312,16 +334,45 @@ fi
 #############################################################################
 # COPY RESULTS BACK TO PERSISTENT STORAGE
 #############################################################################
+# Every copy below is checked for real success -- a failed rsync is no
+# longer swallowed, because silently discarding a finished assembly (via
+# the scratch cleanup that follows) is far worse than a noisy failure.
+# Missing *source* files (e.g. the .stats.txt if TrinityStats.pl couldn't
+# be found earlier) are only warned about, since they're not fatal; a
+# failed copy of a source file that DOES exist sets copy_ok=false, which
+# stops the scratch directory from being deleted and makes the job exit
+# non-zero so SLURM reports it as FAILED instead of silently empty-handed.
+
+copy_item() {
+    # $1 = source (file or dir, dir must end in "/"), $2 = destination dir
+    local src="$1" dst="$2"
+    if [ ! -e "${src%/}" ]; then
+        echo "WARNING: expected output not found, skipping: ${src}" >&2
+        return 0
+    fi
+    mkdir -p "${dst}"
+    if ! rsync -avh "${src}" "${dst}/"; then
+        echo "ERROR: failed to copy ${src} to ${dst}/" >&2
+        copy_ok=false
+    fi
+}
+
 echo "[$(date)] Copying QC reports to ${QC_OUTDIR} ..."
-rsync -avh "${RAW_QC_DIR}/"      "${QC_OUTDIR}/fastqc_raw/"      2>/dev/null || true
-rsync -avh "${TRIMMED_QC_DIR}/"  "${QC_OUTDIR}/fastqc_trimmed/"  2>/dev/null || true
-rsync -avh "${FASTP_REPORT_DIR}/" "${QC_OUTDIR}/fastp/"          2>/dev/null || true
-rsync -avh "${SCRATCH_DIR}/multiqc/" "${QC_OUTDIR}/multiqc/"     2>/dev/null || true
+copy_item "${RAW_QC_DIR}/"          "${QC_OUTDIR}/fastqc_raw"
+copy_item "${TRIMMED_QC_DIR}/"      "${QC_OUTDIR}/fastqc_trimmed"
+copy_item "${FASTP_REPORT_DIR}/"    "${QC_OUTDIR}/fastp"
+copy_item "${SCRATCH_DIR}/multiqc/" "${QC_OUTDIR}/multiqc"
 
 echo "[$(date)] Copying assembly results to ${FINAL_OUTDIR} ..."
-rsync -avh "${SCRATCH_DIR}/trinity_out.Trinity.fasta"                "${FINAL_OUTDIR}/" 2>/dev/null || true
-rsync -avh "${SCRATCH_DIR}/trinity_out.Trinity.fasta.gene_trans_map"  "${FINAL_OUTDIR}/" 2>/dev/null || true
-rsync -avh "${SCRATCH_DIR}/trinity_out.Trinity.fasta.stats.txt"       "${FINAL_OUTDIR}/" 2>/dev/null || true
+copy_item "${SCRATCH_DIR}/trinity_out.Trinity.fasta"               "${FINAL_OUTDIR}"
+copy_item "${SCRATCH_DIR}/trinity_out.Trinity.fasta.gene_trans_map" "${FINAL_OUTDIR}"
+copy_item "${SCRATCH_DIR}/trinity_out.Trinity.fasta.stats.txt"      "${FINAL_OUTDIR}"
+
+if [ "${copy_ok}" != true ]; then
+    echo "ERROR: one or more result files failed to copy to persistent storage -- see above." >&2
+    echo "Common causes: disk quota/space exceeded on the destination, or a permissions problem." >&2
+    exit 1
+fi
 
 echo "=========================================="
 echo "Job finished: $(date)"
@@ -329,4 +380,5 @@ echo "QC reports:     ${QC_OUTDIR}/multiqc/multiqc_report.html"
 echo "Final assembly: ${FINAL_OUTDIR}/trinity_out.Trinity.fasta"
 echo "=========================================="
 
-# (Scratch cleanup happens automatically via the trap above.)
+# (Scratch cleanup happens automatically via the trap above, but only
+# because we reached this point with copy_ok still true.)
