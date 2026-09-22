@@ -11,7 +11,7 @@ module load anaconda/colsa
 
 conda activate interproscan-5.69.101
 
-cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_06152026
+cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_09022026
 mkdir output_iprscan_prot
 
 srun interproscan.sh -i output_funann/predict_results/Neonectria_faginata.proteins.fa \
