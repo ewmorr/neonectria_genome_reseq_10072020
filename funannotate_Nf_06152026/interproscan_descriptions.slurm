@@ -16,6 +16,6 @@ mkdir output_iprscan_prot
 
 srun interproscan.sh -i output_funann/predict_results/Neonectria_faginata.proteins.fa \
     --cpu 24 \
-    -f XML \
+    -f TSV \
     --goterms --pathways \
-    -o output_iprscan_prot/ipr_out.xml
+    -o output_iprscan_prot/ipr_out.tsv
