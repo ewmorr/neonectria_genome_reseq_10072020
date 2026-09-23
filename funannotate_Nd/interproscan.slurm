@@ -17,4 +17,5 @@ mkdir output_iprscan_prot
 srun interproscan.sh -i output_funann/predict_results/Neonectria_ditissima.proteins.fa \
     --cpu 24 \
     -f XML \
+    --goterms --pathways \
     -o output_iprscan_prot/ipr_out.xml
