@@ -14,7 +14,7 @@ gunzip ~/Nf_maker_reference_genome/*fasta.gz
 
 cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_11162026
 
-funannotate train -i ref.fasta.masked.clean -s "Neonectria faginata" \
+funannotate train -i ref.fasta.masked.clean \
     -o output_funann \
     --left all_R1.trimmed.fastq.gz --right all_R2.trimmed.fastq.gz \
     --trinity ../funannotate_09022026/trinity_out/trinity_out.Trinity.fasta \
