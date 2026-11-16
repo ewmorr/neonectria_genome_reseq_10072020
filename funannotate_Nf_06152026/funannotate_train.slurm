@@ -17,8 +17,8 @@ cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_11162026
 
 funannotate train -i ../funannotate_06152026/RepeatMasker/ref.fasta.masked.clean -s "Neonectria faginata" \
     -o output_funann \
-    --left ../funannotate_09022026/trinity_work/trimmed/*_R1_* \
-    --right ../funannotate_09022026/trinity_work/trimmed/*_R2_* \
+    --left ../funannotate_09022026/trinity_work/trimmed/*R1* \
+    --right ../funannotate_09022026/trinity_work/trimmed/*R2* \
     --trinity ../funannotate_09022026/trinity_out/trinity_out.Trinity.fasta \
     --stranded RF --jaccard_clip --no_trimmomatic \
     --cpus 24

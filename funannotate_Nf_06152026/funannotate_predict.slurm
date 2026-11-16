@@ -15,10 +15,13 @@ gunzip ~/Nf_maker_reference_genome/*fasta.gz
 cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_11162026
 
 
-srun funannotate predict -i ../funannotate_06152026/RepeatMasker/ref.fasta.masked.clean -s "Neonectria faginata" \
+funannotate predict -i ../funannotate_06152026/RepeatMasker/ref.fasta.masked.clean -s "Neonectria faginata" \
     -o output_funann \
+    --name Q2T73_ \
     --transcript_evidence $HOME/Nf_maker_reference_genome/Fusgr1_GeneCatalog_transcripts_20110524.nt.fasta \
     --protein_evidence $HOME/Nf_maker_reference_genome/Fusgr1_GeneCatalog_proteins_20110524.aa.fasta $FUNANNOTATE_DB/uniprot_sprot.fasta \
     --cpus 24
     
 gzip ~/Nf_maker_reference_genome/*fasta
+
+funannotate update -i output_funann --cpus 24
