@@ -9,7 +9,7 @@
 module purge
 module load linuxbrew/colsa
 
-cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_06152026/output_funann/predict_results/
+cd ~/neonectria_faginata_draft_genome/Nf_annotate/funannotate_11162026/output_funann/predict_results/
 
 
 srun busco -i Neonectria_faginata.mrna-transcripts.fa -l $HOME/augustus_config/lineage/sordariomyceta_odb9 -m tran -o busco_transcript_eval_all -f -c 24
